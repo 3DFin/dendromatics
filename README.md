@@ -1,15 +1,15 @@
 # Description
 
 
-The associated code implements an algorithm to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. This algorithm is mainly based on rules, although it uses clusterization in some stages.
+The `functions` module in `code` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. Most of the algorithms are mainly based on rules, although DBSCAN clusterization is used in some stages.
 
 
-It may be divided in three main steps:
+The functionalities may be divided in three main steps:
 
 
 1. Identification of stems among user-provided stripe.
 2. Tree individualization based on point-to-stems distances.
-3. Computation of stems diameter at different section heights.
+3. Robust computation of stems diameter at different section heights.
 
 
 # Algorithm
@@ -95,11 +95,9 @@ __libraries__. These are libraries that are imported directly:
 * laspy
 * numpy
 * timeit
-* tkinter
 
 __functions__. These are libraries from which only specific functions are imported:
 
-* PIL (imports ImageTk and Image)
 * copy (imports deepcopy)
 * jakteristics (imports compute_features)
 * scipy (imports cluster.hierarchy, optimize and spatial.distance_matrix)
