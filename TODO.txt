@@ -3,3 +3,4 @@
 3. Make draw_circles as an optional parameter of compute_sections.
 4. Make draw_axes as an optional parameter of compute_axes.
 5. In general, make usage clearer.
+6. Update ReadMe
