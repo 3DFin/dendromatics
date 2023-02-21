@@ -1,7 +1,7 @@
 # Description
 
 
-The `functions` module in `code` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. Most of the algorithms are mainly based on rules, although DBSCAN clusterization is used in some stages.
+The `code` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. Most of the algorithms are mainly based on rules, although DBSCAN clusterization is used in some stages.
 
 
 The functionalities may be divided in three main steps:
