@@ -129,7 +129,7 @@ def fit_circle(X, Y):
 # inner_circle      
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def inner_circle(X, Y, X_c, Y_c, R, times_R = 0.5):
+def inner_circle(X, Y, X_c, Y_c, R, times_R):
 
     '''
     -----------------------------------------------------------------------------
@@ -394,7 +394,7 @@ def fit_circle_check(X, Y, review, second_time, times_R, threshold, R_min, R_max
     n_points_in: numpy array. Matrix containing the number of points in the inner circumferences.
     '''
     
-def compute_sections(stems, sections, section_width, times_R, threshold, R_min, R_max, max_dist, n_points_section, n_sectors = 16, min_n_sectors = 9, width = 2):
+def compute_sections(stems, sections, section_width = 2, times_R = 0.5, threshold = 5, R_min = 0.03, R_max = 0.5, max_dist = 0.02, n_points_section = 80, n_sectors = 16, min_n_sectors = 9, width = 2):
     
     X_field = 0
     Y_field = 1
@@ -402,8 +402,6 @@ def compute_sections(stems, sections, section_width, times_R, threshold, R_min, 
     tree_id_field = 4
     
     trees = np.unique(stems[:, tree_id_field]) # Select the column that contains tree ID
-    sections = np.arange(min_h, max_h, section_len) # Range of uniformly spaced values within the specified interval 
-
     n_trees = trees.size # Number of trees
     n_sections = sections.size  # Number of sections
         
@@ -573,7 +571,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field = 2, w_1 = 3.0, w_2
 # tree_locator
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, n_points_in, threshold, outliers, filename_las, X_field = 0, Y_field = 1, Z_field = 2):
+def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_points_in, filename_las, threshold = 5, X_field = 0, Y_field = 1, Z_field = 2):
 
     '''
     -----------------------------------------------------------------------------
@@ -597,10 +595,10 @@ def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, n_points_in, 
     tree_vector: numpy array. detected_trees output from individualize_trees.
     sector_perct: numpy array. Matrix containing the percentage of occupied sectors.
     R: numpy array. Vector containing section radia.
-    n_points_in: numpy array. Matrix containing the number of points in the inner circumferences.
-    threshold: float. Minimum number of points in inner circumference for a fitted circumference to be valid.
     outliers: numpy array. Vector containing the 'outlier probability' of each section.
     filename_las: char. File name for the output file.
+    n_points_in: numpy array. Matrix containing the number of points in the inner circumferences.
+    threshold: float. Minimum number of points in inner circumference for a fitted circumference to be valid.
     X_field: int. default value: 0. Index at which (x) coordinate is stored.
     Y_field: int. default value: 1. Index at which (y) coordinate is stored.
     Z_field: int. default value: 2. Index at which (z) coordinate is stored.
@@ -812,8 +810,6 @@ def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, n_points_in, 
                 tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7] # Compute coordinates of axis point at BH. 
 
                 dbh_values[i] = 0
-                            
-      
     
     las_tree_locations = laspy.create(point_format = 2, file_version = '1.2')
     las_tree_locations.x = tree_locations[:, X_field]
