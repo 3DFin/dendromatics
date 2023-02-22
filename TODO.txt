@@ -1,9 +1,8 @@
 1. Re-write functions so that they are independent of main script.
 2. Reduce the number of parameters. Add default values.
-3. Make draw_circles as an optional parameter of compute_sections.
-4. Make draw_axes as an optional parameter of compute_axes.
-5. In general, make usage clearer.
-6. Update ReadMe.
-7. Create tests.
-8. Save files through functions. save_axes, save_sections, save_trees, save_stripe, save_heights, save_locators, save_dbh
+3. In general, make usage clearer.
+4. Update ReadMe.
+5. Create tests.
+6. Save files through functions. save_axes, save_sections, save_trees, save_stripe, save_heights, save_locators, save_dbh
+	OR make it an optional parameter in main functions (I like first option best)
 
