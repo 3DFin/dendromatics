@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 
-from FIN3D import voxelate
+from dendromatics import voxelate
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # compute_axes
