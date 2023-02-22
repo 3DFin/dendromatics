@@ -1,3 +1,10 @@
+#### IMPORTS ####
+import sys
+import laspy
+import numpy as np
+from scipy import optimize as opt
+from scipy.cluster import hierarchy as sch
+from scipy.spatial import distance_matrix
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 # point_clustering
