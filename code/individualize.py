@@ -11,7 +11,7 @@ from FIN3D import voxelate
 # compute_axes
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def compute_axes(voxelated_cloud, clust_stripe, min_points, h_range, d_max, X_field, Y_field, Z_field, Z0_field, tree_id_field):
+def compute_axes(voxelated_cloud, clust_stripe, h_range, min_points = 20, d_max = 1.5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3, tree_id_field = 4):
     
     '''
     -----------------------------------------------------------------------------
@@ -34,10 +34,10 @@ def compute_axes(voxelated_cloud, clust_stripe, min_points, h_range, d_max, X_fi
     voxelated_cloud: numpy array. the voxelated point cloud containing the forest plot. It is expected to have X, Y, Z and/or Z0 fields.
     clust_stripe: numpy array. The point cloud containing the clusterized stripe from verticality_clustering_iteration. 
     It is expected to have X, Y, Z and cluster ID fields.
-    d_max: float. Points that are closer than d_max to an axis are assigned to that axis.
     h_range: float. only stems where points extend vertically throughout a range as tall as defined by h_range are considered
-    min_points: int. Minimum number of points in a cluster for it to be considered as a potential stem.
+    min_points: int. default value: 20. Minimum number of points in a cluster for it to be considered as a potential stem.
     tree height.
+    d_max: float. default value: 1.5. Points that are closer than d_max to an axis are assigned to that axis.
     X_field: int. default value: 0. Index at which (x) coordinates are stored.
     Y_field: int. default value: 1. Index at which (y) coordinates are stored.
     Z_field: int. default value: 2. Index at which (z) coordinates are stored.
@@ -131,7 +131,7 @@ def compute_axes(voxelated_cloud, clust_stripe, min_points, h_range, d_max, X_fi
 # compute_heights
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vector, d, max_dev, resolution_heights, n_digits, X_field, Y_field, Z_field, Z0_field):
+def compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vector, d = 15, max_dev = 25, resolution_heights = 0.3, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3):
     
     '''
     -----------------------------------------------------------------------------
@@ -239,7 +239,7 @@ def compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vecto
 # individualize_trees
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def individualize_trees(cloud, clust_stripe, resolution_z, resolution_xy, d_max, h_range, min_points, d, max_dev, filename_las, resolution_heights = 0.3, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3, tree_id_field = 4):
+def individualize_trees(cloud, clust_stripe, filename_las, resolution_z, resolution_xy, h_range, d_max = 1.5, min_points = 20, d = 15, max_dev = 25, resolution_heights = 0.3, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3, tree_id_field = 4):
 
     '''
     -----------------------------------------------------------------------------
@@ -262,18 +262,19 @@ def individualize_trees(cloud, clust_stripe, resolution_z, resolution_xy, d_max,
     cloud: numpy array. the point cloud containing the forest plot. It is expected to have X, Y, Z and Z0 fields.
     clust_stripe: numpy array. The point cloud containing the clusterized stripe from verticality_clustering_iteration. 
     It is expected to have X, Y, Z and cluster ID fields.
+    filename_las: char. File name for the output file.
     resolution_z: float. (x, y) voxel resolution.
     resolution_xy: float. (z) voxel resolution.
-    d_max: float. Points that are closer than d_max to an axis are assigned to that axis.
     h_range: float. only stems where points extend vertically throughout a range as tall as defined by h_range are considered
+    d_max: float. Points that are closer than d_max to an axis are assigned to that axis.
     min_points: int. Minimum number of points in a cluster for it to be considered as a potential stem.
     d: float. Points within this distance from tree axis will be considered as potential points to define
     tree height.
-    filename_las: char. File name for the output file.
     max_dev: float. Maximum degree of vertical deviation of a tree axis to consider its tree height measurement as valid.
     n_digits: int. default value: 5. Number of digits dedicated to each coordinate ((x), (y) or (z))
     during the generation of each point code. If the cloud is really large, it can be advisable
     to increase n_digits.
+    resolution_heights: float. default value: 0.3. (x, y, z) voxel resolution used during height computation.
     X_field: int. default value: 0. Index at which (x) coordinate is stored.
     Y_field: int. default value: 1. Index at which (y) coordinate is stored.
     Z_field: int. default value: 2. Index at which (z) coordinate is stored.
