@@ -1,3 +1,11 @@
+#### IMPORTS ####
+import timeit
+import jakteristics as jak
+import numpy as np
+from sklearn.cluster import DBSCAN
+
+from FIN3D import voxelate
+
 #-----------------------------------------------------------------------------------------------------------------------------------
 # verticality_clustering
 #-----------------------------------------------------------------------------------------------------------------------------------

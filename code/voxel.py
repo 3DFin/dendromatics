@@ -1,7 +1,10 @@
+#### IMPORTS ####
+import timeit
+import numpy as np
+
 #-----------------------------------------------------------------------------------------------------------------------------------
 # voxelate
 #----------------------------------------------------------------------------------------------------------------------------------------                  
-
 
 def voxelate(cloud, resolution_xy, resolution_z, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, with_n_points = True, silent = False):
 
@@ -54,25 +57,25 @@ def voxelate(cloud, resolution_xy, resolution_z, n_digits = 5, X_field = 0, Y_fi
     cloud[:, Y_field] = cloud[:, Y_field] - cloud_min[Y_field];
     cloud[:, Z_field] = cloud[:, Z_field] - cloud_min[Z_field];
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('      -Voxelization')
-		print('        ','Voxel resolution:',"{:.2f}".format(resolution_xy),'x',"{:.2f}".format(resolution_xy),'x',"{:.2f}".format(resolution_z),'m')
-		print('        ',"%.2f" % elapsed,'s: escaling and translading')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('      -Voxelization')
+        print('        ','Voxel resolution:',"{:.2f}".format(resolution_xy),'x',"{:.2f}".format(resolution_xy),'x',"{:.2f}".format(resolution_z),'m')
+        print('        ',"%.2f" % elapsed,'s: escaling and translading')
     
     # Generation of 'pixel code'. It provides each point with an unique identifier. 
     code = np.floor(cloud[:, Z_field] / resolution_z) * 10 ** (n_digits * 2) + np.floor(cloud[:, Y_field] / resolution_xy) * 10 ** n_digits + np.floor(cloud[:, X_field] / resolution_xy)
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('        ',"%.2f" % elapsed,'s: encoding')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('        ',"%.2f" % elapsed,'s: encoding')
     
     # Vector that contains the ordered code. It will be used to sort the code to then sort the cloud.
     vox_order_ind = np.argsort(code)
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('        ',"%.2f" % elapsed,'s: 1st sorting')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('        ',"%.2f" % elapsed,'s: 1st sorting')
     
     # Vector that contains the indexes of said code. It will be used to restore the order of points within the original cloud.
     vox_order_ind_inverse = np.argsort(vox_order_ind)
@@ -80,9 +83,9 @@ def voxelate(cloud, resolution_xy, resolution_z, n_digits = 5, X_field = 0, Y_fi
     # Sorted code.
     code = code[vox_order_ind]
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('        ',"%.2f" % elapsed,'s: 2nd sorting')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('        ',"%.2f" % elapsed,'s: 2nd sorting')
     
     # Unique values of said 'pixel code':
     # unique_code: Unique values. They contain codified coordinates of which will later be the voxel centroids. 
@@ -91,9 +94,9 @@ def voxelate(cloud, resolution_xy, resolution_z, n_digits = 5, X_field = 0, Y_fi
     # vox_points: Number of points in each voxel
     unique_code, vox_first_point_id, inverse_id, vox_points = np.unique(code, return_index = True, return_inverse = True, return_counts = True)
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('        ',"%.2f" % elapsed,'s: extracting uniques values')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('        ',"%.2f" % elapsed,'s: extracting uniques values')
     
     # Indexes that directly associate each voxel to its corresponding points in the original cloud (unordered)
     vox_to_cloud_ind = inverse_id[vox_order_ind_inverse]
@@ -113,9 +116,9 @@ def voxelate(cloud, resolution_xy, resolution_z, n_digits = 5, X_field = 0, Y_fi
     voxelated_cloud[:, Y_field] = y_code
     voxelated_cloud[:, Z_field] = z_code 
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('        ',"%.2f" % elapsed,'s: decomposing code')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('        ',"%.2f" % elapsed,'s: decomposing code')
     
     # Transformation of x, z, y codes into X, Y, X voxel coordinates, by scaling, translating and centering. 
     voxelated_cloud[:, Z_field] = voxelated_cloud[:, Z_field] * resolution_z  + cloud_min[Z_field] + resolution_z  / 2
@@ -126,11 +129,11 @@ def voxelate(cloud, resolution_xy, resolution_z, n_digits = 5, X_field = 0, Y_fi
     if with_n_points == True:
         voxelated_cloud = np.append(voxelated_cloud, vox_points[:, np.newaxis], axis = 1)
     
-	if not silent:
-		elapsed = timeit.default_timer() - t
-		print('        ',"%.2f" % elapsed,'s: reescaling and translading back')
-		print('        ',"{:.2f}".format(vox_to_cloud_ind.shape[0] / 1000000),'million points ->',"{:.2f}".format(cloud_to_vox_ind.shape[0] / 1000000),'million voxels')
-		print('        ','Voxels account for',"{:.2f}".format(cloud_to_vox_ind.shape[0] * 100 / vox_to_cloud_ind.shape[0]),'% of original points')
+    if not silent:
+        elapsed = timeit.default_timer() - t
+        print('        ',"%.2f" % elapsed,'s: reescaling and translading back')
+        print('        ',"{:.2f}".format(vox_to_cloud_ind.shape[0] / 1000000),'million points ->',"{:.2f}".format(cloud_to_vox_ind.shape[0] / 1000000),'million voxels')
+        print('        ','Voxels account for',"{:.2f}".format(cloud_to_vox_ind.shape[0] * 100 / vox_to_cloud_ind.shape[0]),'% of original points')
 
 
     cloud[:, X_field] = cloud[:, X_field] + cloud_min[X_field];
