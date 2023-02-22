@@ -5,3 +5,5 @@
 5. In general, make usage clearer.
 6. Update ReadMe.
 7. Create tests.
+8. Save files through functions. save_axes, save_sections, save_trees, save_stripe, save_heights, save_locators, save_dbh
+
