@@ -10,7 +10,7 @@ from FIN3D import voxelate
 # verticality_clustering
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def verticality_clustering(stripe, vert_scale, vert_treshold, eps, n_points, resolution_xy, resolution_z, n_digits):
+def verticality_clustering_iteration(stripe, vert_scale, vert_treshold, eps, n_points, resolution_xy, resolution_z, n_digits):
 
     '''
     -----------------------------------------------------------------------------
@@ -120,7 +120,7 @@ def verticality_clustering(stripe, vert_scale, vert_treshold, eps, n_points, res
 # verticality_clustering_iteration
 #----------------------------------------------------------------------------------------------------------------------------------------                  
 
-def verticality_clustering_iteration(stripe, scale,vert_treshold, eps_dbscan, n_points, n_iter, resolution_xy, resolution_z, n_digits):
+def verticality_clustering(stripe, scale,vert_treshold, eps_dbscan, n_points, n_iter, resolution_xy, resolution_z, n_digits):
 
     '''
     -----------------------------------------------------------------------------
@@ -175,7 +175,7 @@ def verticality_clustering_iteration(stripe, scale,vert_treshold, eps_dbscan, n_
             aux_stripe = stripe
         else:
             aux_stripe = clust_stripe
-        clust_stripe, t = verticality_clustering(aux_stripe, scale, vert_treshold, eps_dbscan, n_points, resolution_xy, resolution_z, n_digits)
+        clust_stripe, t = verticality_clustering_iteration(aux_stripe, scale, vert_treshold, eps_dbscan, n_points, resolution_xy, resolution_z, n_digits)
         total_t = total_t + t
     print("Final:")            
     print("%.2f" % total_t, 's in total (whole process)')   
