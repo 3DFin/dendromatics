@@ -1,7 +1,7 @@
 # Description
 
 
-The `code` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. These are based on an updated version of the algorithm proposed by (Cabo et al., 2018) which is mainly based on rules, although DBSCAN clusterization is used in some stages.
+The `src` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. These are based on an updated version of the algorithm proposed by (Cabo et al., 2018) which is mainly based on rules, although DBSCAN clusterization is used in some stages.
 
 
 The functionalities may be divided in four main steps:
