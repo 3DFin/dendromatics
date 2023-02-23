@@ -90,7 +90,9 @@ Tree location [(x, y) coordinates] is obtained at this step too, either derived 
 
 # Examples
 
+
 ## Height-normalization
+
 
 Almost all functions in the module expect a height-normalized point cloud to work as intended. If your point cloud is not height-normalized, you can do it in a simple way using some of the module functions.
 
@@ -100,11 +102,11 @@ import laspy
 import numpy as np
 import dendromatic as dm
 
-### Reading the point cloud ###
+# Reading the point cloud
 entr = laspy.read(filename_las)
 coords = np.vstack((entr.x, entr.y, entr.z)).transpose()
 
-### Normalizing the point cloud ###
+# Normalizing the point cloud
 cloth_nodes = dm.generate_dtm(clean_points)
 z0_values = dm.normalize_heights(coords, dtm)
 
@@ -121,6 +123,7 @@ clean_points = dm.clean_ground(coords)
 
 ## Identifying stems from a stripe
 
+
 Simply provide a stripe (from a height-normalized point cloud) as follows to iteratively 'peel off' the stems:
 
 ```Python
@@ -135,6 +138,7 @@ stripe_stems = dm.verticality_clustering(stripe, n_iter = 2)
 
 ## Individualizing trees
 
+
 Once the stems have been identified in the stripe, they can be used to individualize the trees in the point cloud:
 
 ```Python 
@@ -144,6 +148,7 @@ assigned_cloud, tree_vector, tree_heights = dm.individualize_trees(coords, strip
 ```
 
 ## Computing sections along the stems
+
 
 `compute_sections()` can be used to compute sections along the stems of the individualized trees:
 
@@ -169,6 +174,7 @@ X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in = dm.compute_s
 
 ## Tilt detection 
 
+
 `tilt_detection()` computes an 'outlier probability' for each section based on its tilting relative to neighbour sections and the relative to the tree axis:
 
 ```Python
@@ -183,67 +189,17 @@ For further examples and more thorough explanations, please check `example.py` s
 # Dependencies
 
 
-The script imports several Python libraries and functions. They can be found listed below:
+CSF
 
-__libraries__. These are libraries that are imported directly:
+jakteristics
 
-* os
-* sys
-* laspy
-* numpy
-* timeit
+laspy
 
-__functions__. These are libraries from which only specific functions are imported:
+numpy
 
-* copy (imports deepcopy)
-* jakteristics (imports compute_features)
-* scipy (imports cluster.hierarchy, optimize and spatial.distance_matrix)
-* sklearn (imports cluster.DBSCAN and decomposition.PCA)
-* tkinter (imports filedialog)
+scikit_learn
 
-
-# Inputs
-
-
-The main script takes a .LAS file containing the ground-based 3D point cloud as input. The point cloud must be height normalized. Normalized heights can be contained in the Z coordinate of the point cloud or in an additional field in the .LAS file. If so, the name of that field is used as an input parameter. The parameters may be considered as inputs as well.
-
-
-# Outputs
-
-
-After all computations are complete, the following files are output:
-
-
-__LAS files__:
-
-
-* LAS file containing the original point cloud and a scalar field that contains tree IDs.
-
-* LAS file containing trunk axes coordinates.
-
-* LAS file containing circles (sections) coordinates.
-
-* LAS file containing the trunks obtained from the stripe during step 1.
-
-* LAS file containing the tree locators coordinates.
-
-
-__Text files__:
-
-
-* Text file containing tree height, tree location and DBH of every tree as tabular data.
-
-* Text file containing the (x) coordinate of the center of every section of every tree as tabular data.
-
-* Text file containing the (y) coordinate of the center of every section of every tree as tabular data.
-
-* Text file containing the radius of every section of every tree as tabular data.
-
-* Text file containing the 'outlier probability' of every section of every tree as tabular data.
-
-* Text file containing the sector occupancy of every section of every tree as tabular data.
-
-* Text file containing the 'check' status of every section of every tree as tabular data.
+scipy
 
 
 # References
