@@ -89,7 +89,6 @@ from scipy.spatial import distance_matrix
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 
-import gui
 from functions import *
 
 ### Reading the config file ###
@@ -299,5 +298,3 @@ print('8.-End of process!')
 print('---------------------------------------------')
 print('Total time:',"   %.2f" % elapsed_t,'s')
 print('nº of trees:',X_c.shape[0])
-
-input("Press enter to close the program...")
