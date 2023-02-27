@@ -78,21 +78,20 @@ import os
 import sys
 import configparser
 import timeit
-import CSF
+# import CSF
 import laspy
-import jakteristics as jak
+# import jakteristics as jak
 import numpy as np
 from pathlib import Path
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from PIL import ImageTk, Image
-from copy import deepcopy
-from scipy import optimize as opt
-from scipy.cluster import hierarchy as sch
-from scipy.spatial import distance_matrix
-from sklearn.cluster import DBSCAN
-from sklearn.decomposition import PCA
+# from scipy import optimize as opt
+# from scipy.cluster import hierarchy as sch
+# from scipy.spatial import distance_matrix
+# from sklearn.cluster import DBSCAN
+# from sklearn.decomposition import PCA
 
 import gui
 import dendromatics as dm
@@ -1482,7 +1481,7 @@ if is_normalized:
     print('Analyzing cloud size...')
     print('---------------------------------------------')
 
-    _, _, voxelated_ground = voxelate(coords[coords[:, 3] < 0.5, 0:3], 1, 2000, n_digits, with_n_points = False)
+    _, _, voxelated_ground = dm.voxelate(coords[coords[:, 3] < 0.5, 0:3], 1, 2000, n_digits, with_n_points = False, silent = False)
 
     print('   This cloud has',"{:.2f}".format(coords.shape[0]/1000000),'millions points')
     print('   Its area is ',voxelated_ground.shape[0],'m^2')
@@ -1503,7 +1502,7 @@ else:
     print('Analyzing cloud size...')
     print('---------------------------------------------')
 
-    _, _, voxelated_ground = voxelate(coords, 1, 2000, n_digits, with_n_points = False)
+    _, _, voxelated_ground = dm.voxelate(coords, 1, 2000, n_digits, with_n_points = False, silent = False)
 
     print('   This cloud has',"{:.2f}".format(coords.shape[0]/1000000),'millions points')
     print('   Its area is ',voxelated_ground.shape[0],'m^2')
@@ -1520,7 +1519,7 @@ else:
         print('---------------------------------------------')
         t = timeit.default_timer()
         # Noise elimination
-        clean_points = clean_ground(coords)
+        clean_points = dm.clean_ground(coords)
         
         elapsed = timeit.default_timer() - t
         print('        ',"%.2f" % elapsed,'s: denoising')
@@ -1530,7 +1529,7 @@ else:
         print('---------------------------------------------')
         t = timeit.default_timer()
         # Extracting ground points and DTM ## MAYBE ADD VOXELIZATION HERE
-        cloth_nodes = generate_dtm(clean_points, bSloopSmooth = True, cloth_resolution = 0.5, classify_threshold = 0.2)
+        cloth_nodes = dm.generate_dtm(clean_points)
         
         elapsed = timeit.default_timer() - t
         print('        ',"%.2f" % elapsed,'s: generating the DTM')
@@ -1542,7 +1541,7 @@ else:
         print('---------------------------------------------')
         t = timeit.default_timer()
         # Extracting ground points and DTM
-        cloth_nodes = generate_dtm(coords, bSloopSmooth = True, cloth_resolution = 0.5, classify_threshold = 0.2)
+        cloth_nodes = dm.generate_dtm(coords)
         
         elapsed = timeit.default_timer() - t
         print('        ',"%.2f" % elapsed,'s: generating the DTM')
@@ -1552,7 +1551,7 @@ else:
     print('---------------------------------------------')
     t = timeit.default_timer()
     # Cleaning the DTM
-    dtm = clean_cloth(cloth_nodes)
+    dtm = dm.clean_cloth(cloth_nodes)
     
     # Exporting the DTM
 
@@ -1571,7 +1570,7 @@ else:
     print('Normalizing the point cloud and running the algorithm...')
     print('---------------------------------------------')
     t = timeit.default_timer()
-    z0_values = normalize_heights(coords, dtm)
+    z0_values = dm.normalize_heights(coords, dtm)
     coords = np.append(coords, np.expand_dims(z0_values, axis = 1), 1)
     
     elapsed = timeit.default_timer() - t
@@ -1585,14 +1584,14 @@ print('1.-Extracting the stripe and peeling the stems...')
 print('---------------------------------------------')
 
 stripe = coords[(coords[:, 3] > stripe_lower_limit) & (coords[:, 3] < stripe_upper_limit), 0:4]
-clust_stripe = verticality_clustering_iteration(stripe, vert_scale_stripe, vert_threshold_stripe, eps_stripe, n_points_stripe, n_iter_stripe, resolution_xy_stripe, resolution_z_stripe, n_digits)       
+clust_stripe = dm.verticality_clustering(stripe, vert_scale_stripe, vert_threshold_stripe, eps_stripe, n_points_stripe, n_iter_stripe, resolution_xy_stripe, resolution_z_stripe, n_digits)       
 del stripe
 
 print('---------------------------------------------')
 print('2.-Computing distances to axes and individualizating trees...')
 print('---------------------------------------------')
                                                                                        
-assigned_cloud, tree_vector, tree_heights = individualize_trees(coords, clust_stripe, resolution_xy, resolution_z, d_max, h_range, min_points, d_heights, max_dev, filename_las, resolution_heights, tree_id_field = -1)     
+assigned_cloud, tree_vector, tree_heights = dm.individualize_trees(coords, clust_stripe, resolution_z, resolution_xy, h_range, d_max, min_points, d_heights, max_dev, resolution_heights, n_digits, X_field, Y_field, Z_field, tree_id_field = -1)     
 
 print('  ')
 print('---------------------------------------------')
@@ -1609,19 +1608,30 @@ las_stripe.z = clust_stripe[:, Z_field]
 las_stripe.add_extra_dim(laspy.ExtraBytesParams(name = "tree_ID", type = np.int32))
 las_stripe.tree_ID= clust_stripe[:, -1]
 las_stripe.write(filename_las[:-4]+"_stripe.las")
-del clust_stripe
 
 # Whole cloud including new fields
 entr.add_extra_dim(laspy.ExtraBytesParams(name="dist_axes", type=np.float64))
 entr.add_extra_dim(laspy.ExtraBytesParams(name="tree_ID", type=np.int32))
 entr.dist_axes = assigned_cloud[:, 5]
 entr.tree_ID = assigned_cloud[:, 4]
+
 if is_noisy:
     entr.add_extra_dim(laspy.ExtraBytesParams(name="Z0", type=np.float64))
     entr.Z0 = z0_values
 entr.write(filename_las[:-4]+"_tree_ID_dist_axes.las")
 elapsed_las = timeit.default_timer() - t_las
 print('Total time:',"   %.2f" % elapsed_las,'s')
+
+# Tree heights
+las_tree_heights = laspy.create(point_format = 2, file_version='1.2')
+las_tree_heights.x = tree_heights[:, 0] # x
+las_tree_heights.y = tree_heights[:, 1] # y
+las_tree_heights.z = tree_heights[:, 2] # z
+las_tree_heights.add_extra_dim(laspy.ExtraBytesParams(name = "z0", type = np.int32))
+las_tree_heights.z0 = tree_heights[:, 3] # z0
+las_tree_heights.add_extra_dim(laspy.ExtraBytesParams(name = "deviated", type = np.int32))
+las_tree_heights.deviated = tree_heights[:, 4] # vertical deviation binary indicator
+las_tree_heights.write(filename_las[: -4] + "_tree_heights.las")
 
 
 # stem extraction and curation 
@@ -1630,76 +1640,22 @@ print('4.-Extracting and curating stems...')
 print('---------------------------------------------')
 
 xyz0_coords = assigned_cloud[(assigned_cloud[:, 5] < expected_R) & (assigned_cloud[:, 3] > min_h) & (assigned_cloud[:,3] < max_h + section_width),:]
-stems = verticality_clustering_iteration(xyz0_coords, vert_scale_stems, vert_threshold_stems, eps_stems, n_points_stems, n_iter_stems, resolution_xy_stripe, resolution_z_stripe, n_digits)[:, 0:6]
-del xyz0_coords
+stems = dm.verticality_clustering(xyz0_coords, vert_scale_stems, vert_threshold_stems, eps_stems, n_points_stems, n_iter_stems, resolution_xy_stripe, resolution_z_stripe, n_digits)[:, 0:6]
+
 
 # Computing circles 
 print('---------------------------------------------')
 print('5.-Computing diameters along stems...')
 print('---------------------------------------------')
-print('   Nº of trees to compute sections:')
-trees = np.unique(stems[:, tree_id_field]) # Select the column that contains tree ID
+
 sections = np.arange(min_h, max_h, section_length) # Range of uniformly spaced values within the specified interval 
 
-n_trees = trees.size # Number of trees
-n_sections = sections.size  # Number of sections
-    
-zeros_template = np.zeros((n_trees, n_sections), dtype = float) # Empty array to be reused.
-    
-X_c = deepcopy(zeros_template) # Empty array to store X data 
-Y_c = deepcopy(zeros_template) # Empty array to store Y data
-R = deepcopy(zeros_template)# Empty array to store radius data
-check_circle = deepcopy(zeros_template) # Empty array to store 'check' data
-second_time = deepcopy(zeros_template) # Empty array to store 'second_time' data
-sector_perct = deepcopy(zeros_template) # Empty array to store percentage of occuped sectors data
-n_points_in = deepcopy(zeros_template) # Empty array to store inner points data
-
-
-# Filling previous empty arrays
-
-# Auxiliar index for first loop
-tree = -1 # Loop will start at -1
-
-# First loop: iterates over each tree
-for tr in trees: 
-    
-    # Tree ID is used to iterate over trees
-    tree_i = stems[stems[:, tree_id_field] == tr, :]
-    tree = tree + 1 
-    
-    sys.stdout.write("\r%d%%" % np.float64((trees.shape[0] - tree) * 100 / trees.shape[0]))
-    sys.stdout.flush()
-    
-    # Auxiliar index for second loop
-    section = 0 
-    
-    # Second loop: iterates over each section
-    for b in sections: 
-        
-        # Selecting (x, y) coordinates of points within the section
-        X = tree_i[(tree_i[:, Z0_field] >= b) & (tree_i[:, Z0_field] < b + section_width), X_field]
-        Y = tree_i[(tree_i[:, Z0_field] >= b) & (tree_i[:, Z0_field] < b + section_width), Y_field]
-        # fit_circle_check call. It provides data to fill the empty arrays  
-        (X_c_fill, Y_c_fill, R_fill, check_circle_fill, second_time_fill, sector_perct_fill, n_points_in_fill) = fit_circle_check(X, Y, 0, 0, times_R, threshold, R_min, R_max, max_dist, n_points_section, n_sectors, min_n_sectors, width)
-
-        # Filling the empty arrays
-        X_c[tree, section] = X_c_fill
-        Y_c[tree, section] = Y_c_fill
-        R[tree, section] = R_fill
-        check_circle[tree, section] = check_circle_fill
-        second_time[tree, section] = second_time_fill
-        sector_perct[tree, section] = sector_perct_fill
-        n_points_in[tree, section] = n_points_in_fill
-        
-        # Freeing memory
-        del X_c_fill, Y_c_fill, R_fill, check_circle_fill, second_time_fill
-        
-        section = section + 1
+X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in = dm.compute_sections(stems, sections, section_width, times_R, threshold, R_min, R_max, max_dist, n_points_section, n_sectors, min_n_sectors, width)
 
 
 # Once every circle on every tree is fitted, outliers are detected.
 np.seterr(divide='ignore', invalid='ignore')
-outliers = tilt_detection(X_c, Y_c, R, sections, w_1 = 3, w_2 = 1)
+outliers = dm.tilt_detection(X_c, Y_c, R, sections, w_1 = 3, w_2 = 1)
 np.seterr(divide='warn', invalid='warn')
 
 print('  ')
@@ -1709,11 +1665,19 @@ print('---------------------------------------------')
 
 t_las2 = timeit.default_timer()
 
-draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in, tree_vector, outliers, R_min, R_max, threshold, n_sectors, min_n_sectors, filename_las, circa_points)
+dm.draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in, tree_vector, outliers, R_min, R_max, threshold, n_sectors, min_n_sectors, filename_las, circa_points)
 
-draw_axes(tree_vector, line_downstep, line_upstep, stripe_lower_limit, stripe_upper_limit, point_interval, filename_las)
+dm.draw_axes(tree_vector, line_downstep, line_upstep, stripe_lower_limit, stripe_upper_limit, point_interval, filename_las, X_field, Y_field, Z_field)
 
-dbh_values, tree_locations = tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, n_points_in, threshold, outliers, filename_las, X_field = 0, Y_field = 1, Z_field = 2)
+dbh_values, tree_locations = dm.tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_points_in, threshold, X_field, Y_field, Z_field)
+
+las_tree_locations = laspy.create(point_format = 2, file_version = '1.2')
+las_tree_locations.x = tree_locations[:, 0]
+las_tree_locations.y = tree_locations[:, 1]
+las_tree_locations.z = tree_locations[:, 2]
+
+las_tree_locations.write(filename_las[:-4] + "_tree_locator.las")
+
 
 # matrix with tree height, DBH and (x,y) coordinates of each tree
 dbh_and_heights = np.zeros((dbh_values.shape[0], 4))

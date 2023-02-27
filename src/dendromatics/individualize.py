@@ -1,6 +1,5 @@
 #### IMPORTS ####
 import sys
-import laspy
 import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
