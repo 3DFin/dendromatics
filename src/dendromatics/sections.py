@@ -1,6 +1,5 @@
 #### IMPORTS ####
 import sys
-import laspy
 import numpy as np
 from scipy import optimize as opt
 from scipy.cluster import hierarchy as sch
@@ -571,7 +570,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field = 2, w_1 = 3.0, w_2
 # tree_locator
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_points_in, filename_las, threshold = 5, X_field = 0, Y_field = 1, Z_field = 2):
+def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_points_in, threshold = 5, X_field = 0, Y_field = 1, Z_field = 2):
 
     '''
     -----------------------------------------------------------------------------
@@ -666,7 +665,7 @@ def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_p
             which_valid_R = R[i, close_to_dbh] > 0 # From neighbourhood, select only those with non 0 radius
             which_valid_out = outliers[i, close_to_dbh] < 0.30 #From neighbourhood, select only those with outlier probability lower than 10 %
             which_valid_sector_perct = sector_perct[i, close_to_dbh] > 30 # only those with sector occupancy higher than 30 %
-            which_valid_points = n_points_in[i, close_to_dbh] > threshold # only those with enough points in inner circle
+            which_valid_points = n_points_in[i, close_to_dbh] < threshold # only those with enough points in inner circle
             
             # If there are valid sections among the selected
             if (np.any(which_valid_R)) & (np.any(which_valid_out)):
