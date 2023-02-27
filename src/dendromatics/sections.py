@@ -810,13 +810,6 @@ def tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_p
                 tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7] # Compute coordinates of axis point at BH. 
 
                 dbh_values[i] = 0
-    
-    las_tree_locations = laspy.create(point_format = 2, file_version = '1.2')
-    las_tree_locations.x = tree_locations[:, X_field]
-    las_tree_locations.y = tree_locations[:, Y_field]
-    las_tree_locations.z = tree_locations[:, Z_field]
 
 
-    las_tree_locations.write(filename_las[:-4] + "_tree_locator.las")
-    
     return(dbh_values, tree_locations)
