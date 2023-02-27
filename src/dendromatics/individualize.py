@@ -306,18 +306,7 @@ def individualize_trees(cloud, clust_stripe, filename_las, resolution_z, resolut
     
     # Call to compute_heights
     tree_heights = compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vector, d, max_dev, resolution_heights, n_digits, X_field, Y_field, Z_field, Z0_field)
-        
-    las_tree_heights = laspy.create(point_format = 2, file_version='1.2')
-    las_tree_heights.x = tree_heights[:, 0] # x
-    las_tree_heights.y = tree_heights[:, 1] # y
-    las_tree_heights.z = tree_heights[:, 2] # z
-    las_tree_heights.add_extra_dim(laspy.ExtraBytesParams(name = "z0", type = np.int32))
-    las_tree_heights.z0 = tree_heights[:, 3] # z0
-    las_tree_heights.add_extra_dim(laspy.ExtraBytesParams(name = "deviated", type = np.int32))
-    las_tree_heights.deviated = tree_heights[:, 4] # vertical deviation binary indicator
-    las_tree_heights.write(filename_las[: -4] + "_tree_heights.las")
  
-
     # Two new fields are added to the original cloud: - tree ID (id of closest axis) - distance to that axis
     assigned_cloud = np.append(cloud, tree_id_vector[vox_to_cloud_ind, np.newaxis], axis = 1)
     assigned_cloud = np.append(assigned_cloud, dist_to_axis[vox_to_cloud_ind, np.newaxis], axis = 1)
