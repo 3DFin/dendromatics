@@ -1,9 +1,4 @@
-1. Re-write functions so that they are independent of main script.
-2. Reduce the number of parameters. Add default values.
-3. In general, make usage clearer.
-4. Update ReadMe.
-5. Create tests.
-6. Save files only in main_with_gui
-7. Add saving files code to main_with_gui
-8. Add X_field, Y_field and Z_field parameters to functions (p.e., verticality_clustering)
+1. Update ReadMe.
+2. Create tests.
+3. Add X_field, Y_field and Z_field parameters to functions (p.e., verticality_clustering)
 
