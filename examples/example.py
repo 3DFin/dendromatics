@@ -1,10 +1,14 @@
 ### Example script ###
 
+import os
 import laspy
 import numpy as np
 import dendromatics as dm
 
+filename_las = 'TLS_06.las'
 ### Reading the point cloud ###
+
+os.chdir('C:\Swansea\Swansea\data\TLS_06')
 entr = laspy.read(filename_las)
 coords = np.vstack((entr.x, entr.y, entr.z)).transpose()
 #---------------------------------------------------------#
@@ -13,11 +17,11 @@ coords = np.vstack((entr.x, entr.y, entr.z)).transpose()
 clean_points = dm.clean_ground(coords)
 cloth_nodes = dm.generate_dtm(clean_points)
 
-z0_values = dm.normalize_heights(coords, dtm)
+z0_values = dm.normalize_heights(coords, cloth_nodes)
 coords = np.append(coords, np.expand_dims(z0_values, axis = 1), 1)
 
 # OPTIONAL: Reducing noise from the dtm and saving it #
-dtm = clean_cloth(cloth_nodes)    
+dtm = dm.clean_cloth(cloth_nodes)    
 
 las_dtm_points = laspy.create(point_format = 2, file_version='1.2')
 las_dtm_points.x = dtm[:, 0]
@@ -30,8 +34,8 @@ las_dtm_points.write(filename_las + "_dtm_points.las")
 upper_limit = 2.5
 lower_limit = 0.5
 
-stripe = coords[(coords[:, 3] > 0.5) & (coords[:, 3] < 2.5), 0:4]
-stripe_stems = dm.verticality_clustering(stripe, float(config['advanced']['verticality_scale_stripe']), float(config['advanced']['verticality_thresh_stripe']), float(config['advanced']['epsilon_stripe']), int(config['advanced']['number_of_points']), int(config['basic']['number_of_iterations']), float(config['advanced']['res_xy_stripe']), float(config['advanced']['res_z_stripe']), n_digits)       
+stripe = coords[(coords[:, 3] > lower_limit) & (coords[:, 3] < upper_limit)]
+stripe_stems = dm.verticality_clustering(stripe)       
 #---------------------------------------------------------#
 
 ### Individualizing the trees ###
