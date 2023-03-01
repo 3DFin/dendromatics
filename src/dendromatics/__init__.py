@@ -1,6 +1,8 @@
-from dendromatics import draw
-from dendromatics import ground
-from dendromatics import individualize
-from dendromatics import sections
-from dendromatics import stripe
-from dendromatics import voxel
+__all__ = ['draw', 'ground', 'individualize', 'sections', 'stripe', 'voxel']
+
+from .draw import *
+from .ground import *
+from .individualize import *
+from .sections import *
+from .stripe import *
+from .voxel.voxel import *
