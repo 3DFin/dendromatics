@@ -3,13 +3,14 @@
 
 The `src` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. These are based on an updated version of the algorithm proposed by (Cabo et al., 2018).
 
-
 The functionalities may be divided in four main steps:
 
 0. Height-normalization of the point cloud (pre-requisite). 
 1. Identification of stems among user-provided stripe.
 2. Tree individualization based on point-to-stems distances.
 3. Robust computation of stems diameter at different section heights.
+
+Although individual, somewhat independent functions are provided, they are designed to be used in a script that calls one after the other following the algorithm structure. An example script can be found in `example` folder.
 
 
 # Algorithm
@@ -100,14 +101,17 @@ Almost all functions in the module expect a height-normalized point cloud to wor
 
 import laspy
 import numpy as np
-import dendromatic as dm
+
+import dendromatics as dm
 
 # Reading the point cloud
+filename_las = 'example_data.las' # your .las file
 entr = laspy.read(filename_las)
 coords = np.vstack((entr.x, entr.y, entr.z)).transpose()
 
+
 # Normalizing the point cloud
-cloth_nodes = dm.generate_dtm(clean_points)
+dtm = dm.generate_dtm(clean_points)
 z0_values = dm.normalize_heights(coords, dtm)
 
 coords = np.append(coords, np.expand_dims(z0_values, axis = 1), 1) # adding the normalized heights to the point cloud
@@ -156,6 +160,7 @@ assigned_cloud, tree_vector, tree_heights = dm.individualize_trees(coords, strip
 
 # Preprocessing: reducing the point cloud size by keeping only the points that are closer than some radius (expected_R) to the tree axes 
 # and those that are whithin the lowest section (min_h) and the uppest section (max_h) to be computed.
+expected_R = 0.5
 min_h = 0.5 
 max_h = 25
 section_width = 0.02
@@ -179,7 +184,7 @@ X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in = dm.compute_s
 
 ```Python
 
-outlier_prob = dm.tilt_detection(X_c, Y_c, R, sections, w_1 = 3, w_2 = 1)
+outlier_prob = dm.tilt_detection(X_c, Y_c, R, sections)
 
 ```
 
