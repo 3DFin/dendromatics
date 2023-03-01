@@ -6,7 +6,7 @@ import numpy as np
 # draw_circles
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in, tree_vector, outliers, filename_las, R_min, R_max, threshold, n_sectors, min_n_sectors, circa_points = 200):
+def draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in, tree_vector, outliers, filename_las, R_min = 0.03, R_max = 0.5, threshold = 5, n_sectors = 16, min_n_sectors = 9, circa_points = 200):
     
     '''
     -----------------------------------------------------------------------------
@@ -143,7 +143,7 @@ def draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in,
 
 # Function that draws the axes computed for each tree.
 
-def draw_axes(tree_vector, line_downstep, line_upstep, stripe_lower_limit, stripe_upper_limit, point_interval, filename_las, X_field = 0, Y_field = 1, Z_field = 2):
+def draw_axes(tree_vector, filename_las, line_downstep, line_upstep, stripe_lower_limit, stripe_upper_limit, point_interval, X_field = 0, Y_field = 1, Z_field = 2):
     
     '''
     -----------------------------------------------------------------------------
