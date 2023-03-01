@@ -3,6 +3,6 @@
 3. In general, make usage clearer.
 4. Update ReadMe.
 5. Create tests.
-6. Save files through functions. save_axes, save_sections, save_trees, save_stripe, save_heights, save_locators, save_dbh
-	OR make it an optional parameter in main functions (I like first option best)
+6. Save files only in main_with_gui
+7. Add saving files code to main_with_gui
 
