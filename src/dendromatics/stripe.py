@@ -119,7 +119,7 @@ def verticality_clustering_iteration(stripe, vert_scale, vert_treshold, eps, n_p
 # verticality_clustering
 #----------------------------------------------------------------------------------------------------------------------------------------                  
 
-def verticality_clustering(stripe, scale, vert_treshold, eps_dbscan, n_points, n_iter, resolution_xy, resolution_z, n_digits):
+def verticality_clustering(stripe, scale = 0.1, vert_treshold = 0.7, eps_dbscan = 0.037, n_points = 1000, n_iter = 2, resolution_xy = 0.02, resolution_z = 0.02, n_digits = 5):
 
     '''
     -----------------------------------------------------------------------------
