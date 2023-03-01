@@ -143,7 +143,7 @@ def draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in,
 
 # Function that draws the axes computed for each tree.
 
-def draw_axes(tree_vector, filename_las, line_downstep, line_upstep, stripe_lower_limit, stripe_upper_limit, point_interval, X_field = 0, Y_field = 1, Z_field = 2):
+def draw_axes(tree_vector, filename_las, line_downstep = 0.5, line_upstep = 10, stripe_lower_limit = 0.5, stripe_upper_limit = 2.5, point_interval = 0.01, X_field = 0, Y_field = 1, Z_field = 2):
     
     '''
     -----------------------------------------------------------------------------
