@@ -135,7 +135,7 @@ def verticality_clustering(stripe, scale, vert_treshold, eps_dbscan, n_points, n
     -----------------------------------------------------------------------------
 
     stripe: numpy array. The point cloud containing the stripe. It is expected to have X, Y, Z fields.
-    vert_scale: float. Scale to be used during verticality computation to define a neighbourhood around 
+    scale: float. Scale to be used during verticality computation to define a neighbourhood around 
     a given point. Verticality will be computed from the structure tensor of said neighbourhood via 
     eigendecomposition.
     vert_threshold: float. Minimum verticality value associated to a point to consider it as part of a stem.
