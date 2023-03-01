@@ -93,7 +93,7 @@ X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in = dm.compute_s
 #---------------------------------------------------------#
 
 ### Tilt detection ###
-outliers = dm.tilt_detection(X_c, Y_c, R, sections, w_1 = 3, w_2 = 1)
+outliers = dm.tilt_detection(X_c, Y_c, R, sections)
 #---------------------------------------------------------#
 
 ### Drawing sections and axes ###
