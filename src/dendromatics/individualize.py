@@ -237,7 +237,7 @@ def compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vecto
 # individualize_trees
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def individualize_trees(cloud, clust_stripe, resolution_z, resolution_xy, h_range, d_max = 1.5, min_points = 20, d = 15, max_dev = 25, resolution_heights = 0.3, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3, tree_id_field = 4):
+def individualize_trees(cloud, clust_stripe, resolution_z = 0.035, resolution_xy = 0.035, h_range = 1.2, d_max = 1.5, min_points = 20, d = 15, max_dev = 25, resolution_heights = 0.3, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3, tree_id_field = -1):
 
     '''
     -----------------------------------------------------------------------------
