@@ -6,7 +6,7 @@ import numpy as np
 # draw_circles
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in, tree_vector, outliers, R_min, R_max, threshold, n_sectors, min_n_sectors, filename_las, circa_points = 200):
+def draw_circles(X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in, tree_vector, outliers, filename_las, R_min, R_max, threshold, n_sectors, min_n_sectors, circa_points = 200):
     
     '''
     -----------------------------------------------------------------------------
