@@ -4,11 +4,12 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 
+from .voxel.voxel import *
 #-----------------------------------------------------------------------------------------------------------------------------------
 # compute_axes
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def compute_axes(voxelated_cloud, clust_stripe, h_range, min_points = 20, d_max = 1.5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3, tree_id_field = 4):
+def compute_axes(voxelated_cloud, clust_stripe, h_range, min_points, d_max, X_field, Y_field, Z_field, Z0_field, tree_id_field):
     
     '''
     -----------------------------------------------------------------------------
@@ -128,7 +129,7 @@ def compute_axes(voxelated_cloud, clust_stripe, h_range, min_points = 20, d_max 
 # compute_heights
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-def compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vector, d = 15, max_dev = 25, resolution_heights = 0.3, n_digits = 5, X_field = 0, Y_field = 1, Z_field = 2, Z0_field = 3):
+def compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vector, d, max_dev, resolution_heights, n_digits, X_field, Y_field, Z_field, Z0_field):
     
     '''
     -----------------------------------------------------------------------------
@@ -299,7 +300,7 @@ def individualize_trees(cloud, clust_stripe, resolution_z, resolution_xy, h_rang
     voxelated_cloud, vox_to_cloud_ind, cloud_to_vox_ind = voxelate(cloud, resolution_z, resolution_xy, n_digits, X_field, Y_field, Z_field, with_n_points = False)
     
     # Call to compute_axes
-    detected_trees, dist_to_axis, tree_id_vector = compute_axes(voxelated_cloud, clust_stripe, min_points, h_range, d_max, X_field, Y_field, Z_field, Z0_field, tree_id_field)   
+    detected_trees, dist_to_axis, tree_id_vector = compute_axes(voxelated_cloud, clust_stripe, h_range, min_points, d_max, X_field, Y_field, Z_field, Z0_field, tree_id_field)   
     
     # Call to compute_heights
     tree_heights = compute_heights(voxelated_cloud, detected_trees, dist_to_axis, tree_id_vector, d, max_dev, resolution_heights, n_digits, X_field, Y_field, Z_field, Z0_field)
