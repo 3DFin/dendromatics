@@ -5,24 +5,24 @@ from sklearn.cluster import DBSCAN
 
 from .voxel.voxel import *
 
-# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # clean_ground
-# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def clean_ground(cloud):
     """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    ------------------           General description           ----------------
+    ---------------------------------------------------------------------------
 
-    This function takes a point cloud and denoises it via DBSCAN clustering. It first
-    voxelates the point cloud into 0.15 m voxels, then clusters the voxel cloud and excludes
-    clusters of size less than 2.
+    This function takes a point cloud and denoises it via DBSCAN clustering. It
+    first voxelates the point cloud into 0.15 m voxels, then clusters the voxel
+    cloud and excludes clusters of size less than 2.
 
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
+    ------------------                 Inputs                  ----------------
+    ---------------------------------------------------------------------------
 
     cloud: numpy array. Matrix containing (x, y, z) coordinates of the points.
 
@@ -36,20 +36,24 @@ def clean_ground(cloud):
     vox_cloud, vox_to_cloud_ind, cloud_to_vox_ind = voxelate(
         cloud, 0.15, 0.15, with_n_points=False
     )
-    # Cluster labels are appended to the FILTERED cloud. They map each point to the cluster they belong to, according to the clustering algorithm.
+    # Cluster labels are appended to the FILTERED cloud. They map each point to
+    # the cluster they belong to, according to the clustering algorithm.
     clustering = DBSCAN(eps=0.3, min_samples=2).fit(vox_cloud)
 
     cloud_labs = np.append(
         cloud, np.expand_dims(clustering.labels_[vox_to_cloud_ind], axis=1), axis=1
     )
 
-    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, K = 'number of points'.
+    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, 
+    # K = 'number of points'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
-    # Filtering of labels associated only to clusters that contain a minimum number of points.
+    # Filtering of labels associated only to clusters that contain a minimum 
+    # number of points.
     large_clusters = cluster_id[K > 2]
 
-    # ID = -1 is always created by DBSCAN() to include points that were not included in any cluster.
+    # ID = -1 is always created by DBSCAN() to include points that were not 
+    # included in any cluster.
     large_clusters = large_clusters[large_clusters != -1]
 
     # Removing the points that are not in valid clusters.
@@ -134,18 +138,21 @@ def clean_cloth(dtm_points):
     ------------------           General description           ------------------
     -----------------------------------------------------------------------------
 
-    This function takes a Digital Terrain Model (DTM) and denoises it. This denoising is done via a 2 MADs
-    from the median height value of a neighbourhood of size 15.
+    This function takes a Digital Terrain Model (DTM) and denoises it. This 
+    denoising is done via a 2 MADs from the median height value of a 
+    neighbourhood of size 15.
     -----------------------------------------------------------------------------
     ------------------                 Inputs                  ------------------
     -----------------------------------------------------------------------------
 
-    dtm_points: numpy array. Matrix containing (x, y, z) coordinates of the DTM points.
+    dtm_points: numpy array. Matrix containing (x, y, z) coordinates of the DTM
+    points.
     -----------------------------------------------------------------------------
     -----------------                 Outputs                  ------------------
     -----------------------------------------------------------------------------
 
-    clean_points: numpy array. Matrix containing (x, y, z) coordinates of the denoised DTM points.
+    clean_points: numpy array. Matrix containing (x, y, z) coordinates of the 
+    denoised DTM points.
     """
 
     from scipy.spatial import cKDTree
