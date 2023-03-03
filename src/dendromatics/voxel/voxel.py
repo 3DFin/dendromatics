@@ -24,8 +24,8 @@ def voxelate(
     in the point cloud, thus voxelated cloud can be seamlessly reverted to the 
     original point cloud.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     cloud : numpy.ndarray
         The point cloud to be voxelated. It is expected to have X, Y, Z fields. 
         3D or higher array containing data with `float` type. 

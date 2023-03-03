@@ -6,9 +6,9 @@ from sklearn.cluster import DBSCAN
 
 from .voxel.voxel import *
 
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # verticality_clustering_iteration
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def verticality_clustering_iteration(
@@ -21,43 +21,49 @@ def verticality_clustering_iteration(
     resolution_z,
     n_digits,
 ):
-    """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
+    """ This function is to be used internally by verticality_clustering. The 
+    intended use of this function is to accept a stripe as an input, defined 
+    this as a subset of the original cloud delimited by a lower height and an 
+    upper height, which will narrow down a region where it is expected to only 
+    be stems. Then it will voxelate those points and compute the verticality
+    via compute_features() from jakteristics. It will filter points based on 
+    their verticality value, voxelate again and then cluster the remaining 
+    points. Those are expected to belong to stems.
 
-    This function is to be used internally by verticality_clustering_iteration.
-    The intended use of this function is to accept a stripe as an input, defined this as a subset of
-    the original cloud delimited by a lower height and an upper height, which will narrow down a region
-    where it is expected to only be stems. Then it will voxelate those points and compute the verticality
-    via compute_features() from jakteristics. It will filter points based on their verticality value,
-    voxelate again and then cluster the remaining points. Those are expected to belong to stems.
+    Parameters
+    ----------
+    stripe : numpy.ndarray
+        The point cloud containing the stripe. It is expected to have X, Y, Z0
+        fields. 3D or higher array containing data with `float` type.
+    vert_scale : float
+        Scale to be used during verticality computation to define a 
+        neighbourhood arounda given point. Verticality will be computed from 
+        the structure tensor of said neighbourhood via eigendecomposition.
+    vert_threshold : float
+        Minimum verticality value associated to a point to consider it as part 
+        of a stem.
+    eps : float
+        Refer to DBSCAN documentation.
+    n_points : int
+        Minimum number of points in a cluster for it to be considered as a 
+        potential stem.
+    resolution_xy : float
+        (x, y) voxel resolution.
+    resolution_z : float
+        (z) voxel resolution.
+    n_digits : int
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        the generation of each point code.
 
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    stripe: numpy array. The point cloud containing the stripe. It is expected to have X, Y, Z fields.
-    vert_scale: float. Scale to be used during verticality computation to define a neighbourhood around
-    a given point. Verticality will be computed from the structure tensor of said neighbourhood via
-    eigendecomposition.
-    vert_threshold: float. Minimum verticality value associated to a point to consider it as part of a stem.
-    eps: float. Refer to DBSCAN documentation.
-    n_points: int. Minimum number of points in a cluster for it to be considered as a potential stem.
-    resolution_xy: float. (x, y) voxel resolution.
-    resolution_z: float. (z) voxel resolution.
-    n_digits: int. default value: 5. Number of digits dedicated to each coordinate ((x), (y) or (z))
-    during the generation of each point code. If the cloud is really large, it can be advisable
-    to increase n_digits.
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    clust_stripe: numpy array. Point cloud containing the points from the stripe that are considered as stems.
-    It consists of 4 columns: (x), (y) and (z) coordinates, and a 4th column containing the cluster ID of the
-    cluster that each point belongs to.
-    t1: float. Time spent.
+    Returns
+    -------
+    clust_stripe: numpy.ndarray
+        Point cloud containing the points from the stripe that are considered 
+        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and 
+        a 4th column containing the cluster ID of the cluster that each point 
+        belongs to.
+    t1 : float
+        Time spent.
     """
 
     t = timeit.default_timer()
@@ -68,7 +74,9 @@ def verticality_clustering_iteration(
         stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
 
-    # Computation of verticality values associated to voxels using 'compute_features' function. It needs a vicinity radius, provided by 'vert_scale'.
+    # Computation of verticality values associated to voxels using 
+    # 'compute_features' function. It needs a vicinity radius, provided by 
+    # 'vert_scale'.
     vert_values = jak.compute_features(
         voxelated_stripe, search_radius=vert_scale, feature_names=["verticality"]
     )
@@ -77,10 +85,12 @@ def verticality_clustering_iteration(
     print("   %.2f" % elapsed, "s")
     t1 = elapsed
 
-    # Verticality values are appended to the ORIGINAL cloud, using voxel-to-original-cloud indexes.
+    # Verticality values are appended to the ORIGINAL cloud, using voxel-to-
+    # original-cloud indexes.
     vert_stripe = np.append(stripe, vert_values[vox_to_stripe_ind], axis=1)
 
-    # Filtering of points that were in voxels whose verticality value is under the threshold. Output is a filtered cloud.
+    # Filtering of points that were in voxels whose verticality value is under 
+    # the threshold. Output is a filtered cloud.
     filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_treshold]
 
     t = timeit.default_timer()
@@ -92,10 +102,6 @@ def verticality_clustering_iteration(
     )
 
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
-    # 'eps': The maximum distance between two samples for one to be considered as in the neighborhood of the other.
-    #        This is not a maximum bound on the distances of points within a cluster.
-    # min samples: The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.
-    #              This includes the point itself.
     clustering = DBSCAN(eps=eps, min_samples=2).fit(vox_filt_stripe)
 
     elapsed = timeit.default_timer() - t
@@ -105,20 +111,24 @@ def verticality_clustering_iteration(
     t = timeit.default_timer()
     print(" -Extracting 'candidate' stems...")
 
-    # Cluster labels are appended to the FILTERED cloud. They map each point to the cluster they belong to, according to the clustering algorithm.
+    # Cluster labels are appended to the FILTERED cloud. They map each point to
+    # the cluster they belong to, according to the clustering algorithm.
     vox_filt_lab_stripe = np.append(
         filt_stripe,
         np.expand_dims(clustering.labels_[vox_to_filt_stripe_ind], axis=1),
         axis=1,
     )
 
-    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, K = 'number of clusters'.
+    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, 
+    # K = 'number of clusters'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
-    # Filtering of labels associated only to clusters that contain a minimum number of points.
+    # Filtering of labels associated only to clusters that contain a minimum 
+    # number of points.
     large_clusters = cluster_id[K > n_points]
 
-    # ID = -1 is always created by DBSCAN() to include points that were not included in any cluster.
+    # ID = -1 is always created by DBSCAN() to include points that were not 
+    # included in any cluster.
     large_clusters = large_clusters[large_clusters != -1]
 
     # Removing the points that are not in valid clusters.
@@ -152,47 +162,51 @@ def verticality_clustering(
     resolution_z=0.02,
     n_digits=5,
 ):
+    """ This function implements a for loop that iteratively calls 
+    verticality_clustering_iteration, 'peeling off' the stems.
+    
+    Parameters
+    ----------
+    stripe : numpy.ndarray
+        The point cloud containing the stripe. It is expected to have X, Y, Z0
+        fields. 3D or higher array containing data with `float` type.
+    scale : float
+        Scale to be used during verticality computation to define a 
+        neighbourhood arounda given point. Verticality will be computed from 
+        the structure tensor of said neighbourhood via eigendecomposition.
+        Defaults to 0.1.
+    vert_threshold : float
+        Minimum verticality value associated to a point to consider it as part 
+        of a stem. Defaults to 0.7.
+    eps : float
+        Refer to DBSCAN documentation. Defaults to 0.037.
+    n_points : int
+        Minimum number of points in a cluster for it to be considered as a 
+        potential stem. Defaults to 1000.
+    n_iter : int
+        Number of iterations of 'peeling'. Defaults to 2.
+    resolution_xy : float
+        (x, y) voxel resolution. Defaults to 0.02.
+    resolution_z : float
+        (z) voxel resolution. Defaults to 0.02.
+    n_digits : int
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        the generation of each point code. Defaults to 5.
+    
+    Returns
+    -------
+    clust_stripe : numpy.ndarray
+        Point cloud containing the points from the stripe that are considered 
+        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and 
+        a 4th column containing the cluster ID of the cluster that each point 
+        belongs to.
     """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
 
-    This function implements a for loop that iteratively calls verticality_clustering_iteration,
-    'peeling off' the stems.
-
-
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    stripe: numpy array. The point cloud containing the stripe. It is expected to have X, Y, Z fields.
-    scale: float. Scale to be used during verticality computation to define a neighbourhood around
-    a given point. Verticality will be computed from the structure tensor of said neighbourhood via
-    eigendecomposition.
-    vert_threshold: float. Minimum verticality value associated to a point to consider it as part of a stem.
-    eps: float. Refer to DBSCAN documentation.
-    n_points: int. Minimum number of points in a cluster for it to be considered as a potential stem.
-    n_iter: integer. Number of iterations of 'peeling'.
-    resolution_xy: float. (x, y) voxel resolution.
-    resolution_z: float. (z) voxel resolution.
-    n_digits: int. default value: 5. Number of digits dedicated to each coordinate ((x), (y) or (z))
-    during the generation of each point code. If the cloud is really large, it can be advisable
-    to increase n_digits.
-
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    clust_stripe: numpy array. Point cloud containing the points from the stripe that are considered as stems.
-    It consists of 4 columns: (x), (y) and (z) coordinates, and a 4th column containing the cluster ID of the
-    cluster that each point belongs to.
-    """
-
-    # This first if loop is just a fix that allows to compute everything ignoring verticality.
-    # It should be addressed as it currently computes verticality when n_iter = 0 and that should
-    # not happen (although, in practice, n_iter should never be 0).
-    # It does not provide wrong results but it slows down the process needlessly.
+    # This first if loop is just a fix that allows to compute everything 
+    # ignoring verticality. It should be addressed as it currently computes 
+    # verticality when n_iter = 0 and that should not happen (although, in 
+    # practice, n_iter should never be 0). It does not provide wrong results 
+    # but it slows down the process needlessly.
     if n_iter == 0:
         n_iter = 1
         vert_treshold = 0
