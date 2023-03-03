@@ -18,43 +18,46 @@ def voxelate(
     with_n_points=True,
     silent=False,
 ):
-    """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
+    """ Function used to voxelate point clouds. It allows to use a different 
+    resolution for (z), but (x, y) will always share the same resolution. It 
+    also allows to revert the process, by creating a unique code for each point
+    in the point cloud, thus voxelated cloud can be seamlessly reverted to the 
+    original point cloud.
+    
+    Parameters:
+    -----------
+    cloud : numpy.ndarray
+        The point cloud to be voxelated. It is expected to have X, Y, Z fields. 
+        3D or higher array containing data with `float` type. 
+    resolution_xy : float 
+        (x, y) voxel resolution.
+    resolution_z : float
+        (z) voxel resolution.
+    n_digits : int
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        the generation of each point code. Defaults to 5.
+    X_field : int
+        Index at which (x) coordinate is stored. Defaults to 0.
+    Y_field : int
+        Index at which (y) coordinate is stored. Defaults to 1.
+    Z_field : int
+        Index at which (z) coordinate is stored. Defaults to 2.
+    with_n_points : boolean
+        If True, output voxelated cloud will have a field including the number 
+        of points that each voxel contains. Defaults to True.
 
-    Function used to voxelate point clouds. It allows to use a different resolution for (z),
-    but (x, y) will always share the same resolution. It also allows to revert the process,
-    by creating a unique code for each point in the point cloud, thus voxelated cloud can be
-    seamlessly reverted to the original point cloud.
-
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    cloud: numpy array. the point cloud to be voxelated. It is expected to have X, Y, Z fields.
-    resolution_xy: float. (x, y) voxel resolution.
-    resolution_z: float. (z) voxel resolution.
-    n_digits: int. default value: 5. Number of digits dedicated to each coordinate ((x), (y) or (z))
-    during the generation of each point code. If the cloud is really large, it can be advisable
-    to increase n_digits.
-    X_field: int. default value: 0. Index at which (x) coordinate is stored.
-    Y_field: int. default value: 1. Index at which (y) coordinate is stored.
-    Z_field: int. default value: 2. Index at which (z) coordinate is stored.
-    with_n_points: boolean. default value: True. If True, output voxelated cloud will have a field
-    including the number of points that each voxel contains.
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    voxelated_cloud: numpy array. The voxelated cloud. It consists of 3 columns, each with
-    (x), (y) and (z) coordinates, and an optional 4th column having the number of points included
-    in each voxel if with_n_points = True.
-    vox_to_cloud_ind: numpy array. Vector containing the indexes to revert to the original point cloud
-    from the voxelated cloud.
-    cloud_to_vox_ind: numpy array. Vector containing the indexes to directly go from the original point cloud
-    to the voxelated cloud.
+    Returns
+    -------
+    voxelated_cloud : numpy.ndarray
+        The voxelated cloud. It consists of 3 columns, each with (x), (y) and 
+        (z) coordinates, and an optional 4th column having the number of points
+        included in each voxel if with_n_points = True.
+    vox_to_cloud_ind : numpy.ndarray
+        Vector containing the indexes to revert to the original point cloud 
+        from the voxelated cloud.
+    cloud_to_vox_ind : numpy.ndarray
+        Vector containing the indexes to directly go from the original point 
+        cloud to the voxelated cloud.
     """
 
     t = timeit.default_timer()
