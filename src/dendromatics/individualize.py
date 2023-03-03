@@ -6,9 +6,9 @@ from sklearn.decomposition import PCA
 
 from .voxel.voxel import *
 
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # compute_axes
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def compute_axes(
@@ -23,49 +23,57 @@ def compute_axes(
     Z0_field,
     tree_id_field,
 ):
+    """ Function used inside individualize_trees during tree individualization 
+    process. It identifies tree axes. It expects a voxelated version of the 
+    point cloud and a filtered (based on the verticality clustering process) 
+    stripe as input, so that it only contains (hopefully) stems. Those stems 
+    are isolated and enumerated, and then, their axes are identified using PCA
+    (PCA1 direction). This allows to group points based on their distance to 
+    those axes, thus assigning each point to a tree. 
+    
+    It requires a height-normalized cloud in order to function properly.
+
+    Parameters
+    ----------
+    voxelated_cloud : numpy.ndarray
+        The voxelated point cloud. It is expected to have X, Y, Z and Z0 fields.
+    clust_stripe : numpy.ndarray
+        The point cloud containing the clusterized stripe (the stems) from 
+        verticality_clustering.
+    h_range : float
+        Only stems where points extend vertically throughout a range as tall as
+        defined by h_range are considered.
+    min_points : int
+        Minimum number of points in a cluster for it to be considered as a 
+        potential stem
+    d_max : float
+        Points that are closer than d_max to an axis are assigned to that axis.
+    X_field : int
+        Index at which (x) coordinates are stored.
+    Y_field : int
+        Index at which (y) coordinates are stored.
+    Z_field : int
+        Index at which (z) coordinates are stored.
+    Z0_field : int
+        Index at which (z0) coordinates are stored.
+    tree_id_field : int
+        Index at which cluster ID is stored.
+
+    Returns
+    -------
+    detected_trees : numpy.ndarray
+        Matrix with as many rows as trees, containing a description of each
+        individualized tree. It stores the following values: tree ID, PCA1 X 
+        value, PCA1 Y value, PCA1 Z value, stem centroid X value, stem centroid
+        Y value, stem centroid Z value, height difference of stem centroid 
+        (z - z0), axis vertical deviation.
+    dist_to_axis : numpy.ndarray
+        Matrix containing the distance from each point to the closest axis.
+    tree_id_vector : numpy.ndarray
+        Vector containing the tree IDs.
     """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
-
-    Function used inside individualize_trees during tree individualization process.
-    It identifies tree axes.
-    It expects a  voxelated version of the point cloud and a filtered (based on the
-    verticality clustering process) stripe as input, so that it only contains (hopefully) stems.
-    Those stems are isolated and enumerated, and then, their axes are identified using PCA
-    (PCA1 direction). This allows to group points based on their distance to those axes,
-    thus assigning each point to a tree.
-    It requires a normalized cloud in order to function properly; see cloud normalization appendix.
-
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    voxelated_cloud: numpy array. the voxelated point cloud containing the forest plot. It is expected to have X, Y, Z and/or Z0 fields.
-    clust_stripe: numpy array. The point cloud containing the clusterized stripe from verticality_clustering_iteration.
-    It is expected to have X, Y, Z and cluster ID fields.
-    h_range: float. only stems where points extend vertically throughout a range as tall as defined by h_range are considered
-    min_points: int. default value: 20. Minimum number of points in a cluster for it to be considered as a potential stem.
-    tree height.
-    d_max: float. default value: 1.5. Points that are closer than d_max to an axis are assigned to that axis.
-    X_field: int. default value: 0. Index at which (x) coordinates are stored.
-    Y_field: int. default value: 1. Index at which (y) coordinates are stored.
-    Z_field: int. default value: 2. Index at which (z) coordinates are stored.
-    Z0_field: int. default value: 3. Index at which (z0) coordinates are stored.
-    tree_id_field: int. default value: 4. Index at which cluster ID is stored.
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    detected_trees: numpy array. Matrix with as many rows as trees, containing a description of each
-    individualized tree. It stores the following values: tree ID, PCA1 X value, PCA1 Y value, PCA1 Z value,
-    stem centroid X value, stem centroid Y value, stem centroid Z value, height difference of stem centroid (z - z0),
-    axis vertical deviation.
-    dist_to_axis: numpy array. Matrix containing the distance from each point to the closest axis.
-    tree_id_vector: numpy array. Vector containing the tree IDs.
-    """
-    # Empty vectors that will store final outputs: - distance from each point to closest axis - ID of the corresponding tree (the tree that the point belongs to).
+    # Empty vectors that will store final outputs: - distance from each point to
+    # closest axis - ID of the corresponding tree (the tree that the point belongs to).
     dist_to_axis = (
         np.zeros((np.size(voxelated_cloud, 0))) + 100000
     )  # distance to the closest axis
@@ -83,7 +91,8 @@ def compute_axes(
     n_values = np.size(filt_unique_values)
 
     # Empty array to be filled with several descriptors of the trees. In the following order:
-    # tree ID | PCA1 X value | PCA1 Y value | PCA1 Z value | trunk centroid X value | trunk centroid Y value | trunk centroid Z value | height difference |
+    # tree ID | PCA1 X value | PCA1 Y value | PCA1 Z value | trunk centroid X value 
+    # | trunk centroid Y value | trunk centroid Z value | height difference |
     # It has as many rows as trees are.
 
     detected_trees = np.zeros((np.size(filt_unique_values, 0), 9))
@@ -91,7 +100,8 @@ def compute_axes(
     # Auxiliar index used to display progress information.
     ind = 0
 
-    # First loop: It goes over each tree (still stems) except for the first entry, which maps to noise (this entry is generated by DBSCAN during clustering).
+    # First loop: It goes over each tree (still stems) except for the first entry, 
+    # which maps to noise (this entry is generated by DBSCAN during clustering).
     for i in filt_unique_values:
         # Isolation of stems: stem_i only contains points associated to 1 tree.
         stem_i = clust_stripe[clust_stripe[:, tree_id_field] == i][
@@ -107,7 +117,8 @@ def compute_axes(
         # Difference between Z and Z0 mean heights
         diff_z_z0 = z_z0[0] - z_z0[1]
 
-        # Second loop: only stems where points extend vertically throughout its whole range are considered.
+        # Second loop: only stems where points extend vertically throughout its
+        # whole range are considered.
         if np.ptp(stem_i[:, Z_field]) > (h_range):
             # PCA and centroid computation.
             pca_out = PCA(n_components=3)
@@ -136,7 +147,8 @@ def compute_axes(
             sys.stdout.write("\r%d%%" % np.float64((n_values - ind) * 100 / n_values))
             sys.stdout.flush()
 
-            # Coordinate transformation from original to PCA. Done for EVERY point of the original cloud from the PCA of a SINGLE stem.
+            # Coordinate transformation from original to PCA. Done for EVERY 
+            # point of the original cloud from the PCA of a SINGLE stem.
             cloud_pca_coords = pca_out.transform(
                 voxelated_cloud[:, [X_field, Y_field, Z_field]]
             )
@@ -148,7 +160,7 @@ def compute_axes(
             # Points that are closer than d_max to an axis are assigned to that axis.
             # Also, if a point is closer to an axis than it was to previous axes, accounting for points
             # that were previously assigned to some other axis in previous iterations, it is assigned
-            # to the new, closer axis. Distance to the axis is stored as well
+            # to the new, closer axis. Distance to the axis is stored as well.
             valid_points = (axis_dist < d_max) & ((axis_dist - dist_to_axis) < 0)
             tree_id_vector[valid_points] = i
             dist_to_axis[valid_points] = axis_dist[valid_points]
@@ -156,9 +168,9 @@ def compute_axes(
     return (detected_trees, dist_to_axis, tree_id_vector)
 
 
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # compute_heights
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def compute_heights(
@@ -175,53 +187,59 @@ def compute_heights(
     Z_field,
     Z0_field,
 ):
-    """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
+    """ Function used inside individualize_trees during tree individualization 
+    process. It measures tree heights. The function creates a large-resolution 
+    voxel cloud to and filters voxels containing few points. This has the 
+    purpose to discard any outlier point that might be over the trees, to then 
+    identify the highest point within the remaining voxels.
 
-    Function used inside individualize_trees during tree individualization process.
-    It measures tree heights. The function creates a large-resolution voxel cloud to
-    and filters voxels containing few points. This has the purpose to discard any outlier
-    point that might be over the trees, to then identify the highest point within the
-    remaining voxels.
+    It requires a height-normalized cloud in order to function properly.
 
-    It requires a normalized cloud in order to function properly; see cloud normalization appendix.
+    Parameters
+    ----------
+    voxelated_cloud : numpy.ndarray
+        The voxelated point cloud. It is expected to have X, Y, Z and Z0 fields.
+    detected_trees : numpy.ndarray
+        See compute_axes.
+    dist_to_axis : numpy.ndarray
+        See compute_axes.
+    tree_id_vector : numpynd.array
+        See compute_axes.
+    d : float
+        Points within this distance from tree axis will be considered as 
+        potential points to define tree height.
+    eps : float
+        Refer to DBSCAN documentation.
+    max_dev : float
+        Maximum degree of vertical deviation of a tree axis to consider its 
+        tree height measurement as valid.
+    n_digits : int
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        the generation of each point code.
+    resolution_heights : float
+        (x, y, z) voxel resolution.
+    X_field : int
+        Index at which (x) coordinates are stored.
+    Y_field : int
+        Index at which (y) coordinates are stored.
+    Z_field : int
+        Index at which (z) coordinates are stored.
+    Z0_field : int
+        Index at which (z0) coordinates are stored.
+    tree_id_field : int
+        Index at which cluster ID is stored.
 
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    voxelated_cloud: numpy array. the voxelated point cloud containing the forest plot. It is expected to have X, Y, Z and/or Z0 fields.
-    detected_trees: numpy array. See compute_axes.
-    dist_to_axis: numpy array. See compute_axes.
-    tree_id_vector: numpy array. See compute_axes.
-    d: float. Points within this distance from tree axis will be considered as potential points to define
-    tree height.
-    eps: float. Refer to DBSCAN documentation.
-    max_dev: float. Maximum degree of vertical deviation of a tree axis to consider its tree height measurement as valid.
-    n_digits: int. default value: 5. Number of digits dedicated to each coordinate ((x), (y) or (z))
-    during the generation of each point code. If the cloud is really large, it can be advisable
-    to increase n_digits.
-    resolution_heights: float. default value: 0.3. Resolution used for voxelization.
-    X_field: int. default value: 0. Index at which (x) coordinates are stored.
-    Y_field: int. default value: 1. Index at which (y) coordinates are stored.
-    Z_field: int. default value: 2. Index at which (z) coordinates are stored.
-    Z0_field: int. default value: 3. Index at which (z0) coordinates are stored.
-    tree_id_field: int. default value: 4. Index at which cluster ID is stored.
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    tree_heights: numpy array. Matrix containing (x, y, z) coordinates of each tree's
-    highest point, as well as its normalized height and a binary field stating if the
-    axis was deviated (1) or if it was not (0).
+    Returns
+    -------
+    tree_heights: numpy.ndarray
+        Matrix containing (x, y, z) coordinates of each tree's highest point, 
+        as well as its normalized height and a binary field stating if the 
+        axis was deviated (1) or if it was not (0).
     """
 
     # The cloud is re-voxelated to a larger resolution to then be clusterized.
-    # Small clusters containing 1-2 voxels will be discarded to eliminate outliers points
-    # that could interfere in height measurement.
+    # Small clusters containing 1-2 voxels will be discarded to eliminate 
+    # outliers points that could interfere in height measurement.
     large_voxels_cloud, large_vox_to_cloud_ind, cloud_to_large_vox_ind = voxelate(
         voxelated_cloud,
         resolution_heights,
@@ -254,7 +272,8 @@ def compute_heights(
     # Eliminating all points too far away from axes
     voxelated_cloud = voxelated_cloud[dist_to_axis < d, :]
 
-    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, K = 'number of clusters'.
+    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, 
+    # K = 'number of clusters'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
     # Filtering of labels associated only to clusters that contain a minimum number of points.
@@ -289,9 +308,9 @@ def compute_heights(
     return tree_heights
 
 
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # individualize_trees
-# -----------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def individualize_trees(
@@ -312,61 +331,82 @@ def individualize_trees(
     Z0_field=3,
     tree_id_field=-1,
 ):
-    """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
+    """ This function expects a filtered (based on the clustering process)
+    stripe as input, so that it only contains (hopefully) stems. Those stems 
+    are voxelated and enumerated, and then, their axes are identified using PCA
+    (PCA1 direction). This allows to group points based on their distance to 
+    those axes, thus assigning each point to a tree. This last step is applied 
+    to the WHOLE original cloud. It also measures tree heights.
 
-    Function to be used AFTER the verticality clustering. It expects a filtered (based on the clustering process)
-    stripe as input, so that it only contains (hopefully) stems.
-    Those stems are voxelated and enumerated, and then, their axes are identified using PCA
-    (PCA1 direction). This allows to group points based on their distance to those axes,
-    thus assigning each point to a tree. This last step is applied to the WHOLE original cloud.
-    It also measures tree heights.
-
-    It requires a Z0 field containing normalized heights in order to function properly.
+    It requires a height-normalized cloud in order to function properly.
 
     -----------------------------------------------------------------------------
     ------------------                 Inputs                  ------------------
     -----------------------------------------------------------------------------
 
-    cloud: numpy array. the point cloud containing the forest plot. It is expected to have X, Y, Z and Z0 fields.
-    clust_stripe: numpy array. The point cloud containing the clusterized stripe from verticality_clustering_iteration.
-    It is expected to have X, Y, Z and cluster ID fields.
-    filename_las: char. File name for the output file.
-    resolution_z: float. (x, y) voxel resolution.
-    resolution_xy: float. (z) voxel resolution.
-    h_range: float. only stems where points extend vertically throughout a range as tall as defined by h_range are considered
-    d_max: float. Points that are closer than d_max to an axis are assigned to that axis.
-    min_points: int. Minimum number of points in a cluster for it to be considered as a potential stem.
-    d: float. Points within this distance from tree axis will be considered as potential points to define
-    tree height.
-    max_dev: float. Maximum degree of vertical deviation of a tree axis to consider its tree height measurement as valid.
-    n_digits: int. default value: 5. Number of digits dedicated to each coordinate ((x), (y) or (z))
-    during the generation of each point code. If the cloud is really large, it can be advisable
-    to increase n_digits.
-    resolution_heights: float. default value: 0.3. (x, y, z) voxel resolution used during height computation.
-    X_field: int. default value: 0. Index at which (x) coordinate is stored.
-    Y_field: int. default value: 1. Index at which (y) coordinate is stored.
-    Z_field: int. default value: 2. Index at which (z) coordinate is stored.
-    Z0_field: int. default value: 3. Index at which (z0) coordinate is stored.
-    tree_id_field: int. default value: 4. Index at which cluster ID is stored.
+    cloud : numpy.ndarray
+        The point cloud. It is expected to have X, Y, Z and Z0 fields.
+    clust_stripe : numpy.ndarray. 
+        The point cloud containing the clusterized stripe from 
+        verticality_clustering. It is expected to have X, Y, Z0 and cluster ID 
+        fields.
+    resolution_z : float
+        (x, y) voxel resolution in meters. Defaults to 0.035.
+    resolution_xy : float
+        (z) voxel resolution in meters. Defaults to 0.035.
+    h_range : float
+        Only stems where points extend vertically throughout a range as tall as
+        defined by h_range are considered (units is meters). Defaults to 1.2.
+    d_max : float
+        Points that are closer than d_max to an axis are assigned to that axis
+        (units is meters). Defaults to 1.5.
+    min_points : int
+        Minimum number of points in a cluster for it to be considered as a 
+        potential stem. Defaults to 20.
+    d : float
+        Points within this distance from tree axis will be considered as 
+        potential points to define tree height (units is meters). 
+        Defaults to 15.
+    max_dev : float
+        Maximum degree of vertical deviation of a tree axis to consider its 
+        tree height measurement as valid (units is sexagesimal degrees). 
+        Defaults to 25.
+    n_digits : int
+        Number of digits dedicated to each coordinate ((x), (y) or (z))
+        during the generation of each point code. Defaults to 5.
+    resolution_heights : float
+        (x, y, z) voxel resolution in meters used during height computation.
+        Defaults to 0.3
+    X_field : int
+        Index at which (x) coordinate is stored. Defaults to 0.
+    Y_field : int
+        Index at which (y) coordinate is stored. Defaults to 1.
+    Z_field : int
+        Index at which (z) coordinate is stored. Defaults to 2.
+    Z0_field : int
+        Index at which (z0) coordinate is stored. Defaults to 3.
+    tree_id_field : int
+        Index at which cluster ID is stored. Defaults to -1.
 
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    assigned_cloud: numpy array. Point cloud containing individualized trees.
-    It consists of 6 columns: (x), (y), (z) and (z0) coordinates, a 5th column containing tree ID
-    that each point belongs to and a 6th column containing point distance to closest axis.
-    detected_trees: numpy array. Matrix with as many rows as trees, containing a description of each
-    individualized tree. It stores the following values: tree ID, PCA1 X value, PCA1 Y value, PCA1 Z value,
-    stem centroid X value, stem centroid Y value, stem centroid Z value, height difference of stem centroid (z - z0),
-    axis vertical deviation.
-    tree_heights: numpy array. Matrix containing the heights of individualized trees. It consists of 5 columns:
-    (x), (y), (z) and (z0) coordinates of the highest point of the tree and 5th column containing a
-    binary indicator: 0 - tree was too deviated from vertical, and height may not be accurate;
-    1 - tree was not too deviated from vertical, thus height may be trusted.
+    Returns
+    -------
+    assigned_cloud : numpy.ndarray
+        Point cloud containing individualized trees. It consists of 
+        (x), (y), (z) and (z0) coordinates, a 5th column containing tree ID 
+        that each point belongs to and a 6th column containing point distance 
+        to closest axis.
+    detected_trees : numpy.ndarray
+        Matrix with as many rows as trees, containing a description of each 
+        individualized tree. It stores tree ID, PCA1 X value, PCA1 Y value, 
+        PCA1 Z value, stem centroid X value, stem centroid Y value, stem 
+        centroid Z value, height difference of stem centroid (z - z0), axis 
+        vertical deviation.
+    tree_heights : numpy.ndarray
+        Matrix containing the heights of individualized trees. It consists of 
+        (x), (y), (z) and (z0) coordinates of the highest point of the tree and 
+        a 5th column containing a binary indicator: 0 - tree was too deviated 
+        from vertical, and height may not be accurate, or 1 - tree was not too 
+        deviated from vertical, thus height may be trusted.
     """
 
     # Whole original cloud voxelization
@@ -411,7 +451,8 @@ def individualize_trees(
         Z0_field,
     )
 
-    # Two new fields are added to the original cloud: - tree ID (id of closest axis) - distance to that axis
+    # Two new fields are added to the original cloud: - tree ID (id of closest axis) 
+    # - distance to that axis
     assigned_cloud = np.append(
         cloud, tree_id_vector[vox_to_cloud_ind, np.newaxis], axis=1
     )
