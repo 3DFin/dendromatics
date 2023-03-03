@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dendromatics.ground &mdash; dendromatics 00.00.01 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dendromatics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dendromatics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dendromatics.ground</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dendromatics.ground</h1><div class="highlight"><pre>
+<span></span><span class="c1">#### IMPORTS ####</span>
+<span class="kn">import</span> <span class="nn">CSF</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">cKDTree</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">DBSCAN</span>
+
+<span class="kn">from</span> <span class="nn">.voxel.voxel</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># clean_ground</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="clean_ground"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.ground.clean_ground">[docs]</a><span class="k">def</span> <span class="nf">clean_ground</span><span class="p">(</span><span class="n">cloud</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function takes a point cloud and denoises it via DBSCAN </span>
+<span class="sd">    clustering. It first voxelates the point cloud into 0.15 m voxels, then </span>
+<span class="sd">    clusters the voxel cloud and excludes clusters of size less than 2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cloud : numpy.ndarray</span>
+<span class="sd">        The point cloud to be denoised. Matrix containing (x, y, z) coordinates</span>
+<span class="sd">        of the points.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    clust_cloud : numpy.ndarray</span>
+<span class="sd">        The denoised point cloud. Matrix containing (x, y, z) coordinates of </span>
+<span class="sd">        the denoised points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vox_cloud</span><span class="p">,</span> <span class="n">vox_to_cloud_ind</span><span class="p">,</span> <span class="n">cloud_to_vox_ind</span> <span class="o">=</span> <span class="n">voxelate</span><span class="p">(</span>
+        <span class="n">cloud</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="n">with_n_points</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="c1"># Cluster labels are appended to the FILTERED cloud. They map each point to</span>
+    <span class="c1"># the cluster they belong to, according to the clustering algorithm.</span>
+    <span class="n">clustering</span> <span class="o">=</span> <span class="n">DBSCAN</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vox_cloud</span><span class="p">)</span>
+
+    <span class="n">cloud_labs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">cloud</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">vox_to_cloud_ind</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, </span>
+    <span class="c1"># K = &#39;number of points&#39;.</span>
+    <span class="n">cluster_id</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Filtering of labels associated only to clusters that contain a minimum </span>
+    <span class="c1"># number of points.</span>
+    <span class="n">large_clusters</span> <span class="o">=</span> <span class="n">cluster_id</span><span class="p">[</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># ID = -1 is always created by DBSCAN() to include points that were not </span>
+    <span class="c1"># included in any cluster.</span>
+    <span class="n">large_clusters</span> <span class="o">=</span> <span class="n">large_clusters</span><span class="p">[</span><span class="n">large_clusters</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Removing the points that are not in valid clusters.</span>
+    <span class="n">clust_cloud</span> <span class="o">=</span> <span class="n">cloud_labs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">cloud_labs</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">large_clusters</span><span class="p">),</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">clust_cloud</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># classify_ground</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="generate_dtm"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.ground.generate_dtm">[docs]</a><span class="k">def</span> <span class="nf">generate_dtm</span><span class="p">(</span>
+    <span class="n">cloud</span><span class="p">,</span>
+    <span class="n">bSloopSmooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cloth_resolution</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">classify_threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">exportCloth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function takes a point cloud and generates a Digital Terrain Model</span>
+<span class="sd">    (DTM) based on its ground. It&#39;s based on &#39;Cloth Simulation Filter&#39; by </span>
+<span class="sd">    W. Zhang et al., 2016 (http://www.mdpi.com/2072-4292/8/6/501/htm),</span>
+<span class="sd">    which is implemented in CSF package. This function just implements it in a </span>
+<span class="sd">    convenient way for this use-case.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cloud : numpy.ndarray</span>
+<span class="sd">        The point cloud. Matrix containing (x, y, z) coordinates of the points.</span>
+<span class="sd">    bSloopSmooth : Boolean</span>
+<span class="sd">        The resulting DTM will be smoothed. Refer to CSF documentation. </span>
+<span class="sd">        Defaults to True.    </span>
+<span class="sd">    cloth_resolution : float</span>
+<span class="sd">        The resolution of the cloth grid. Refer to CSF documentation. Defaults</span>
+<span class="sd">        to 0.5.</span>
+<span class="sd">    classify_threshold : float</span>
+<span class="sd">        The height threshold used to classify the point cloud into ground and </span>
+<span class="sd">        non-ground parts. Refer to CSF documentation. Defaults to 0.1.</span>
+<span class="sd">    exportCloth : Boolean</span>
+<span class="sd">        The DTM will be exported. Refer to CSF documentation. Defaults to True.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cloth_nodes : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x, y, z) coordinates of the DTM points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">### Cloth simulation filter ###</span>
+    <span class="n">csf</span> <span class="o">=</span> <span class="n">CSF</span><span class="o">.</span><span class="n">CSF</span><span class="p">()</span>  <span class="c1"># initialize the csf</span>
+
+    <span class="c1">### parameter settings ###</span>
+    <span class="n">csf</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">bSloopSmooth</span> <span class="o">=</span> <span class="n">bSloopSmooth</span>
+    <span class="n">csf</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">cloth_resolution</span> <span class="o">=</span> <span class="n">cloth_resolution</span>
+    <span class="c1"># csf.params.rigidness # 1, 2 or 3</span>
+    <span class="n">csf</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">classify_threshold</span> <span class="o">=</span> <span class="n">classify_threshold</span>  <span class="c1"># default is 0.5 m</span>
+
+    <span class="n">csf</span><span class="o">.</span><span class="n">setPointCloud</span><span class="p">(</span><span class="n">cloud</span><span class="p">)</span>  <span class="c1"># pass the (x), (y), (z) list to csf</span>
+    <span class="n">ground</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">CSF</span><span class="o">.</span><span class="n">VecInt</span><span class="p">()</span>
+    <span class="p">)</span>  <span class="c1"># a list to indicate the index of ground points after calculation</span>
+    <span class="n">non_ground</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">CSF</span><span class="o">.</span><span class="n">VecInt</span><span class="p">()</span>
+    <span class="p">)</span>  <span class="c1"># a list to indicate the index of non-ground points after calculation</span>
+
+    <span class="n">csf</span><span class="o">.</span><span class="n">do_filtering</span><span class="p">(</span>
+        <span class="n">ground</span><span class="p">,</span> <span class="n">non_ground</span><span class="p">,</span> <span class="n">exportCloth</span><span class="o">=</span><span class="n">exportCloth</span>
+    <span class="p">)</span>  <span class="c1"># do actual filtering.</span>
+
+    <span class="c1"># Retrieving the cloth nodes</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cloth_nodes.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+    <span class="n">cloth_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cloth_nodes</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># clean_cloth</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="clean_cloth"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.ground.clean_cloth">[docs]</a><span class="k">def</span> <span class="nf">clean_cloth</span><span class="p">(</span><span class="n">dtm_points</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function takes a Digital Terrain Model (DTM) and denoises it. This </span>
+<span class="sd">    denoising is done via a 2 MADs criterion from the median height value of a </span>
+<span class="sd">    neighbourhood of size 15.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtm_points : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x, y, z) coordinates of the DTM points.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    clean_points : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x, y, z) coordinates of the denoised DTM points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">dtm_points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">indexes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">dtm_points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">abs_devs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dtm_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">dtm_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">][</span><span class="n">indexes</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">mads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">abs_devs</span><span class="p">)</span>
+    <span class="n">clean_points</span> <span class="o">=</span> <span class="n">dtm_points</span><span class="p">[</span><span class="n">abs_devs</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mads</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">clean_points</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># normalize_heights</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="normalize_heights"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.ground.normalize_heights">[docs]</a><span class="k">def</span> <span class="nf">normalize_heights</span><span class="p">(</span><span class="n">cloud</span><span class="p">,</span> <span class="n">dtm_points</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function takes a point cloud and a Digital Terrain Model (DTM) and</span>
+<span class="sd">    normalizes the heights of the first based on the second.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cloud : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x, y, z) coordinates of the point cloud.</span>
+<span class="sd">    dtm_points : numpy array</span>
+<span class="sd">        Matrix containing (x, y, z) coordinates of the DTM points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zs_diff_triples : numpy.ndarray</span>
+<span class="sd">        Vector containing the normalized height values for the cloud points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">dtm_points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">idx_pt_mesh</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cloud</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="c1"># Z point cloud - Z dtm (Weighted average, based on distance)</span>
+    <span class="n">zs_diff_triples</span> <span class="o">=</span> <span class="n">cloud</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+        <span class="n">dtm_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">][</span><span class="n">idx_pt_mesh</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">zs_diff_triples</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

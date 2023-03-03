@@ -1,5 +1,5 @@
 .. dendromatics documentation master file, created by
-   sphinx-quickstart on Fri Mar  3 16:40:38 2023.
+   sphinx-quickstart on Fri Mar  3 17:07:59 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dendromatics.sections &mdash; dendromatics 00.00.01 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dendromatics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dendromatics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dendromatics.sections</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dendromatics.sections</h1><div class="highlight"><pre>
+<span></span><span class="c1">#### IMPORTS ####</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span> <span class="k">as</span> <span class="n">opt</span>
+<span class="kn">from</span> <span class="nn">scipy.cluster</span> <span class="kn">import</span> <span class="n">hierarchy</span> <span class="k">as</span> <span class="n">sch</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance_matrix</span>
+
+<span class="kn">from</span> <span class="nn">.voxel.voxel</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># point_clustering</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="point_clustering"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.point_clustering">[docs]</a><span class="k">def</span> <span class="nf">point_clustering</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">max_dist</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function clusters points by distance and finds the largest </span>
+<span class="sd">    cluster. It is to be used inside fit_circle_check().</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        Vector containing (x) coordinates of points belonging to a tree section.</span>
+<span class="sd">    Y : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of points belonging to a tree section.</span>
+<span class="sd">    max_dist : float</span>
+<span class="sd">        Max separation among the points to be considered as members of the same</span>
+<span class="sd">        cluster.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X_g : numpy.ndarray</span>
+<span class="sd">        Vector containing the (x) coordinates of the largest cluster.</span>
+<span class="sd">    Y_g : numpy.ndarray</span>
+<span class="sd">        Vector containing the (y) coordinates of the largest cluster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Stacks 1D arrays ([X], [Y]) into a 2D array ([X, Y])</span>
+    <span class="n">xy_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
+
+    <span class="c1"># sch.fclusterdata outputs a vector that contains cluster ID of each point </span>
+    <span class="c1"># (which cluster does each point belong to)</span>
+    <span class="n">clust_id</span> <span class="o">=</span> <span class="n">sch</span><span class="o">.</span><span class="n">fclusterdata</span><span class="p">(</span>
+        <span class="n">xy_stack</span><span class="p">,</span> <span class="n">max_dist</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">&quot;distance&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Set of all clusters</span>
+    <span class="n">clust_id_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">clust_id</span><span class="p">)</span>
+
+    <span class="c1"># For loop that iterates over each cluster ID, sums its elements and finds </span>
+    <span class="c1"># the largest</span>
+    <span class="n">n_max</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clust_id_unique</span><span class="p">:</span>
+        <span class="c1"># How many elements are in each cluster</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">clust_id</span> <span class="o">==</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="c1"># Update largest cluster and its cardinality</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">n_max</span><span class="p">:</span>
+            <span class="n">n_max</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="n">largest_cluster</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="c1"># X, Y coordinates of points that belong to the largest cluster</span>
+    <span class="n">X_g</span> <span class="o">=</span> <span class="n">xy_stack</span><span class="p">[</span><span class="n">clust_id</span> <span class="o">==</span> <span class="n">largest_cluster</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Y_g</span> <span class="o">=</span> <span class="n">xy_stack</span><span class="p">[</span><span class="n">clust_id</span> <span class="o">==</span> <span class="n">largest_cluster</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Output: those X, Y coordinates</span>
+    <span class="k">return</span> <span class="n">X_g</span><span class="p">,</span> <span class="n">Y_g</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># fit_circle</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="fit_circle"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.fit_circle">[docs]</a><span class="k">def</span> <span class="nf">fit_circle</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function fits points within a tree section into a circle by</span>
+<span class="sd">    least squares minimization. It is to be used inside fit_circle_check().</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        Vector containing (x) coordinates of points belonging to a tree section.</span>
+<span class="sd">    Y : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of points belonging to a tree section.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    circle_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing the (x, y) coordinates of the circle center.</span>
+<span class="sd">    mean_radius : numpy.ndarray</span>
+<span class="sd">        Vector containing the radius of each fitted circle </span>
+<span class="sd">        (units is meters).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Function that computes distance from each 2D point to a single point defined by (X_c, Y_c)</span>
+    <span class="c1"># It will be used to compute the distance from each point to the circle center.</span>
+    <span class="k">def</span> <span class="nf">calc_R</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">X_c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">Y_c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Function that computes algebraic distance from each 2D point to some middle circle c</span>
+    <span class="c1"># It calls calc_R (just defined above) and it is used during the least squares optimization.</span>
+    <span class="k">def</span> <span class="nf">f_2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="n">R_i</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">R_i</span> <span class="o">-</span> <span class="n">R_i</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># Initial barycenter coordinates (middle circle c center)</span>
+    <span class="n">X_m</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">Y_m</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">barycenter</span> <span class="o">=</span> <span class="n">X_m</span><span class="p">,</span> <span class="n">Y_m</span>
+
+    <span class="c1"># Least square minimization to find the circle that best fits all </span>
+    <span class="c1"># points within the section. &#39;ier&#39; is a flag indicating whether the solution</span>
+    <span class="c1"># was found (ier = 1, 2, 3 or 4) or not (otherwise).</span>
+    <span class="n">circle_c</span><span class="p">,</span> <span class="n">ier</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span>
+        <span class="n">f_2</span><span class="p">,</span> <span class="n">barycenter</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+    <span class="p">)</span>  
+    
+    <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span> <span class="o">=</span> <span class="n">circle_c</span>
+
+    <span class="c1"># Its radius</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">*</span><span class="n">circle_c</span><span class="p">)</span>
+    <span class="n">mean_radius</span> <span class="o">=</span> <span class="n">radius</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># Output: - X, Y coordinates of best-fit circle center - its radius</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">circle_c</span><span class="p">,</span> <span class="n">mean_radius</span><span class="p">)</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># inner_circle</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="inner_circle"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.inner_circle">[docs]</a><span class="k">def</span> <span class="nf">inner_circle</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">times_R</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Function that computes an internal circle inside the one fitted by </span>
+<span class="sd">    fit_circle. This new circle is used as a validation tool and it gives </span>
+<span class="sd">    insight on the quality of the &#39;fit_circle-circle&#39;.</span>
+<span class="sd">    </span>
+<span class="sd">        - If points are closest to the inner circle, then the first fit was not</span>
+<span class="sd">        appropiate</span>
+<span class="sd">        - On the contrary, if points are closer to the outer circle, the </span>
+<span class="sd">        &#39;fit_circle-circle&#39; is appropiate and describes well the stem diameter.</span>
+<span class="sd">    </span>
+<span class="sd">    Instead of directly computing the inner circle, it just takes a proportion </span>
+<span class="sd">    (less than one) of the original circle radius and its center. Then, it just</span>
+<span class="sd">    checks how many points are closest to the inner circle than to the original</span>
+<span class="sd">    circle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        Vector containing (x) coordinates of points belonging to a tree section.</span>
+<span class="sd">    Y : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of points belonging to a tree section.</span>
+<span class="sd">    X_c : numpy.ndarray</span>
+<span class="sd">    Vector containing (x) coordinates of fitted circles.</span>
+<span class="sd">    Y_c : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of fitted circles.</span>
+<span class="sd">    R : numpy.ndarray</span>
+<span class="sd">        Vector containing the radii of the fitted circles.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    n_points_in : numpy.ndarray</span>
+<span class="sd">        Vector containing the number of points inside the inner circle of each </span>
+<span class="sd">        section.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Distance from each 2D point to the center.</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">X_c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">Y_c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Number of points closest to the inner circle, whose radius is </span>
+    <span class="c1"># proportionate to the outer circle radius by a factor defined by &#39;times_R&#39;.</span>
+    <span class="n">n_points_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="n">R</span> <span class="o">*</span> <span class="n">times_R</span><span class="p">)</span>
+
+    <span class="c1"># Output: Number of points closest to the inner circle.</span>
+    <span class="k">return</span> <span class="n">n_points_in</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># sector_occupancy</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="sector_occupancy"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.sector_occupancy">[docs]</a><span class="k">def</span> <span class="nf">sector_occupancy</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">n_sectors</span><span class="p">,</span> <span class="n">min_n_sectors</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function provides quality measurements for the fitting of the </span>
+<span class="sd">    circle. It divides the section in a number of sectors to check if there are</span>
+<span class="sd">    points within them (so they are occupied). If there are not enough occupied</span>
+<span class="sd">    sectors, the section fails the test, as it is safe to asume it has an </span>
+<span class="sd">    anomale, non desirable structure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        Vector containing (x) coordinates of points belonging to a tree section.</span>
+<span class="sd">    Y : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of points belonging to a tree section.</span>
+<span class="sd">    X_c : numpy.ndarray</span>
+<span class="sd">        Vector containing (x) coordinates of fitted circles.</span>
+<span class="sd">    Y_c : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of fitted circles.</span>
+<span class="sd">    R : numpy.ndarray</span>
+<span class="sd">        Vector containing the radii of the fitted circles.</span>
+<span class="sd">    n_sectors : int</span>
+<span class="sd">        Number of sectors in which sections will be divided.</span>
+<span class="sd">    min_n_sectors : int</span>
+<span class="sd">        Minimum number of occupied sectors in a section for its fitted circle </span>
+<span class="sd">        to be considered as valid.</span>
+<span class="sd">    width : float</span>
+<span class="sd">        Width around the fitted circle to look for points (units is </span>
+<span class="sd">        milimeters).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    perct_occuped_sectors : numpy.ndarray</span>
+<span class="sd">        Vector containing the percentage of occupied sectors in each section.</span>
+<span class="sd">    enough_occuped_sectors : numpy.ndarray</span>
+<span class="sd">        Vector containing binary indicators whether the fitted circle is valid </span>
+<span class="sd">        or not. 1 - valid, 0 - not valid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Coordinates translation.</span>
+    <span class="n">X_red</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="n">X_c</span>
+    <span class="n">Y_red</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">Y_c</span>
+
+    <span class="c1"># Computation of radius and angle necessary to transform cartesian coordinates</span>
+    <span class="c1"># to polar coordinates.</span>
+    <span class="n">radial_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X_red</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y_red</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># radial coordinate</span>
+    <span class="n">angular_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span>
+        <span class="n">X_red</span><span class="p">,</span> <span class="n">Y_red</span>
+    <span class="p">)</span>  <span class="c1"># angular coordinate. This function from numpy directly computes it.</span>
+
+    <span class="c1"># Points that are close enough to the circle that will be checked.</span>
+    <span class="n">points_within</span> <span class="o">=</span> <span class="p">(</span><span class="n">radial_coord</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">100</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">radial_coord</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">R</span> <span class="o">+</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Codification of points in each sector. Basically the range of angular coordinates</span>
+    <span class="c1"># is divided in n_sector pieces and granted an integer number. Then, every </span>
+    <span class="c1"># point is assigned the integer corresponding to the sector it belongs to.</span>
+    <span class="n">norm_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span>
+        <span class="n">angular_coord</span><span class="p">[</span><span class="n">points_within</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">n_sectors</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># np.floor se queda solo con la parte entera de la división</span>
+
+    <span class="c1"># Number of points in each sector.</span>
+    <span class="n">n_occuped_sectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">norm_angles</span><span class="p">))</span>
+
+    <span class="c1"># Percentage of occupied sectors.</span>
+    <span class="n">perct_occuped_sectors</span> <span class="o">=</span> <span class="n">n_occuped_sectors</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">n_sectors</span>
+
+    <span class="c1"># If there are enough occupied sectors, then it is a valid section.</span>
+    <span class="k">if</span> <span class="n">n_occuped_sectors</span> <span class="o">&lt;</span> <span class="n">min_n_sectors</span><span class="p">:</span>
+        <span class="n">enough_occuped_sectors</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># If there are not, then it is not a valid section.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">enough_occuped_sectors</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Output: percentage of occuped sectors | boolean indicating if it has enough </span>
+    <span class="c1"># occuped sectors to pass the test.</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">perct_occuped_sectors</span><span class="p">,</span>
+        <span class="n">enough_occuped_sectors</span><span class="p">,</span>
+    <span class="p">)</span>  <span class="c1"># 0: passes; 1: does not pass.</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># fit_circle_check</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="fit_circle_check"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.fit_circle_check">[docs]</a><span class="k">def</span> <span class="nf">fit_circle_check</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">Y</span><span class="p">,</span>
+    <span class="n">review</span><span class="p">,</span>
+    <span class="n">second_time</span><span class="p">,</span>
+    <span class="n">times_R</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">,</span>
+    <span class="n">R_min</span><span class="p">,</span>
+    <span class="n">R_max</span><span class="p">,</span>
+    <span class="n">max_dist</span><span class="p">,</span>
+    <span class="n">n_points_section</span><span class="p">,</span>
+    <span class="n">n_sectors</span><span class="p">,</span>
+    <span class="n">min_n_sectors</span><span class="p">,</span>
+    <span class="n">width</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function calls fit_circle() to fit points within a section to a </span>
+<span class="sd">    circle by least squares minimization. These circles will define tree</span>
+<span class="sd">    sections. It checks the goodness of fit using sector_occupancy and </span>
+<span class="sd">    inner_circle. If fit is not appropriate, another circle will be fitted </span>
+<span class="sd">    using only points from the largest cluster inside the first circle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        Vector containing (x) coordinates of points belonging to a tree section.</span>
+<span class="sd">    Y : numpy.ndarray</span>
+<span class="sd">        Vector containing (y) coordinates of points belonging to a tree section.</span>
+<span class="sd">    second_time : numpy.ndarray</span>
+<span class="sd">        Vector containing integers that indicates whether it is the first time </span>
+<span class="sd">        a circle is fitted or not (will be modified internally).</span>
+<span class="sd">    times_R : float</span>
+<span class="sd">        Ratio of radius between outer circle and inner circle.</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        Minimum number of points in inner circle for a fitted circle to be </span>
+<span class="sd">        valid.</span>
+<span class="sd">    R_min : float</span>
+<span class="sd">        Minimum radius that a fitted circle must have to be valid.</span>
+<span class="sd">    R_max : float</span>
+<span class="sd">        Maximum radius that a fitted circle must have to be valid.</span>
+<span class="sd">    max_dist : float</span>
+<span class="sd">        Max separation among the points to be considered as members of the same</span>
+<span class="sd">        cluster.</span>
+<span class="sd">    n_points_section : int</span>
+<span class="sd">        Minimum points within a section for its fitted circle to be valid.</span>
+<span class="sd">    n_sectors : int</span>
+<span class="sd">        Number of sectors in which sections will be divided.</span>
+<span class="sd">    min_n_sectors : int</span>
+<span class="sd">        Minimum number of occupied sectors in a section for its fitted circle </span>
+<span class="sd">        to be considered as valid.</span>
+<span class="sd">    width : float</span>
+<span class="sd">        Width around the fitted circle to look for points (units is milimeters).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X_gs : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x) coordinates of largest clusters.</span>
+<span class="sd">    Y_gs : numpy.ndarray</span>
+<span class="sd">        Matrix containing (y) coordinates of largest clusters.</span>
+<span class="sd">    X_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x) coordinates of the center of the best-fit circles.</span>
+<span class="sd">    Y_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (y) coordinates of the center of the best-fit circles.</span>
+<span class="sd">    R : numpy.ndarray</span>
+<span class="sd">        Vector containing best-fit circle radii.</span>
+<span class="sd">    section_perct : numpy.ndarray</span>
+<span class="sd">        Matrix containing the percentage of occupied sectors.</span>
+<span class="sd">    n_points_in : numpy.ndarray</span>
+<span class="sd">        Matrix containing the number of points in the inner circle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If loop that discards sections that do not have enough points (n_points_section)</span>
+    <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">n_points_section</span><span class="p">:</span>
+        <span class="c1"># Call to fit_circle to fit the circle that best fits all points </span>
+        <span class="c1">#within the section.</span>
+        <span class="p">(</span><span class="n">circle_center</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span> <span class="o">=</span> <span class="n">fit_circle</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">)</span>
+        <span class="n">X_c</span> <span class="o">=</span> <span class="n">circle_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Column 0 is center X coordinate</span>
+        <span class="n">Y_c</span> <span class="o">=</span> <span class="n">circle_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Column 1 is center Y coordinate</span>
+
+        <span class="c1"># Call to inner_circle to fit an inner circle and to get the number</span>
+        <span class="c1"># of points closest to it.</span>
+        <span class="n">n_points_in</span> <span class="o">=</span> <span class="n">inner_circle</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">times_R</span><span class="p">)</span>
+
+        <span class="c1"># Call to sector_occupancy to check if sectors around inner circle are occupied.</span>
+        <span class="p">(</span><span class="n">sector_perct</span><span class="p">,</span> <span class="n">enough_sectors</span><span class="p">)</span> <span class="o">=</span> <span class="n">sector_occupancy</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">n_sectors</span><span class="p">,</span> <span class="n">min_n_sectors</span><span class="p">,</span> <span class="n">width</span>
+        <span class="p">)</span>
+
+        <span class="c1"># If any of the following conditions hold:</span>
+        <span class="c1">#   - Too many points in inner circle</span>
+        <span class="c1">#   - Radius of best-fit circle is too small</span>
+        <span class="c1">#   - Number of occupied sectors is too low</span>
+        <span class="c1"># Then proceed with countermeasures</span>
+        <span class="k">if</span> <span class="n">n_points_in</span> <span class="o">&gt;</span> <span class="n">threshold</span> <span class="ow">or</span> <span class="n">R</span> <span class="o">&lt;</span> <span class="n">R_min</span> <span class="ow">or</span> <span class="n">R</span> <span class="o">&gt;</span> <span class="n">R_max</span> <span class="ow">or</span> <span class="n">enough_sectors</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># If this is not the second round or, simply, if it is the first round,</span>
+            <span class="c1"># then proceed</span>
+            <span class="k">if</span> <span class="n">second_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># First round implies there is no X_g or Y_g, as points would not </span>
+                <span class="c1"># have been grouped yet. point_clustering is called.</span>
+                <span class="p">(</span><span class="n">X_g</span><span class="p">,</span> <span class="n">Y_g</span><span class="p">)</span> <span class="o">=</span> <span class="n">point_clustering</span><span class="p">(</span>
+                    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">max_dist</span>
+                <span class="p">)</span>  <span class="c1"># X_g or Y_g are the coordinates of the largest cluster.</span>
+
+                <span class="c1"># If cluster size is big enough, then proceed. It is done this way to </span>
+                <span class="c1"># account for cases where, even though the section had enough points,</span>
+                <span class="c1"># there might not be enough points within the largest cluster.</span>
+                <span class="k">if</span> <span class="n">X_g</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">n_points_section</span><span class="p">:</span>
+                    <span class="c1"># Call to fit_circle_check (lets call it the &#39;deep call&#39;). </span>
+                    <span class="c1"># Now it is guaranteed that it is a valid section (has enough </span>
+                    <span class="c1"># points and largest cluster has enough points as well).</span>
+                    <span class="p">(</span>
+                        <span class="n">X_c</span><span class="p">,</span>
+                        <span class="n">Y_c</span><span class="p">,</span>
+                        <span class="n">R</span><span class="p">,</span>
+                        <span class="n">review</span><span class="p">,</span>
+                        <span class="n">second_time</span><span class="p">,</span>
+                        <span class="n">sector_perct</span><span class="p">,</span>
+                        <span class="n">n_points_in</span><span class="p">,</span>
+                    <span class="p">)</span> <span class="o">=</span> <span class="n">fit_circle_check</span><span class="p">(</span>
+                        <span class="n">X_g</span><span class="p">,</span>
+                        <span class="n">Y_g</span><span class="p">,</span>
+                        <span class="mi">0</span><span class="p">,</span>
+                        <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">times_R</span><span class="p">,</span>
+                        <span class="n">threshold</span><span class="p">,</span>
+                        <span class="n">R_min</span><span class="p">,</span>
+                        <span class="n">R_max</span><span class="p">,</span>
+                        <span class="n">max_dist</span><span class="p">,</span>
+                        <span class="n">n_points_section</span><span class="p">,</span>
+                        <span class="n">n_sectors</span><span class="p">,</span>
+                        <span class="n">min_n_sectors</span><span class="p">,</span>
+                        <span class="n">width</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># If cluster size is not big enough, then don&#39;t take the section </span>
+                <span class="c1"># it belongs to into account.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">review</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Even if it is not a valid section, lets note it has been checked.</span>
+                    <span class="n">X_c</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">Y_c</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">R</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">second_time</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="c1"># If this is the second round (whether the first round succesfully </span>
+            <span class="c1"># provided a valid section or not), then proceed.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">review</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Just stating that if this is the second round, the check has happened.</span>
+
+    <span class="c1"># This matches the first loop. If section is not even big enough (does not </span>
+    <span class="c1"># contain enough points), it is not valid.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">review</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">X_c</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Y_c</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">second_time</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">sector_perct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_points_in</span> <span class="o">=</span> <span class="mi">0</span>
+        
+    <span class="k">return</span> <span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">review</span><span class="p">,</span> <span class="n">second_time</span><span class="p">,</span> <span class="n">sector_perct</span><span class="p">,</span> <span class="n">n_points_in</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># compute_sections</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="compute_sections"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.compute_sections">[docs]</a><span class="k">def</span> <span class="nf">compute_sections</span><span class="p">(</span>
+    <span class="n">stems</span><span class="p">,</span>
+    <span class="n">sections</span><span class="p">,</span>
+    <span class="n">section_width</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+    <span class="n">times_R</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">R_min</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">R_max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">max_dist</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+    <span class="n">n_points_section</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+    <span class="n">n_sectors</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">min_n_sectors</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">X_field</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">Y_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">Z0_field</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">tree_id_field</span><span class="o">=</span><span class="mi">4</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function calls fit_circle_check() to compute stem diameter at </span>
+<span class="sd">    given sections.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stems : numpy.ndarray</span>
+<span class="sd">        Point cloud containing the individualized trees. It is expected to </span>
+<span class="sd">        have X, Y, Z0 and tree_ID fields.</span>
+<span class="sd">    sections : numpy.ndarray</span>
+<span class="sd">        Matrix containing a range of height values at which sections will be </span>
+<span class="sd">        computed.</span>
+<span class="sd">    section_width : float</span>
+<span class="sd">        Points within this distance from any `sections` value will be considered </span>
+<span class="sd">        as belonging to said section (units is meters). Defaults to 0.02.</span>
+<span class="sd">    times_R : float</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 0.5.</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 5.</span>
+<span class="sd">    R_min : float</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 0.03.</span>
+<span class="sd">    R_max : float</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 0.5.</span>
+<span class="sd">    max_dist : float</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 0.02.</span>
+<span class="sd">    n_points_section : int</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 80.</span>
+<span class="sd">    n_sectors : int</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 16.</span>
+<span class="sd">    min_n_sectors : int</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 9.</span>
+<span class="sd">    width : float</span>
+<span class="sd">        Refer to fit_circle_check. Defaults to 2.0.</span>
+<span class="sd">    X_field : int</span>
+<span class="sd">        Index at which (x) coordinate is stored. Defaults to 0.</span>
+<span class="sd">    Y_field : int</span>
+<span class="sd">        Index at which (y) coordinate is stored. Defaults to 1.</span>
+<span class="sd">    Z0_field : int</span>
+<span class="sd">        Index at which (z0) coordinate is stored. Defaults to 3.</span>
+<span class="sd">    tree_id_field : int</span>
+<span class="sd">        Index at which cluster ID is stored. Defaults to 4.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x) coordinates of the center of the best-fit circles.</span>
+<span class="sd">    Y_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (y) coordinates of the center of the best-fit circles.</span>
+<span class="sd">    R : numpy.ndarray</span>
+<span class="sd">        Vector containing best-fit circle radii.</span>
+<span class="sd">    section_perct : numpy.ndarray</span>
+<span class="sd">        Matrix containing the percentage of occupied sectors.</span>
+<span class="sd">    n_points_in : numpy.ndarray</span>
+<span class="sd">        Matrix containing the number of points in the inner circles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+    <span class="n">stems</span><span class="p">[:,</span> <span class="n">tree_id_field</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># Select the column that contains tree ID</span>
+    <span class="n">n_trees</span> <span class="o">=</span> <span class="n">trees</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># Number of trees</span>
+    <span class="n">n_sections</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># Number of sections</span>
+
+    <span class="n">X_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># Empty array to store X data</span>
+    <span class="n">Y_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># Empty array to store Y data</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># Empty array to store radius data</span>
+    <span class="n">check_circle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+    <span class="p">)</span>  <span class="c1"># Empty array to store &#39;check&#39; data</span>
+    <span class="n">second_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+    <span class="p">)</span>  <span class="c1"># Empty array to store &#39;second_time&#39; data</span>
+    <span class="n">sector_perct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+    <span class="p">)</span>  <span class="c1"># Empty array to store percentage of occuped sectors data</span>
+    <span class="n">n_points_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">n_trees</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+    <span class="p">)</span>  <span class="c1"># Empty array to store inner points data</span>
+
+    <span class="c1"># Filling previous empty arrays</span>
+
+    <span class="c1"># Auxiliar index for first loop</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># Loop will start at -1</span>
+
+    <span class="c1"># First loop: iterates over each tree</span>
+    <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">trees</span><span class="p">:</span>
+        <span class="c1"># Tree ID is used to iterate over trees</span>
+        <span class="n">tree_i</span> <span class="o">=</span> <span class="n">stems</span><span class="p">[</span><span class="n">stems</span><span class="p">[:,</span> <span class="n">tree_id_field</span><span class="p">]</span> <span class="o">==</span> <span class="n">tr</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\r</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">((</span><span class="n">trees</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">tree</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">trees</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># Auxiliar index for second loop</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Second loop: iterates over each section</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+            <span class="c1"># Selecting (x, y) coordinates of points within the section</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">tree_i</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">tree_i</span><span class="p">[:,</span> <span class="n">Z0_field</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tree_i</span><span class="p">[:,</span> <span class="n">Z0_field</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="o">+</span> <span class="n">section_width</span><span class="p">),</span>
+                <span class="n">X_field</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="n">tree_i</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">tree_i</span><span class="p">[:,</span> <span class="n">Z0_field</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tree_i</span><span class="p">[:,</span> <span class="n">Z0_field</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="o">+</span> <span class="n">section_width</span><span class="p">),</span>
+                <span class="n">Y_field</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="c1"># fit_circle_check call. It provides data to fill the empty arrays</span>
+            <span class="p">(</span>
+                <span class="n">X_c_fill</span><span class="p">,</span>
+                <span class="n">Y_c_fill</span><span class="p">,</span>
+                <span class="n">R_fill</span><span class="p">,</span>
+                <span class="n">check_circle_fill</span><span class="p">,</span>
+                <span class="n">second_time_fill</span><span class="p">,</span>
+                <span class="n">sector_perct_fill</span><span class="p">,</span>
+                <span class="n">n_points_in_fill</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">fit_circle_check</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span>
+                <span class="n">Y</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="n">times_R</span><span class="p">,</span>
+                <span class="n">threshold</span><span class="p">,</span>
+                <span class="n">R_min</span><span class="p">,</span>
+                <span class="n">R_max</span><span class="p">,</span>
+                <span class="n">max_dist</span><span class="p">,</span>
+                <span class="n">n_points_section</span><span class="p">,</span>
+                <span class="n">n_sectors</span><span class="p">,</span>
+                <span class="n">min_n_sectors</span><span class="p">,</span>
+                <span class="n">width</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Filling the empty arrays</span>
+            <span class="n">X_c</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_c_fill</span>
+            <span class="n">Y_c</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y_c_fill</span>
+            <span class="n">R</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">R_fill</span>
+            <span class="n">check_circle</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">check_circle_fill</span>
+            <span class="n">second_time</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">second_time_fill</span>
+            <span class="n">sector_perct</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">sector_perct_fill</span>
+            <span class="n">n_points_in</span><span class="p">[</span><span class="n">tree</span><span class="p">,</span> <span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_points_in_fill</span>
+
+            <span class="n">section</span> <span class="o">=</span> <span class="n">section</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">X_c</span><span class="p">,</span> <span class="n">Y_c</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">check_circle</span><span class="p">,</span> <span class="n">second_time</span><span class="p">,</span> <span class="n">sector_perct</span><span class="p">,</span> <span class="n">n_points_in</span><span class="p">)</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># tilt_detection</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="tilt_detection"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.tilt_detection">[docs]</a><span class="k">def</span> <span class="nf">tilt_detection</span><span class="p">(</span><span class="n">X_tree</span><span class="p">,</span> <span class="n">Y_tree</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">Z_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">w_1</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">w_2</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function finds outlier tilting values among sections within a tree</span>
+<span class="sd">    and assigns a score to the sections based on those outliers. Two kinds of </span>
+<span class="sd">    outliers are considered.</span>
+<span class="sd">    </span>
+<span class="sd">        Absolute outliers are obtained from the sum of the deviations from </span>
+<span class="sd">        every section center to all axes within a tree (the most tilted sections </span>
+<span class="sd">        relative to all axes)</span>
+<span class="sd">    </span>
+<span class="sd">        Relative outliers are obtained from the deviations of other section </span>
+<span class="sd">        centers from a certain axis, within a tree (the most tilted sections </span>
+<span class="sd">        relative to a certain axis)</span>
+<span class="sd">    </span>
+<span class="sd">    The &#39;outlier score&#39; consists on a weighted sum of the absolute tilting value</span>
+<span class="sd">    and the relative tilting value.</span>
+
+<span class="sd">    X_tree : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x) coordinates of the center of the sections.</span>
+<span class="sd">    Y_tree : numpy.ndarray</span>
+<span class="sd">        Matrix containing (y) coordinates of the center of the sections.</span>
+<span class="sd">    radius : numpy.ndarray</span>
+<span class="sd">        Vector containing section radii.</span>
+<span class="sd">    sections : numpy.ndarray</span>
+<span class="sd">        Vector containing the height of the section associated to each section.</span>
+<span class="sd">    Z_field : int</span>
+<span class="sd">        Index at which (z) coordinate is stored. Defaults to 2.</span>
+<span class="sd">    w_1 : float</span>
+<span class="sd">        Weight of absolute deviation. Defaults to 3.0.</span>
+<span class="sd">    w_2 : float</span>
+<span class="sd">        Weight of relative deviation. Defaults to 1.0.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    outlier_prob : numpy.ndarray</span>
+<span class="sd">        Vector containing the &#39;outlier probability&#39; of each section.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># This function simply defines 1st and 3rd cuartile of a vector and separates </span>
+    <span class="c1"># values that are outside the interquartilic range defined by these. Those </span>
+    <span class="c1"># are the candidates to be outliers. This filtering may be done either </span>
+    <span class="c1"># directly from the interquartilic range, or from a certain distance from it, </span>
+    <span class="c1"># thanks to &#39;n_range&#39; parameter. Its default value is 1.5.</span>
+
+    <span class="k">def</span> <span class="nf">outlier_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">lower_q</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">upper_q</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">n_range</span><span class="o">=</span><span class="mf">1.5</span><span class="p">):</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">lower_q</span><span class="p">)</span>  <span class="c1"># First quartile</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">upper_q</span><span class="p">)</span>  <span class="c1"># Third quartile</span>
+        <span class="n">iqr</span> <span class="o">=</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q1</span>  <span class="c1"># Interquartilic range</span>
+
+        <span class="n">lower_bound</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">q1</span> <span class="o">-</span> <span class="n">iqr</span> <span class="o">*</span> <span class="n">n_range</span>
+        <span class="p">)</span>  <span class="c1"># Lower bound of filter. If n_range = 0 -&gt; lower_bound = q1</span>
+        <span class="n">upper_bound</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">q3</span> <span class="o">+</span> <span class="n">iqr</span> <span class="o">*</span> <span class="n">n_range</span>
+        <span class="p">)</span>  <span class="c1"># Upper bound of filter. If n_range = 0 -&gt; upper_bound = q3</span>
+
+        <span class="c1"># Outlier vector.</span>
+        <span class="n">outlier_ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">vector</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">vector</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">outlier_ind</span>
+
+    <span class="c1"># Empty matrix that will store the probabilities of a section to be invalid</span>
+    <span class="n">outlier_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">X_tree</span><span class="p">)</span>
+
+    <span class="c1"># First loop: iterates over each tree</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_tree</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c1"># If there is, at least, 1 circle with positive radius in a tree, then </span>
+        <span class="c1"># proceed (invalid circles are stored with a radius value of 0)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">radius</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Filtering sections within a tree that have valid circles (non-zero radius).</span>
+            <span class="n">valid_radius</span> <span class="o">=</span> <span class="n">radius</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+            <span class="c1"># Weights associated to each section. They are computed in a way </span>
+            <span class="c1"># that the final value of outliers sums up to 1 as maximum.</span>
+            <span class="n">abs_outlier_w</span> <span class="o">=</span> <span class="n">w_1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">sections</span><span class="p">[</span><span class="n">valid_radius</span><span class="p">])</span> <span class="o">*</span> <span class="n">w_2</span> <span class="o">+</span> <span class="n">w_1</span><span class="p">)</span>
+            <span class="n">rel_outlier_w</span> <span class="o">=</span> <span class="n">w_2</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">sections</span><span class="p">[</span><span class="n">valid_radius</span><span class="p">])</span> <span class="o">*</span> <span class="n">w_2</span> <span class="o">+</span> <span class="n">w_1</span><span class="p">)</span>
+
+            <span class="c1"># Vertical distance matrix among all sections (among their centers)</span>
+            <span class="n">heights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">sections</span><span class="p">[</span><span class="n">valid_radius</span><span class="p">]),</span> <span class="n">Z_field</span><span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># Empty matrix to store heights of each section</span>
+            <span class="n">heights</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                <span class="n">sections</span><span class="p">[</span><span class="n">valid_radius</span><span class="p">]</span>
+            <span class="p">)</span>  <span class="c1">#  Height (Z value) of each section</span>
+            <span class="n">z_dist_matrix</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span>
+                <span class="n">heights</span><span class="p">,</span> <span class="n">heights</span>
+            <span class="p">)</span>  <span class="c1"># Vertical distance matrix</span>
+
+            <span class="c1"># Horizontal distance matrix among all sections (among their centers)</span>
+            <span class="n">c_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">sections</span><span class="p">[</span><span class="n">valid_radius</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># Empty matrix to store X, Y coordinates of each section</span>
+            <span class="n">c_coord</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X_tree</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">valid_radius</span><span class="p">])</span>  <span class="c1"># X coordinates</span>
+            <span class="n">c_coord</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Y_tree</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">valid_radius</span><span class="p">])</span>  <span class="c1"># Y coordinates</span>
+            <span class="n">xy_dist_matrix</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span>
+                <span class="n">c_coord</span><span class="p">,</span> <span class="n">c_coord</span>
+            <span class="p">)</span>  <span class="c1"># Horizontal distance matrix</span>
+
+            <span class="c1"># Tilting measured from every vertical within a tree: All verticals </span>
+            <span class="c1"># obtained from the set of sections within a tree. For instance, if</span>
+            <span class="c1"># there are 10 sections, there are 10 tilting values for each section.</span>
+            <span class="n">tilt_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">xy_dist_matrix</span> <span class="o">/</span> <span class="n">z_dist_matrix</span><span class="p">)</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+            <span class="c1"># Summation of tilting values from each center.</span>
+            <span class="n">tilt_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">tilt_matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Outliers within previous vector (too low / too high tilting values). </span>
+            <span class="c1"># These are anomalus tilting values from ANY axis.</span>
+            <span class="n">outlier_prob</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">valid_radius</span><span class="p">]</span> <span class="o">=</span> <span class="n">outlier_vector</span><span class="p">(</span><span class="n">tilt_sum</span><span class="p">)</span> <span class="o">*</span> <span class="n">abs_outlier_w</span>
+
+            <span class="c1"># Second loop: iterates over each section (within a single tree).</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">sections</span><span class="p">[</span><span class="n">valid_radius</span><span class="p">])):</span>
+                <span class="c1"># Search for anomalous tilting values from a CERTAIN axis.</span>
+                <span class="n">tilt_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">tilt_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="o">~</span><span class="n">j</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">)</span>
+                <span class="n">rel_outlier</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">outlier_vector</span><span class="p">(</span><span class="n">tilt_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="n">rel_outlier_w</span>
+                <span class="p">)</span>  <span class="c1"># Storing those values.</span>
+
+                <span class="c1"># Sum of absolute outlier value and relative outlier value</span>
+                <span class="n">outlier_prob</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">valid_radius</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">outlier_prob</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">valid_radius</span><span class="p">]</span> <span class="o">+</span> <span class="n">rel_outlier</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">outlier_prob</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># tree_locator</span>
+<span class="c1"># --------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="tree_locator"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.sections.tree_locator">[docs]</a><span class="k">def</span> <span class="nf">tree_locator</span><span class="p">(</span>
+    <span class="n">sections</span><span class="p">,</span>
+    <span class="n">X_c</span><span class="p">,</span>
+    <span class="n">Y_c</span><span class="p">,</span>
+    <span class="n">tree_vector</span><span class="p">,</span>
+    <span class="n">sector_perct</span><span class="p">,</span>
+    <span class="n">R</span><span class="p">,</span>
+    <span class="n">outliers</span><span class="p">,</span>
+    <span class="n">n_points_in</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">X_field</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">Y_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">Z_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function generates points that locate the individualized trees and</span>
+<span class="sd">    computes their DBH (diameter at breast height). It uses all the quality </span>
+<span class="sd">    measurements defined in previous functions to check whether the DBH should </span>
+<span class="sd">    be computed or not and to check which point should be used as the tree locator.</span>
+
+<span class="sd">    The tree locators are then saved in a LAS file. Each tree locator corresponds </span>
+<span class="sd">    on a one-to-one basis to the individualized trees.</span>
+
+<span class="sd">    sections : numpy.ndarray</span>
+<span class="sd">        Vector containing section heights (normalized heights).</span>
+<span class="sd">    X_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x) coordinates of the center of the sections.</span>
+<span class="sd">    Y_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (y) coordinates of the center of the sections.</span>
+<span class="sd">    tree_vector : numpy.ndarray</span>
+<span class="sd">        detected_trees output from individualize_trees.</span>
+<span class="sd">    sector_perct : numpy.ndarray</span>
+<span class="sd">        Matrix containing the percentage of occupied sectors.</span>
+<span class="sd">    R : numpy.ndarray</span>
+<span class="sd">        Vector containing section radii.</span>
+<span class="sd">    outliers : numpy.ndarray</span>
+<span class="sd">        Vector containing the &#39;outlier probability&#39; of each section.</span>
+<span class="sd">    n_points_in : numpy.ndarray</span>
+<span class="sd">        Matrix containing the number of points in the inner circles.</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        Minimum number of points in inner circle for a fitted circle to be valid.</span>
+<span class="sd">        Defaults to 5.</span>
+<span class="sd">    X_field : int</span>
+<span class="sd">        Index at which (x) coordinate is stored. Defaults to 0.</span>
+<span class="sd">    Y_field : int</span>
+<span class="sd">        Index at which (y) coordinate is stored. Defaults to 1.</span>
+<span class="sd">    Z_field : int</span>
+<span class="sd">        Index at which (z) coordinate is stored. Defaults to 2.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dbh_values : numpy.ndarray</span>
+<span class="sd">        Vector containing DBH values.</span>
+<span class="sd">    tree_locations : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x, y, z) coordinates of each tree locator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dbh</span> <span class="o">=</span> <span class="mf">1.3</span>  <span class="c1"># Breast height</span>
+
+    <span class="n">tree_locations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">X_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># Empty vector to be filled with tree locators</span>
+    <span class="n">n_trees</span> <span class="o">=</span> <span class="n">tree_locations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Number of trees</span>
+
+    <span class="n">dbh_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">X_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># Empty vector to be filled with DBH values.</span>
+
+    <span class="c1"># This if loop covers the cases where the stripe was defined in a way that </span>
+    <span class="c1"># it did not include BH and DBH nor tree locator cannot be obtained from a </span>
+    <span class="c1"># section at or close to BH. If that happens, tree axis is used to locate </span>
+    <span class="c1"># the tree and DBH is not computed.</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.3</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trees</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="n">diff_height</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">dbh</span> <span class="o">-</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># Compute the height difference between centroid and BH</span>
+            <span class="n">dist_centroid_dbh</span> <span class="o">=</span> <span class="n">diff_height</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+            <span class="p">)</span>  <span class="c1"># Compute the distance between centroid and axis point at BH.</span>
+            <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">vector</span> <span class="o">*</span> <span class="n">dist_centroid_dbh</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># Compute coordinates of axis point at BH.</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">diff_to_dbh</span> <span class="o">=</span> <span class="n">sections</span> <span class="o">-</span> <span class="n">dbh</span>  <span class="c1"># Height difference between each section and BH.</span>
+        <span class="n">which_dbh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diff_to_dbh</span><span class="p">))</span>  <span class="c1"># Which section is closer to BH.</span>
+
+        <span class="c1"># get surrounding sections too</span>
+        <span class="n">lower_d_section</span> <span class="o">=</span> <span class="n">which_dbh</span> <span class="o">-</span> <span class="n">d</span>
+        <span class="n">upper_d_section</span> <span class="o">=</span> <span class="n">which_dbh</span> <span class="o">+</span> <span class="n">d</span>
+
+        <span class="c1"># Just in case they are out of bound</span>
+        <span class="k">if</span> <span class="n">lower_d_section</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">lower_d_section</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">upper_d_section</span> <span class="o">&gt;</span> <span class="n">sections</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">upper_d_section</span> <span class="o">=</span> <span class="n">sections</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># BH section and its neighbours. From now on, neighbourhood</span>
+        <span class="n">close_to_dbh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lower_d_section</span><span class="p">,</span> <span class="n">upper_d_section</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trees</span><span class="p">):</span>  <span class="c1"># For each tree</span>
+            <span class="n">which_valid_R</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">)</span>  <span class="c1"># From neighbourhood, select only those with non 0 radius</span>
+            <span class="n">which_valid_out</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">outliers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.30</span>
+            <span class="p">)</span>  <span class="c1"># From neighbourhood, select only those with outlier probability lower than 10 %</span>
+            <span class="n">which_valid_sector_perct</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">sector_perct</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">30</span>
+            <span class="p">)</span>  <span class="c1"># only those with sector occupancy higher than 30 %</span>
+            <span class="n">which_valid_points</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">n_points_in</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">threshold</span>
+            <span class="p">)</span>  <span class="c1"># only those with enough points in inner circle</span>
+
+            <span class="c1"># If there are valid sections among the selected</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">which_valid_R</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">which_valid_out</span><span class="p">)):</span>
+                <span class="c1"># If first section is BH section and if itself and its only neighbour are valid</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">lower_d_section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_R</span><span class="p">))</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_out</span><span class="p">))</span>
+                    <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_sector_perct</span><span class="p">)</span>
+                <span class="p">):</span>  <span class="c1"># only happens when which_dbh == 0 # which_valid_points should be used here</span>
+                    <span class="c1"># If they are coherent: difference among their radii is not larger than 10 % of the largest radius</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.1</span>
+                    <span class="p">):</span>
+                        <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">X_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_c</span><span class="p">[</span>
+                            <span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span>
+                        <span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># Their centers are averaged and we keep that value</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">Y_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y_c</span><span class="p">[</span>
+                            <span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span>
+                        <span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># Their centers are averaged and we keep that value</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">Z_field</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="n">dbh</span>
+                        <span class="p">)</span>  <span class="c1"># original height is obtained</span>
+
+                    <span class="c1"># If not all of them are valid, then there is no coherence </span>
+                    <span class="c1"># in any case, and the axis location is used</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                        <span class="n">diff_height</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">dbh</span> <span class="o">-</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># Compute the height difference between centroid and BH</span>
+                        <span class="n">dist_centroid_dbh</span> <span class="o">=</span> <span class="n">diff_height</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                            <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+                        <span class="p">)</span>  <span class="c1"># Compute the distance between centroid and axis point at BH.</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">vector</span> <span class="o">*</span> <span class="n">dist_centroid_dbh</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># Compute coordinates of axis point at BH.</span>
+
+                <span class="c1"># If last section is BH section and if itself and its only neighbour are valid</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">upper_d_section</span> <span class="o">==</span> <span class="n">sections</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_R</span><span class="p">))</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_out</span><span class="p">))</span>
+                <span class="p">):</span>
+                    <span class="c1"># if they are coherent</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">close_to_dbh</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.15</span>
+                    <span class="p">):</span>
+                        <span class="c1"># use BH section diameter as DBH</span>
+                        <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">X_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_c</span><span class="p">[</span>
+                            <span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span>
+                        <span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># use its center x value as x coordinate of tree locator</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">Y_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y_c</span><span class="p">[</span>
+                            <span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span>
+                        <span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># use its center y value as y coordinate of tree locator</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">Z_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="n">dbh</span>
+
+                    <span class="c1"># If not all of them are valid, then there is no coherence in </span>
+                    <span class="c1"># any case, and the axis location is used and DBH is not computed</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                        <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+                        <span class="n">diff_height</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">dbh</span> <span class="o">-</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># Compute the height difference between centroid and BH</span>
+                        <span class="n">dist_centroid_dbh</span> <span class="o">=</span> <span class="n">diff_height</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                            <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+                        <span class="p">)</span>  <span class="c1"># Compute the distance between centroid and axis point at BH.</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">vector</span> <span class="o">*</span> <span class="n">dist_centroid_dbh</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># Compute coordinates of axis point at BH.</span>
+
+                <span class="c1"># In any other case, BH section is not first or last section, so it has 2 neighbourghs</span>
+                <span class="c1"># 3 posibilities left:</span>
+                <span class="c1"># A: Not all of three sections are valid: there is no possible coherence</span>
+                <span class="c1"># B: All of three sections are valid, and there is coherence among the three</span>
+                <span class="c1"># C: All of three sections are valid, but there is only coherence among neighbours </span>
+                <span class="c1"># and not BH section or All of three sections are valid, but there is no coherence</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Case A:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_R</span><span class="p">))</span>
+                        <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_out</span><span class="p">))</span>
+                        <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">which_valid_sector_perct</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                        <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+                        <span class="n">diff_height</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">dbh</span> <span class="o">-</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># Compute the height difference between centroid and BH</span>
+                        <span class="n">dist_centroid_dbh</span> <span class="o">=</span> <span class="n">diff_height</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                            <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+                        <span class="p">)</span>  <span class="c1"># Compute the distance between centroid and axis point at BH.</span>
+                        <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">vector</span> <span class="o">*</span> <span class="n">dist_centroid_dbh</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># Compute coordinates of axis point at BH.</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">valid_sections</span> <span class="o">=</span> <span class="n">close_to_dbh</span>  <span class="c1"># Valid sections indexes</span>
+                        <span class="n">valid_radii</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">valid_sections</span><span class="p">]</span>  <span class="c1"># Valid sections radii</span>
+                        <span class="n">median_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span>
+                            <span class="n">valid_radii</span>
+                        <span class="p">)</span>  <span class="c1"># Valid sections median radius</span>
+                        <span class="n">abs_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+                            <span class="n">valid_radii</span> <span class="o">-</span> <span class="n">median_radius</span>
+                        <span class="p">)</span>  <span class="c1"># Valid sections absolute deviation from median radius</span>
+                        <span class="n">mad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">abs_dev</span><span class="p">)</span>  <span class="c1"># Median absolute deviation</span>
+                        <span class="n">filtered_sections</span> <span class="o">=</span> <span class="n">valid_sections</span><span class="p">[</span>
+                            <span class="n">abs_dev</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">mad</span>
+                        <span class="p">]</span>  <span class="c1"># Only keep sections close to median radius (3 MAD criterion)</span>
+
+                        <span class="c1"># 3 things can happen here:</span>
+                        <span class="c1"># There are no deviated sections --&gt; there is coherence among 3 --&gt; case B</span>
+                        <span class="c1"># There are 2 deviated sections --&gt; only median radius survives filter --&gt; case C</span>
+
+                        <span class="c1"># Case B</span>
+                        <span class="k">if</span> <span class="n">filtered_sections</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">close_to_dbh</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+
+                            <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">X_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_c</span><span class="p">[</span>
+                                <span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span>
+                            <span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># Their centers are averaged and we keep that value</span>
+                            <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">Y_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y_c</span><span class="p">[</span>
+                                <span class="n">i</span><span class="p">,</span> <span class="n">which_dbh</span>
+                            <span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># Their centers are averaged and we keep that value</span>
+                            <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">Z_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="n">dbh</span>
+
+                        <span class="c1"># Case C</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># if PCA1 Z value is negative</span>
+                            <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                            <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+                            <span class="n">diff_height</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">dbh</span> <span class="o">-</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+                            <span class="p">)</span>  <span class="c1"># Compute the height difference between centroid and BH</span>
+                            <span class="n">dist_centroid_dbh</span> <span class="o">=</span> <span class="n">diff_height</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                                <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+                            <span class="p">)</span>  <span class="c1"># Compute the distance between centroid and axis point at BH.</span>
+                            <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">vector</span> <span class="o">*</span> <span class="n">dist_centroid_dbh</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+                            <span class="p">)</span>  <span class="c1"># Compute coordinates of axis point at BH.</span>
+
+            <span class="c1"># If there is not a single section that either has non 0 radius nor low </span>
+            <span class="c1"># outlier probability, there is nothing else to do -&gt; axis location is used</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+                <span class="n">diff_height</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">dbh</span> <span class="o">-</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+                <span class="p">)</span>  <span class="c1"># Compute the height difference between centroid and BH</span>
+                <span class="n">dist_centroid_dbh</span> <span class="o">=</span> <span class="n">diff_height</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                    <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+                <span class="p">)</span>  <span class="c1"># Compute the distance between centroid and axis point at BH.</span>
+                <span class="n">tree_locations</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">vector</span> <span class="o">*</span> <span class="n">dist_centroid_dbh</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+                <span class="p">)</span>  <span class="c1"># Compute coordinates of axis point at BH.</span>
+
+                <span class="n">dbh_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">dbh_values</span><span class="p">,</span> <span class="n">tree_locations</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

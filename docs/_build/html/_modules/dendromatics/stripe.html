@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dendromatics.stripe &mdash; dendromatics 00.00.01 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dendromatics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dendromatics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dendromatics.stripe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dendromatics.stripe</h1><div class="highlight"><pre>
+<span></span><span class="c1">#### IMPORTS ####</span>
+<span class="kn">import</span> <span class="nn">timeit</span>
+<span class="kn">import</span> <span class="nn">jakteristics</span> <span class="k">as</span> <span class="nn">jak</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">DBSCAN</span>
+
+<span class="kn">from</span> <span class="nn">.voxel.voxel</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># verticality_clustering_iteration</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="verticality_clustering_iteration"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.stripe.verticality_clustering_iteration">[docs]</a><span class="k">def</span> <span class="nf">verticality_clustering_iteration</span><span class="p">(</span>
+    <span class="n">stripe</span><span class="p">,</span>
+    <span class="n">vert_scale</span><span class="p">,</span>
+    <span class="n">vert_treshold</span><span class="p">,</span>
+    <span class="n">eps</span><span class="p">,</span>
+    <span class="n">n_points</span><span class="p">,</span>
+    <span class="n">resolution_xy</span><span class="p">,</span>
+    <span class="n">resolution_z</span><span class="p">,</span>
+    <span class="n">n_digits</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function is to be used internally by verticality_clustering. The </span>
+<span class="sd">    intended use of this function is to accept a stripe as an input, defined </span>
+<span class="sd">    this as a subset of the original cloud delimited by a lower height and an </span>
+<span class="sd">    upper height, which will narrow down a region where it is expected to only </span>
+<span class="sd">    be stems. Then it will voxelate those points and compute the verticality</span>
+<span class="sd">    via compute_features() from jakteristics. It will filter points based on </span>
+<span class="sd">    their verticality value, voxelate again and then cluster the remaining </span>
+<span class="sd">    points. Those are expected to belong to stems.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stripe : numpy.ndarray</span>
+<span class="sd">        The point cloud containing the stripe. It is expected to have X, Y, Z0</span>
+<span class="sd">        fields. 3D or higher array containing data with `float` type.</span>
+<span class="sd">    vert_scale : float</span>
+<span class="sd">        Scale to be used during verticality computation to define a </span>
+<span class="sd">        neighbourhood arounda given point. Verticality will be computed from </span>
+<span class="sd">        the structure tensor of said neighbourhood via eigendecomposition.</span>
+<span class="sd">    vert_threshold : float</span>
+<span class="sd">        Minimum verticality value associated to a point to consider it as part </span>
+<span class="sd">        of a stem.</span>
+<span class="sd">    eps : float</span>
+<span class="sd">        Refer to DBSCAN documentation.</span>
+<span class="sd">    n_points : int</span>
+<span class="sd">        Minimum number of points in a cluster for it to be considered as a </span>
+<span class="sd">        potential stem.</span>
+<span class="sd">    resolution_xy : float</span>
+<span class="sd">        (x, y) voxel resolution.</span>
+<span class="sd">    resolution_z : float</span>
+<span class="sd">        (z) voxel resolution.</span>
+<span class="sd">    n_digits : int</span>
+<span class="sd">        Number of digits dedicated to each coordinate ((x), (y) or (z)) during </span>
+<span class="sd">        the generation of each point code.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    clust_stripe: numpy.ndarray</span>
+<span class="sd">        Point cloud containing the points from the stripe that are considered </span>
+<span class="sd">        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and </span>
+<span class="sd">        a 4th column containing the cluster ID of the cluster that each point </span>
+<span class="sd">        belongs to.</span>
+<span class="sd">    t1 : float</span>
+<span class="sd">        Time spent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; -Computing verticality...&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Call to &#39;voxelate&#39; function to voxelate the cloud.</span>
+    <span class="n">voxelated_stripe</span><span class="p">,</span> <span class="n">vox_to_stripe_ind</span><span class="p">,</span> <span class="n">stripe_to_vox_ind</span> <span class="o">=</span> <span class="n">voxelate</span><span class="p">(</span>
+        <span class="n">stripe</span><span class="p">,</span> <span class="n">resolution_xy</span><span class="p">,</span> <span class="n">resolution_z</span><span class="p">,</span> <span class="n">n_digits</span><span class="p">,</span> <span class="n">with_n_points</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Computation of verticality values associated to voxels using </span>
+    <span class="c1"># &#39;compute_features&#39; function. It needs a vicinity radius, provided by </span>
+    <span class="c1"># &#39;vert_scale&#39;.</span>
+    <span class="n">vert_values</span> <span class="o">=</span> <span class="n">jak</span><span class="o">.</span><span class="n">compute_features</span><span class="p">(</span>
+        <span class="n">voxelated_stripe</span><span class="p">,</span> <span class="n">search_radius</span><span class="o">=</span><span class="n">vert_scale</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;verticality&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">elapsed</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">elapsed</span>
+
+    <span class="c1"># Verticality values are appended to the ORIGINAL cloud, using voxel-to-</span>
+    <span class="c1"># original-cloud indexes.</span>
+    <span class="n">vert_stripe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stripe</span><span class="p">,</span> <span class="n">vert_values</span><span class="p">[</span><span class="n">vox_to_stripe_ind</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Filtering of points that were in voxels whose verticality value is under </span>
+    <span class="c1"># the threshold. Output is a filtered cloud.</span>
+    <span class="n">filt_stripe</span> <span class="o">=</span> <span class="n">vert_stripe</span><span class="p">[</span><span class="n">vert_stripe</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">vert_treshold</span><span class="p">]</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; -Clustering...&quot;</span><span class="p">)</span>
+
+    <span class="c1"># The filtered cloud is voxelated.</span>
+    <span class="n">vox_filt_stripe</span><span class="p">,</span> <span class="n">vox_to_filt_stripe_ind</span><span class="p">,</span> <span class="n">filt_stripe_to_vox_ind</span> <span class="o">=</span> <span class="n">voxelate</span><span class="p">(</span>
+        <span class="n">filt_stripe</span><span class="p">,</span> <span class="n">resolution_xy</span><span class="p">,</span> <span class="n">resolution_z</span><span class="p">,</span> <span class="n">n_digits</span><span class="p">,</span> <span class="n">with_n_points</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Clusterization of the voxelated cloud obtained from the filtered cloud.</span>
+    <span class="n">clustering</span> <span class="o">=</span> <span class="n">DBSCAN</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vox_filt_stripe</span><span class="p">)</span>
+
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">elapsed</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">elapsed</span> <span class="o">+</span> <span class="n">t1</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; -Extracting &#39;candidate&#39; stems...&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Cluster labels are appended to the FILTERED cloud. They map each point to</span>
+    <span class="c1"># the cluster they belong to, according to the clustering algorithm.</span>
+    <span class="n">vox_filt_lab_stripe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">filt_stripe</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">vox_to_filt_stripe_ind</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, </span>
+    <span class="c1"># K = &#39;number of clusters&#39;.</span>
+    <span class="n">cluster_id</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Filtering of labels associated only to clusters that contain a minimum </span>
+    <span class="c1"># number of points.</span>
+    <span class="n">large_clusters</span> <span class="o">=</span> <span class="n">cluster_id</span><span class="p">[</span><span class="n">K</span> <span class="o">&gt;</span> <span class="n">n_points</span><span class="p">]</span>
+
+    <span class="c1"># ID = -1 is always created by DBSCAN() to include points that were not </span>
+    <span class="c1"># included in any cluster.</span>
+    <span class="n">large_clusters</span> <span class="o">=</span> <span class="n">large_clusters</span><span class="p">[</span><span class="n">large_clusters</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Removing the points that are not in valid clusters.</span>
+    <span class="n">clust_stripe</span> <span class="o">=</span> <span class="n">vox_filt_lab_stripe</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">vox_filt_lab_stripe</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">large_clusters</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">large_clusters</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">elapsed</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">elapsed</span> <span class="o">+</span> <span class="n">t1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">t1</span><span class="p">,</span> <span class="s2">&quot;s per iteration&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   &quot;</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="s2">&quot; clusters&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">clust_stripe</span><span class="p">,</span> <span class="n">t1</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># verticality_clustering</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="verticality_clustering"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.stripe.verticality_clustering">[docs]</a><span class="k">def</span> <span class="nf">verticality_clustering</span><span class="p">(</span>
+    <span class="n">stripe</span><span class="p">,</span>
+    <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">vert_treshold</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+    <span class="n">eps_dbscan</span><span class="o">=</span><span class="mf">0.037</span><span class="p">,</span>
+    <span class="n">n_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">n_iter</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">resolution_xy</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+    <span class="n">resolution_z</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+    <span class="n">n_digits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function implements a for loop that iteratively calls </span>
+<span class="sd">    verticality_clustering_iteration, &#39;peeling off&#39; the stems.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stripe : numpy.ndarray</span>
+<span class="sd">        The point cloud containing the stripe. It is expected to have X, Y, Z0</span>
+<span class="sd">        fields. 3D or higher array containing data with `float` type.</span>
+<span class="sd">    scale : float</span>
+<span class="sd">        Scale to be used during verticality computation to define a </span>
+<span class="sd">        neighbourhood arounda given point. Verticality will be computed from </span>
+<span class="sd">        the structure tensor of said neighbourhood via eigendecomposition.</span>
+<span class="sd">        Defaults to 0.1.</span>
+<span class="sd">    vert_threshold : float</span>
+<span class="sd">        Minimum verticality value associated to a point to consider it as part </span>
+<span class="sd">        of a stem. Defaults to 0.7.</span>
+<span class="sd">    eps : float</span>
+<span class="sd">        Refer to DBSCAN documentation. Defaults to 0.037.</span>
+<span class="sd">    n_points : int</span>
+<span class="sd">        Minimum number of points in a cluster for it to be considered as a </span>
+<span class="sd">        potential stem. Defaults to 1000.</span>
+<span class="sd">    n_iter : int</span>
+<span class="sd">        Number of iterations of &#39;peeling&#39;. Defaults to 2.</span>
+<span class="sd">    resolution_xy : float</span>
+<span class="sd">        (x, y) voxel resolution. Defaults to 0.02.</span>
+<span class="sd">    resolution_z : float</span>
+<span class="sd">        (z) voxel resolution. Defaults to 0.02.</span>
+<span class="sd">    n_digits : int</span>
+<span class="sd">        Number of digits dedicated to each coordinate ((x), (y) or (z)) during </span>
+<span class="sd">        the generation of each point code. Defaults to 5.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    clust_stripe : numpy.ndarray</span>
+<span class="sd">        Point cloud containing the points from the stripe that are considered </span>
+<span class="sd">        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and </span>
+<span class="sd">        a 4th column containing the cluster ID of the cluster that each point </span>
+<span class="sd">        belongs to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># This first if loop is just a fix that allows to compute everything </span>
+    <span class="c1"># ignoring verticality. It should be addressed as it currently computes </span>
+    <span class="c1"># verticality when n_iter = 0 and that should not happen (although, in </span>
+    <span class="c1"># practice, n_iter should never be 0). It does not provide wrong results </span>
+    <span class="c1"># but it slows down the process needlessly.</span>
+    <span class="k">if</span> <span class="n">n_iter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">vert_treshold</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Basically, use verticality_clustering as many times as defined by n_iter</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iteration number&quot;</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;out of&quot;</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">total_t</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">aux_stripe</span> <span class="o">=</span> <span class="n">stripe</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">aux_stripe</span> <span class="o">=</span> <span class="n">clust_stripe</span>
+        <span class="n">clust_stripe</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">verticality_clustering_iteration</span><span class="p">(</span>
+            <span class="n">aux_stripe</span><span class="p">,</span>
+            <span class="n">scale</span><span class="p">,</span>
+            <span class="n">vert_treshold</span><span class="p">,</span>
+            <span class="n">eps_dbscan</span><span class="p">,</span>
+            <span class="n">n_points</span><span class="p">,</span>
+            <span class="n">resolution_xy</span><span class="p">,</span>
+            <span class="n">resolution_z</span><span class="p">,</span>
+            <span class="n">n_digits</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">total_t</span> <span class="o">=</span> <span class="n">total_t</span> <span class="o">+</span> <span class="n">t</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">total_t</span><span class="p">,</span> <span class="s2">&quot;s in total (whole process)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">clust_stripe</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dendromatics.draw &mdash; dendromatics 00.00.01 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dendromatics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dendromatics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dendromatics.draw</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dendromatics.draw</h1><div class="highlight"><pre>
+<span></span><span class="c1">#### IMPORTS ####</span>
+<span class="kn">import</span> <span class="nn">laspy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># draw_circles</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="draw_circles"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.draw.draw_circles">[docs]</a><span class="k">def</span> <span class="nf">draw_circles</span><span class="p">(</span>
+    <span class="n">X_c</span><span class="p">,</span>
+    <span class="n">Y_c</span><span class="p">,</span>
+    <span class="n">R</span><span class="p">,</span>
+    <span class="n">sections</span><span class="p">,</span>
+    <span class="n">check_circle</span><span class="p">,</span>
+    <span class="n">sector_perct</span><span class="p">,</span>
+    <span class="n">n_points_in</span><span class="p">,</span>
+    <span class="n">tree_vector</span><span class="p">,</span>
+    <span class="n">outliers</span><span class="p">,</span>
+    <span class="n">filename_las</span><span class="p">,</span>
+    <span class="n">R_min</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">R_max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">n_sectors</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">min_n_sectors</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="n">circa_points</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function generates points that comprise the circles computed by </span>
+<span class="sd">    fit_circle_check function, so sections can be visualized. The circles are </span>
+<span class="sd">    then saved in a LAS file, along some descriptive fields. Each circle </span>
+<span class="sd">    corresponds on a one-to-one basis to the sections described by the user.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (x) coordinates of the center of the sections.</span>
+<span class="sd">    Y_c : numpy.ndarray</span>
+<span class="sd">        Matrix containing (y) coordinates of the center of the sections.</span>
+<span class="sd">    R : numpy.ndarray</span>
+<span class="sd">        Vector containing section radia.</span>
+<span class="sd">    sections : numpy.ndarray</span>
+<span class="sd">        Vector containing section heights (normalized heights).</span>
+<span class="sd">    section_perct : numpy.ndarray</span>
+<span class="sd">        Matrix containing the percentage of occupied sectors.</span>
+<span class="sd">    n_points_in : numpy.ndarray</span>
+<span class="sd">        Matrix containing the number of points in the inner circumferences.</span>
+<span class="sd">    tree_vector : numpy.ndarray</span>
+<span class="sd">        detected_trees output from individualize_trees.</span>
+<span class="sd">    outliers : numpy.ndarray</span>
+<span class="sd">        Vector containing the &#39;outlier probability&#39; of each section.</span>
+<span class="sd">    filename_las : char</span>
+<span class="sd">        File name for the output file.</span>
+<span class="sd">    R_min : float</span>
+<span class="sd">        Refer to fit_circle_check in &#39;sections&#39; module. Defaults to 0.03.</span>
+<span class="sd">    R_max : float</span>
+<span class="sd">        Refer to fit_circle_check in &#39;sections&#39; module. Defaults to 0.5.</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        Refer to fit_circle_check in &#39;sections&#39; module. Defaults to 5.</span>
+<span class="sd">    n_sectors : int</span>
+<span class="sd">        Refer to fit_circle_check in &#39;sections&#39; module. Defaults to 16.</span>
+<span class="sd">    min_n_sectors: int</span>
+<span class="sd">        Refer to fit_circle_check in sections module. Defaults to 9.</span>
+<span class="sd">    circa_points : int</span>
+<span class="sd">        Number of points used to draw each circle. Defaults to 200.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Empty vector to be filled. It has as many elements as the vector containing</span>
+    <span class="c1"># the center of the circles for a given tree.</span>
+    <span class="n">tree_section</span> <span class="o">=</span> <span class="n">X_c</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Empty array that will contain the information about each section, to then</span>
+    <span class="c1"># be used to complete the .LAS file data.</span>
+    <span class="n">section_c_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">tree_section</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">tree_section</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">9</span><span class="p">])</span>
+
+    <span class="c1"># Auxiliar index indicating which section is in use.</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Double for loop to iterate through each combination of coordinates</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tree_section</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tree_section</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># If distance is within range (0, 1), then proceed.</span>
+            <span class="k">if</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Filling the array with the appropiate data</span>
+                <span class="n">section_c_xyz</span><span class="p">[</span><span class="n">section</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">X_c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">Y_c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">sections</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+                    <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">check_circle</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">sector_perct</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">n_points_in</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">sections</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
+                    <span class="n">outliers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                <span class="p">]</span>
+
+                <span class="n">section</span> <span class="o">=</span> <span class="n">section</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Just the centers of each filled section</span>
+    <span class="n">centers</span> <span class="o">=</span> <span class="n">section_c_xyz</span><span class="p">[:</span><span class="n">section</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Number of centers</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Empty vector to be filled with the coordinates of each circle.</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">circa_points</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+
+    <span class="c1"># User-create function to tranform polar coordinates to cartesian coordinates.</span>
+    <span class="k">def</span> <span class="nf">polar_to_cart</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+    <span class="c1"># For loop to iterate over each circle and compute their (x, y) coordinates.</span>
+    <span class="c1"># (z) coordinates are already given by the user.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">circa_points</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">circa_points</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">circa_points</span><span class="p">)</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">polar_to_cart</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># X</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Y</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># check</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>  <span class="c1"># Z0</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>  <span class="c1"># Tree ID</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># sector occupancy</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>  <span class="c1"># points in inner circle</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>  <span class="c1"># Z0</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># Diameter</span>
+        <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>  <span class="c1"># outlier probability</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_n_sectors</span> <span class="o">/</span> <span class="n">n_sectors</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="o">|</span> <span class="p">(</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="o">|</span> <span class="p">(</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">)</span>
+            <span class="o">|</span> <span class="p">(</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">R_min</span><span class="p">)</span>
+            <span class="o">|</span> <span class="p">(</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">R_max</span><span class="p">)</span>
+        <span class="p">):</span>  <span class="c1"># only happens when which_dbh == 0 # which_valid_points should be used here</span>
+            <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># does not pass quality checks</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># passes quality checks</span>
+
+    <span class="c1"># LAS file containing circle coordinates.</span>
+    <span class="n">las_circ</span> <span class="o">=</span> <span class="n">laspy</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">point_format</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">file_version</span><span class="o">=</span><span class="s2">&quot;1.2&quot;</span><span class="p">)</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># All extra fields.</span>
+
+    <span class="c1"># las_circ.add_extra_dim(laspy.ExtraBytesParams(name = &quot;check&quot;, type = np.int32))</span>
+    <span class="c1"># las_circ.check = coords[:, 3]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span><span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tree_ID&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">tree_ID</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span>
+        <span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sector_occupancy_percent&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">sector_occupancy_percent</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span>
+        <span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pts_inner_circle&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">pts_inner_circle</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span><span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Z0&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">Z0</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span><span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Diameter&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">Diameter</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span><span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outlier_prob&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">outlier_prob</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span><span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;quality&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">quality</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">10</span><span class="p">]</span>
+
+    <span class="n">las_circ</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename_las</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_circ.las&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># draw_axes</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="draw_axes"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.draw.draw_axes">[docs]</a><span class="k">def</span> <span class="nf">draw_axes</span><span class="p">(</span>
+    <span class="n">tree_vector</span><span class="p">,</span>
+    <span class="n">filename_las</span><span class="p">,</span>
+    <span class="n">line_downstep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">line_upstep</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">stripe_lower_limit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">stripe_upper_limit</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+    <span class="n">point_interval</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">X_field</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">Y_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">Z_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This function generates points that comprise the axes computed by </span>
+<span class="sd">    individualize_trees, so that they can be visualized. The axes are then </span>
+<span class="sd">    saved in a LAS file, along some descriptive fields. Each axis corresponds </span>
+<span class="sd">    on a one-to-one basis to the individualized trees.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tree_vector : numpy.ndarray</span>
+<span class="sd">        detected_trees output from individualize_trees.</span>
+<span class="sd">    line_downstep : float</span>
+<span class="sd">        From the stripe centroid, how much (downwards direction) will the drawn</span>
+<span class="sd">        axes extend (units is meters). Defaults to 0.5. </span>
+<span class="sd">    line_upstep : float</span>
+<span class="sd">        From the stripe centroid, how much (upwards direction) will the drawn</span>
+<span class="sd">        axes extend (units is meters). Defaults to 10.0.</span>
+<span class="sd">    stripe_lower_limit : float</span>
+<span class="sd">        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.5. </span>
+<span class="sd">    stripe_upper_limit : float</span>
+<span class="sd">        Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.</span>
+<span class="sd">    point_interval : float</span>
+<span class="sd">        Step value used to draw points (unit is meters). Defaults to 0.01.</span>
+<span class="sd">    filename_las : char</span>
+<span class="sd">        File name for the output file.</span>
+<span class="sd">    X_field : int</span>
+<span class="sd">        Index at which (x) coordinate is stored. Defaults to 0.</span>
+<span class="sd">    Y_field : int</span>
+<span class="sd">        Index at which (y) coordinate is stored. Defaults to 1.</span>
+<span class="sd">    Z_field : int</span>
+<span class="sd">        Index at which (z) coordinate is stored. Defaults to 2.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">stripe_centroid</span> <span class="o">=</span> <span class="p">(</span><span class="n">stripe_lower_limit</span> <span class="o">+</span> <span class="n">stripe_upper_limit</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">mean_descend</span> <span class="o">=</span> <span class="n">stripe_centroid</span> <span class="o">+</span> <span class="n">line_downstep</span>
+    <span class="n">mean_rise</span> <span class="o">=</span> <span class="n">line_upstep</span> <span class="o">-</span> <span class="n">stripe_centroid</span>
+
+    <span class="n">up_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mean_rise</span> <span class="o">/</span> <span class="n">point_interval</span><span class="p">)</span>
+    <span class="n">down_iter</span> <span class="o">=</span> <span class="n">mean_descend</span> <span class="o">/</span> <span class="n">point_interval</span>
+
+    <span class="n">axes_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">tree_vector</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">up_iter</span> <span class="o">+</span> <span class="n">down_iter</span><span class="p">)),</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">tilt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">tree_vector</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">up_iter</span> <span class="o">+</span> <span class="n">down_iter</span><span class="p">)))</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tree_vector</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp2</span><span class="p">(</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">vector</span> <span class="o">=</span> <span class="o">-</span><span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vector</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="n">axes_points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">up_iter</span> <span class="o">+</span> <span class="n">down_iter</span><span class="p">),</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">down_iter</span><span class="p">,</span> <span class="n">up_iter</span><span class="p">),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">down_iter</span><span class="p">,</span> <span class="n">up_iter</span><span class="p">),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">down_iter</span><span class="p">,</span> <span class="n">up_iter</span><span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+                <span class="o">*</span> <span class="n">vector</span>
+                <span class="o">*</span> <span class="n">point_interval</span>
+                <span class="o">+</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">tilt</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="n">up_iter</span> <span class="o">+</span> <span class="n">down_iter</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tree_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">ind</span> <span class="o">+</span> <span class="n">up_iter</span> <span class="o">+</span> <span class="n">down_iter</span>
+
+    <span class="n">axes_points</span> <span class="o">=</span> <span class="n">axes_points</span><span class="p">[:</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">(</span><span class="n">ind</span><span class="p">),</span> <span class="p">:]</span>
+    <span class="n">las_axes</span> <span class="o">=</span> <span class="n">laspy</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">point_format</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">file_version</span><span class="o">=</span><span class="s2">&quot;1.2&quot;</span><span class="p">)</span>
+    <span class="n">las_axes</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">axes_points</span><span class="p">[:,</span> <span class="n">X_field</span><span class="p">]</span>
+    <span class="n">las_axes</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">axes_points</span><span class="p">[:,</span> <span class="n">Y_field</span><span class="p">]</span>
+    <span class="n">las_axes</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">axes_points</span><span class="p">[:,</span> <span class="n">Z_field</span><span class="p">]</span>
+    <span class="n">las_axes</span><span class="o">.</span><span class="n">add_extra_dim</span><span class="p">(</span>
+        <span class="n">laspy</span><span class="o">.</span><span class="n">ExtraBytesParams</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tilting_degree&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">las_axes</span><span class="o">.</span><span class="n">tilting_degree</span> <span class="o">=</span> <span class="n">tilt</span>
+
+    <span class="n">las_axes</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename_las</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_axes.las&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

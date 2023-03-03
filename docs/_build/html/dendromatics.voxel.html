@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dendromatics.voxel package &mdash; dendromatics 00.00.01 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dendromatics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">dendromatics.voxel package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-dendromatics.voxel.voxel">dendromatics.voxel.voxel module</a><ul>
+<li><a class="reference internal" href="#dendromatics.voxel.voxel.voxelate"><code class="docutils literal notranslate"><span class="pre">voxelate()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics.voxel">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dendromatics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dendromatics.voxel package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dendromatics.voxel.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dendromatics-voxel-package">
+<h1>dendromatics.voxel package<a class="headerlink" href="#dendromatics-voxel-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dendromatics.voxel.voxel">
+<span id="dendromatics-voxel-voxel-module"></span><h2>dendromatics.voxel.voxel module<a class="headerlink" href="#module-dendromatics.voxel.voxel" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendromatics.voxel.voxel.voxelate">
+<span class="sig-prename descclassname"><span class="pre">dendromatics.voxel.voxel.</span></span><span class="sig-name descname"><span class="pre">voxelate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/voxel/voxel.html#voxelate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.voxel.voxel.voxelate" title="Permalink to this definition"></a></dt>
+<dd><p>Function used to voxelate point clouds. It allows to use a different
+resolution for (z), but (x, y) will always share the same resolution. It
+also allows to revert the process, by creating a unique code for each point
+in the point cloud, thus voxelated cloud can be seamlessly reverted to the
+original point cloud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud to be voxelated. It is expected to have X, Y, Z fields.
+3D or higher array containing data with <cite>float</cite> type.</p></li>
+<li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution.</p></li>
+<li><p><strong>resolution_z</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
+<li><p>voxel resolution.</p></li>
+</ol>
+</p></li>
+<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
+the generation of each point code. Defaults to 5.</p></li>
+<li><p><strong>X_field</strong> (<em>int</em>) – Index at which (x) coordinate is stored. Defaults to 0.</p></li>
+<li><p><strong>Y_field</strong> (<em>int</em>) – Index at which (y) coordinate is stored. Defaults to 1.</p></li>
+<li><p><strong>Z_field</strong> (<em>int</em>) – Index at which (z) coordinate is stored. Defaults to 2.</p></li>
+<li><p><strong>with_n_points</strong> (<em>boolean</em>) – If True, output voxelated cloud will have a field including the number
+of points that each voxel contains. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>voxelated_cloud</strong> (<em>numpy.ndarray</em>) – The voxelated cloud. It consists of 3 columns, each with (x), (y) and
+(z) coordinates, and an optional 4th column having the number of points
+included in each voxel if with_n_points = True.</p></li>
+<li><p><strong>vox_to_cloud_ind</strong> (<em>numpy.ndarray</em>) – Vector containing the indexes to revert to the original point cloud
+from the voxelated cloud.</p></li>
+<li><p><strong>cloud_to_vox_ind</strong> (<em>numpy.ndarray</em>) – Vector containing the indexes to directly go from the original point
+cloud to the voxelated cloud.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dendromatics.voxel">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dendromatics.voxel" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
