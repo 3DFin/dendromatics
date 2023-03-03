@@ -2,9 +2,9 @@
 import laspy
 import numpy as np
 
-# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # draw_circles
-# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def draw_circles(
@@ -25,42 +25,51 @@ def draw_circles(
     min_n_sectors=9,
     circa_points=200,
 ):
+    """ This function generates points that comprise the circles computed by 
+    fit_circle_check function, so sections can be visualized. The circles are 
+    then saved in a LAS file, along some descriptive fields. Each circle 
+    corresponds on a one-to-one basis to the sections described by the user.
+    
+    Parameters
+    ----------
+    X_c : numpy.ndarray
+        Matrix containing (x) coordinates of the center of the sections.
+    Y_c : numpy.ndarray
+        Matrix containing (y) coordinates of the center of the sections.
+    R : numpy.ndarray
+        Vector containing section radia.
+    sections : numpy.ndarray
+        Vector containing section heights (normalized heights).
+    section_perct : numpy.ndarray
+        Matrix containing the percentage of occupied sectors.
+    n_points_in : numpy.ndarray
+        Matrix containing the number of points in the inner circumferences.
+    tree_vector : numpy.ndarray
+        detected_trees output from individualize_trees.
+    outliers : numpy.ndarray
+        Vector containing the 'outlier probability' of each section.
+    filename_las : char
+        File name for the output file.
+    R_min : float
+        Refer to fit_circle_check in 'sections' module. Defaults to 0.03.
+    R_max : float
+        Refer to fit_circle_check in 'sections' module. Defaults to 0.5.
+    threshold : float
+        Refer to fit_circle_check in 'sections' module. Defaults to 5.
+    n_sectors : int
+        Refer to fit_circle_check in 'sections' module. Defaults to 16.
+    min_n_sectors: int
+        Refer to fit_circle_check in sections module. Defaults to 9.
+    circa_points : int
+        Number of points used to draw each circle. Defaults to 200.
     """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
 
-    This function generates points that comprise the circles computed by fit_circle function,
-    so sections can be visualized.
-    The circles are then saved in a LAS file, along some descriptive fields.
-    Each circle corresponds on a one-to-one basis to the sections described by the user (they are input by 'sections' parameter).
-
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    X_c: numpy array. Matrix containing (x) coordinates of the center of the sections.
-    Y_c: numpy array. Matrix containing (y) coordinates of the center of the sections.
-    R: numpy array. Vector containing section radia.
-    sections: numpy array. Vector containing section heights (normalized heights).
-    section_perct: numpy array. Matrix containing the percentage of occupied sectors.
-    n_points_in: numpy array. Matrix containing the number of points in the inner circumferences.
-    tree_vector: numpy array. detected_trees output from individualize_trees.
-    outliers: numpy array. Vector containing the 'outlier probability' of each section.
-    filename_las: char. File name for the output file.
-    circa_points: int. Number of points to draw each circle.
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    Output is a LAS file containing the circles.
-    """
-
-    # Empty vector to be filled. It has as many elements as the vector containing the center of the circles for a given tree.
+    # Empty vector to be filled. It has as many elements as the vector containing
+    # the center of the circles for a given tree.
     tree_section = X_c.shape
 
-    # Empty array that will contain the information about each section, to then be used to complete the .LAS file data.
+    # Empty array that will contain the information about each section, to then
+    # be used to complete the .LAS file data.
     section_c_xyz = np.zeros([tree_section[0] * tree_section[1], 9])
 
     # Auxiliar index indicating which section is in use.
@@ -101,7 +110,8 @@ def draw_circles(
         y = rho * np.sin(theta)
         return x, y
 
-    # For loop to iterate over each circle and compute their (x, y) coordinates. (z) coordinates are already given by the user.
+    # For loop to iterate over each circle and compute their (x, y) coordinates.
+    # (z) coordinates are already given by the user.
     for i in range(n):
         start = i * circa_points
         end = (i + 1) * circa_points
@@ -170,18 +180,16 @@ def draw_circles(
     las_circ.write(filename_las[:-4] + "_circ.las")
 
 
-# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # draw_axes
-# -------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# Function that draws the axes computed for each tree.
+# -----------------------------------------------------------------------------
 
 
 def draw_axes(
     tree_vector,
     filename_las,
     line_downstep=0.5,
-    line_upstep=10,
+    line_upstep=10.0,
     stripe_lower_limit=0.5,
     stripe_upper_limit=2.5,
     point_interval=0.01,
@@ -189,37 +197,35 @@ def draw_axes(
     Y_field=1,
     Z_field=2,
 ):
-    """
-    -----------------------------------------------------------------------------
-    ------------------           General description           ------------------
-    -----------------------------------------------------------------------------
+    """ This function generates points that comprise the axes computed by 
+    individualize_trees, so that they can be visualized. The axes are then 
+    saved in a LAS file, along some descriptive fields. Each axis corresponds 
+    on a one-to-one basis to the individualized trees.
 
-    This function generates points that comprise the axes computed by individualize_trees,
-    so that they can be visualized.
-    The axes are then saved in a LAS file, along some descriptive fields.
-    Each circle corresponds on a one-to-one basis to the individualized trees.
-
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    tree_vector: numpy array. detected_trees output from individualize_trees.
-    line_downstep: float. It will be used to derive the position from which steps will start to locate points downstep the stem centroids.
-    line_upstep: float. It will be used to derive the position from which steps will start to locate points upstep the stem centroids.
-    stripe_lower_limit: float. Lower point of the axis drawn.
-    stripe_upper_limit: float. Upper point of the axis drawn.
-    point_interval: float. Step value used to draw points.
-    filename_las: char. File name for the output file.
-    X_field: int. default value: 0. Index at which (x) coordinate is stored.
-    Y_field: int. default value: 1. Index at which (y) coordinate is stored.
-    Z_field: int. default value: 2. Index at which (z) coordinate is stored.
-
-
-    -----------------------------------------------------------------------------
-    -----------------                 Outputs                  ------------------
-    -----------------------------------------------------------------------------
-
-    Output is a LAS file containing the axes.
+    Parameters
+    ----------
+    tree_vector : numpy.ndarray
+        detected_trees output from individualize_trees.
+    line_downstep : float
+        From the stripe centroid, how much (downwards direction) will the drawn
+        axes extend (units is meters). Defaults to 0.5. 
+    line_upstep : float
+        From the stripe centroid, how much (upwards direction) will the drawn
+        axes extend (units is meters). Defaults to 10.0.
+    stripe_lower_limit : float
+        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.5. 
+    stripe_upper_limit : float
+        Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.
+    point_interval : float
+        Step value used to draw points (unit is meters). Defaults to 0.01.
+    filename_las : char
+        File name for the output file.
+    X_field : int
+        Index at which (x) coordinate is stored. Defaults to 0.
+    Y_field : int
+        Index at which (y) coordinate is stored. Defaults to 1.
+    Z_field : int
+        Index at which (z) coordinate is stored. Defaults to 2.
     """
 
     stripe_centroid = (stripe_lower_limit + stripe_upper_limit) / 2
