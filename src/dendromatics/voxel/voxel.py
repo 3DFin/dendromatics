@@ -96,14 +96,16 @@ def voxelate(
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: encoding")
 
-    # Vector that contains the ordered code. It will be used to sort the code to then sort the cloud.
+    # Vector that contains the ordered code. It will be used to sort the code to
+    # then sort the cloud.
     vox_order_ind = np.argsort(code)
 
     if not silent:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: 1st sorting")
 
-    # Vector that contains the indexes of said code. It will be used to restore the order of points within the original cloud.
+    # Vector that contains the indexes of said code. It will be used to restore
+    # the order of points within the original cloud.
     vox_order_ind_inverse = np.argsort(vox_order_ind)
 
     # Sorted code.
@@ -114,8 +116,10 @@ def voxelate(
         print("        ", "%.2f" % elapsed, "s: 2nd sorting")
 
     # Unique values of said 'pixel code':
-    # unique_code: Unique values. They contain codified coordinates of which will later be the voxel centroids.
-    # vox_first_point_id. Index corresponding to the point of each voxel that corresponds to the first point, among those in the same voxel, in the original cloud.
+    # unique_code: Unique values. They contain codified coordinates of which will
+    #   later be the voxel centroids.
+    # vox_first_point_id. Index corresponding to the point of each voxel that 
+    #   corresponds to the first point, among those in the same voxel, in the original cloud.
     # inverse_id: Indexes that allow to revert the voxelization.
     # vox_points: Number of points in each voxel
     unique_code, vox_first_point_id, inverse_id, vox_points = np.unique(
@@ -126,10 +130,12 @@ def voxelate(
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: extracting uniques values")
 
-    # Indexes that directly associate each voxel to its corresponding points in the original cloud (unordered)
+    # Indexes that directly associate each voxel to its corresponding points in 
+    # the original cloud (unordered)
     vox_to_cloud_ind = inverse_id[vox_order_ind_inverse]
 
-    # Indexes that directly associate each point in the original, unordered cloud to its corresponding voxel
+    # Indexes that directly associate each point in the original, unordered cloud
+    # to its corresponding voxel
     cloud_to_vox_ind = vox_order_ind[vox_first_point_id]
 
     # Empty array to be filled with voxel coordinates
@@ -148,7 +154,8 @@ def voxelate(
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: decomposing code")
 
-    # Transformation of x, z, y codes into X, Y, X voxel coordinates, by scaling, translating and centering.
+    # Transformation of x, z, y codes into X, Y, X voxel coordinates, by scaling,
+    # translating and centering.
     voxelated_cloud[:, Z_field] = (
         voxelated_cloud[:, Z_field] * resolution_z
         + cloud_min[Z_field]
@@ -165,7 +172,8 @@ def voxelate(
         + resolution_xy / 2
     )
 
-    # Boolean parameter that includes or not a 4th column with the number of points in each voxel
+    # Boolean parameter that includes or not a 4th column with the number of 
+    # points in each voxel
     if with_n_points == True:
         voxelated_cloud = np.append(voxelated_cloud, vox_points[:, np.newaxis], axis=1)
 
@@ -192,5 +200,4 @@ def voxelate(
     cloud[:, Y_field] = cloud[:, Y_field] + cloud_min[Y_field]
     cloud[:, Z_field] = cloud[:, Z_field] + cloud_min[Z_field]
 
-    # Output. It consists in 3 arrays: - voxelated cloud (X, Y, Z, n_points) - voxel to original cloud indexes - original to voxel cloud indexes.
     return voxelated_cloud, vox_to_cloud_ind, cloud_to_vox_ind
