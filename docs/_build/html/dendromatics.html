@@ -1,198 +1,91 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dendromatics package &mdash; dendromatics 00.00.01 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/js/theme.js"></script>
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Functions &#8212; dendromatics 00.00.01 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-</head>
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">dendromatics 00.00.01 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Functions</a></li> 
+      </ul>
+    </div>  
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            dendromatics
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">dendromatics package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-dendromatics.draw">dendromatics.draw module</a><ul>
-<li><a class="reference internal" href="#dendromatics.draw.draw_axes"><code class="docutils literal notranslate"><span class="pre">draw_axes()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.draw.draw_circles"><code class="docutils literal notranslate"><span class="pre">draw_circles()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dendromatics.ground">dendromatics.ground module</a><ul>
-<li><a class="reference internal" href="#dendromatics.ground.clean_cloth"><code class="docutils literal notranslate"><span class="pre">clean_cloth()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.ground.clean_ground"><code class="docutils literal notranslate"><span class="pre">clean_ground()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.ground.generate_dtm"><code class="docutils literal notranslate"><span class="pre">generate_dtm()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.ground.normalize_heights"><code class="docutils literal notranslate"><span class="pre">normalize_heights()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dendromatics.individualize">dendromatics.individualize module</a><ul>
-<li><a class="reference internal" href="#dendromatics.individualize.compute_axes"><code class="docutils literal notranslate"><span class="pre">compute_axes()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.individualize.compute_heights"><code class="docutils literal notranslate"><span class="pre">compute_heights()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.individualize.individualize_trees"><code class="docutils literal notranslate"><span class="pre">individualize_trees()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dendromatics.sections">dendromatics.sections module</a><ul>
-<li><a class="reference internal" href="#dendromatics.sections.compute_sections"><code class="docutils literal notranslate"><span class="pre">compute_sections()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.fit_circle"><code class="docutils literal notranslate"><span class="pre">fit_circle()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.fit_circle_check"><code class="docutils literal notranslate"><span class="pre">fit_circle_check()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.inner_circle"><code class="docutils literal notranslate"><span class="pre">inner_circle()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.point_clustering"><code class="docutils literal notranslate"><span class="pre">point_clustering()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.sector_occupancy"><code class="docutils literal notranslate"><span class="pre">sector_occupancy()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.tilt_detection"><code class="docutils literal notranslate"><span class="pre">tilt_detection()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.sections.tree_locator"><code class="docutils literal notranslate"><span class="pre">tree_locator()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dendromatics.stripe">dendromatics.stripe module</a><ul>
-<li><a class="reference internal" href="#dendromatics.stripe.verticality_clustering"><code class="docutils literal notranslate"><span class="pre">verticality_clustering()</span></code></a></li>
-<li><a class="reference internal" href="#dendromatics.stripe.verticality_clustering_iteration"><code class="docutils literal notranslate"><span class="pre">verticality_clustering_iteration()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dendromatics">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">dendromatics</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">dendromatics package</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/dendromatics.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="dendromatics-package">
-<h1>dendromatics package<a class="headerlink" href="#dendromatics-package" title="Permalink to this heading"></a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dendromatics.voxel.html">dendromatics.voxel package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dendromatics.voxel.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dendromatics.voxel.html#module-dendromatics.voxel.voxel">dendromatics.voxel.voxel module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="dendromatics.voxel.html#dendromatics.voxel.voxel.voxelate"><code class="docutils literal notranslate"><span class="pre">voxelate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="dendromatics.voxel.html#module-dendromatics.voxel">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
-</section>
-<section id="module-dendromatics.draw">
-<span id="dendromatics-draw-module"></span><h2>dendromatics.draw module<a class="headerlink" href="#module-dendromatics.draw" title="Permalink to this heading"></a></h2>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h1>
+<section id="module-dendromatics.voxel.voxel">
+<span id="voxelization"></span><h2>Voxelization<a class="headerlink" href="#module-dendromatics.voxel.voxel" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dendromatics.draw.draw_axes">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.draw.</span></span><span class="sig-name descname"><span class="pre">draw_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename_las</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_downstep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_upstep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stripe_lower_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stripe_upper_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/draw.html#draw_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.draw.draw_axes" title="Permalink to this definition"></a></dt>
-<dd><p>This function generates points that comprise the axes computed by
-individualize_trees, so that they can be visualized. The axes are then
-saved in a LAS file, along some descriptive fields. Each axis corresponds
-on a one-to-one basis to the individualized trees.</p>
+<dt class="sig sig-object py" id="dendromatics.voxel.voxel.voxelate">
+<span class="sig-prename descclassname"><span class="pre">dendromatics.voxel.voxel.</span></span><span class="sig-name descname"><span class="pre">voxelate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/voxel/voxel.html#voxelate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.voxel.voxel.voxelate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used to voxelate point clouds. It allows to use a different
+resolution for (z), but (x, y) will always share the same resolution. It
+also allows to revert the process, by creating a unique code for each point
+in the point cloud, thus voxelated cloud can be seamlessly reverted to the
+original point cloud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tree_vector</strong> (<em>numpy.ndarray</em>) – detected_trees output from individualize_trees.</p></li>
-<li><p><strong>line_downstep</strong> (<em>float</em>) – From the stripe centroid, how much (downwards direction) will the drawn
-axes extend (units is meters). Defaults to 0.5.</p></li>
-<li><p><strong>line_upstep</strong> (<em>float</em>) – From the stripe centroid, how much (upwards direction) will the drawn
-axes extend (units is meters). Defaults to 10.0.</p></li>
-<li><p><strong>stripe_lower_limit</strong> (<em>float</em>) – Lower (vertical) limit of the stripe (units is meters). Defaults to 0.5.</p></li>
-<li><p><strong>stripe_upper_limit</strong> (<em>float</em>) – Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.</p></li>
-<li><p><strong>point_interval</strong> (<em>float</em>) – Step value used to draw points (unit is meters). Defaults to 0.01.</p></li>
-<li><p><strong>filename_las</strong> (<em>char</em>) – File name for the output file.</p></li>
+<li><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud to be voxelated. It is expected to have X, Y, Z fields.
+3D or higher array containing data with <cite>float</cite> type.</p></li>
+<li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution.</p></li>
+<li><p><strong>resolution_z</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
+<li><p>voxel resolution.</p></li>
+</ol>
+</p></li>
+<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
+the generation of each point code. Defaults to 5.</p></li>
 <li><p><strong>X_field</strong> (<em>int</em>) – Index at which (x) coordinate is stored. Defaults to 0.</p></li>
 <li><p><strong>Y_field</strong> (<em>int</em>) – Index at which (y) coordinate is stored. Defaults to 1.</p></li>
 <li><p><strong>Z_field</strong> (<em>int</em>) – Index at which (z) coordinate is stored. Defaults to 2.</p></li>
+<li><p><strong>with_n_points</strong> (<em>boolean</em>) – If True, output voxelated cloud will have a field including the number
+of points that each voxel contains. Defaults to True.</p></li>
 </ul>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dendromatics.draw.draw_circles">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.draw.</span></span><span class="sig-name descname"><span class="pre">draw_circles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sector_perct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outliers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename_las</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circa_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/draw.html#draw_circles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.draw.draw_circles" title="Permalink to this definition"></a></dt>
-<dd><p>This function generates points that comprise the circles computed by
-fit_circle_check function, so sections can be visualized. The circles are
-then saved in a LAS file, along some descriptive fields. Each circle
-corresponds on a one-to-one basis to the sections described by the user.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X_c</strong> (<em>numpy.ndarray</em>) – Matrix containing (x) coordinates of the center of the sections.</p></li>
-<li><p><strong>Y_c</strong> (<em>numpy.ndarray</em>) – Matrix containing (y) coordinates of the center of the sections.</p></li>
-<li><p><strong>R</strong> (<em>numpy.ndarray</em>) – Vector containing section radia.</p></li>
-<li><p><strong>sections</strong> (<em>numpy.ndarray</em>) – Vector containing section heights (normalized heights).</p></li>
-<li><p><strong>section_perct</strong> (<em>numpy.ndarray</em>) – Matrix containing the percentage of occupied sectors.</p></li>
-<li><p><strong>n_points_in</strong> (<em>numpy.ndarray</em>) – Matrix containing the number of points in the inner circumferences.</p></li>
-<li><p><strong>tree_vector</strong> (<em>numpy.ndarray</em>) – detected_trees output from individualize_trees.</p></li>
-<li><p><strong>outliers</strong> (<em>numpy.ndarray</em>) – Vector containing the ‘outlier probability’ of each section.</p></li>
-<li><p><strong>filename_las</strong> (<em>char</em>) – File name for the output file.</p></li>
-<li><p><strong>R_min</strong> (<em>float</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 0.03.</p></li>
-<li><p><strong>R_max</strong> (<em>float</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 0.5.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 5.</p></li>
-<li><p><strong>n_sectors</strong> (<em>int</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 16.</p></li>
-<li><p><strong>min_n_sectors</strong> (<em>int</em>) – Refer to fit_circle_check in sections module. Defaults to 9.</p></li>
-<li><p><strong>circa_points</strong> (<em>int</em>) – Number of points used to draw each circle. Defaults to 200.</p></li>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>voxelated_cloud</strong> (<em>numpy.ndarray</em>) – The voxelated cloud. It consists of 3 columns, each with (x), (y) and
+(z) coordinates, and an optional 4th column having the number of points
+included in each voxel if with_n_points = True.</p></li>
+<li><p><strong>vox_to_cloud_ind</strong> (<em>numpy.ndarray</em>) – Vector containing the indexes to revert to the original point cloud
+from the voxelated cloud.</p></li>
+<li><p><strong>cloud_to_vox_ind</strong> (<em>numpy.ndarray</em>) – Vector containing the indexes to directly go from the original point
+cloud to the voxelated cloud.</p></li>
 </ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
 <section id="module-dendromatics.ground">
-<span id="dendromatics-ground-module"></span><h2>dendromatics.ground module<a class="headerlink" href="#module-dendromatics.ground" title="Permalink to this heading"></a></h2>
+<span id="height-normalization"></span><h2>Height-normalization<a class="headerlink" href="#module-dendromatics.ground" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.ground.clean_cloth">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_cloth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtm_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_cloth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_cloth" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_cloth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtm_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_cloth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_cloth" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a Digital Terrain Model (DTM) and denoises it. This
 denoising is done via a 2 MADs criterion from the median height value of a
 neighbourhood of size 15.</p>
@@ -211,7 +104,7 @@ neighbourhood of size 15.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.ground.clean_ground">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_ground" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_ground" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a point cloud and denoises it via DBSCAN
 clustering. It first voxelates the point cloud into 0.15 m voxels, then
 clusters the voxel cloud and excludes clusters of size less than 2.</p>
@@ -232,7 +125,7 @@ the denoised points.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.ground.generate_dtm">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">generate_dtm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bSloopSmooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cloth_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classify_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exportCloth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#generate_dtm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.generate_dtm" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">generate_dtm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bSloopSmooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cloth_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classify_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exportCloth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#generate_dtm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.generate_dtm" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a point cloud and generates a Digital Terrain Model
 (DTM) based on its ground. It’s based on ‘Cloth Simulation Filter’ by
 W. Zhang et al., 2016 (<a class="reference external" href="http://www.mdpi.com/2072-4292/8/6/501/htm">http://www.mdpi.com/2072-4292/8/6/501/htm</a>),
@@ -262,7 +155,7 @@ non-ground parts. Refer to CSF documentation. Defaults to 0.1.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.ground.normalize_heights">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">normalize_heights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtm_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#normalize_heights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.normalize_heights" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">normalize_heights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtm_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#normalize_heights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.normalize_heights" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a point cloud and a Digital Terrain Model (DTM) and
 normalizes the heights of the first based on the second.</p>
 <dl class="field-list simple">
@@ -282,11 +175,101 @@ normalizes the heights of the first based on the second.</p>
 </dd></dl>
 
 </section>
+<section id="module-dendromatics.stripe">
+<span id="stem-extraction"></span><h2>Stem extraction<a class="headerlink" href="#module-dendromatics.stripe" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendromatics.stripe.verticality_clustering">
+<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_dbscan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.037</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function implements a for loop that iteratively calls
+verticality_clustering_iteration, ‘peeling off’ the stems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stripe</strong> (<em>numpy.ndarray</em>) – The point cloud containing the stripe. It is expected to have X, Y, Z0
+fields. 3D or higher array containing data with <cite>float</cite> type.</p></li>
+<li><p><strong>scale</strong> (<em>float</em>) – Scale to be used during verticality computation to define a
+neighbourhood arounda given point. Verticality will be computed from
+the structure tensor of said neighbourhood via eigendecomposition.
+Defaults to 0.1.</p></li>
+<li><p><strong>vert_threshold</strong> (<em>float</em>) – Minimum verticality value associated to a point to consider it as part
+of a stem. Defaults to 0.7.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation. Defaults to 0.037.</p></li>
+<li><p><strong>n_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
+potential stem. Defaults to 1000.</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations of ‘peeling’. Defaults to 2.</p></li>
+<li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution. Defaults to 0.02.</p></li>
+<li><p><strong>resolution_z</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
+<li><p>voxel resolution. Defaults to 0.02.</p></li>
+</ol>
+</p></li>
+<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
+the generation of each point code. Defaults to 5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>clust_stripe</strong> – Point cloud containing the points from the stripe that are considered
+as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and
+a 4th column containing the cluster ID of the cluster that each point
+belongs to.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendromatics.stripe.verticality_clustering_iteration">
+<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is to be used internally by verticality_clustering. The
+intended use of this function is to accept a stripe as an input, defined
+this as a subset of the original cloud delimited by a lower height and an
+upper height, which will narrow down a region where it is expected to only
+be stems. Then it will voxelate those points and compute the verticality
+via compute_features() from jakteristics. It will filter points based on
+their verticality value, voxelate again and then cluster the remaining
+points. Those are expected to belong to stems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stripe</strong> (<em>numpy.ndarray</em>) – The point cloud containing the stripe. It is expected to have X, Y, Z0
+fields. 3D or higher array containing data with <cite>float</cite> type.</p></li>
+<li><p><strong>vert_scale</strong> (<em>float</em>) – Scale to be used during verticality computation to define a
+neighbourhood arounda given point. Verticality will be computed from
+the structure tensor of said neighbourhood via eigendecomposition.</p></li>
+<li><p><strong>vert_threshold</strong> (<em>float</em>) – Minimum verticality value associated to a point to consider it as part
+of a stem.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation.</p></li>
+<li><p><strong>n_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
+potential stem.</p></li>
+<li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution.</p></li>
+<li><p><strong>resolution_z</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
+<li><p>voxel resolution.</p></li>
+</ol>
+</p></li>
+<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
+the generation of each point code.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>clust_stripe</strong> (<em>numpy.ndarray</em>) – Point cloud containing the points from the stripe that are considered
+as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and
+a 4th column containing the cluster ID of the cluster that each point
+belongs to.</p></li>
+<li><p><strong>t1</strong> (<em>float</em>) – Time spent.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-dendromatics.individualize">
-<span id="dendromatics-individualize-module"></span><h2>dendromatics.individualize module<a class="headerlink" href="#module-dendromatics.individualize" title="Permalink to this heading"></a></h2>
+<span id="tree-individualization"></span><h2>Tree individualization<a class="headerlink" href="#module-dendromatics.individualize" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.individualize.compute_axes">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.individualize.</span></span><span class="sig-name descname"><span class="pre">compute_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voxelated_cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clust_stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/individualize.html#compute_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.individualize.compute_axes" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.individualize.</span></span><span class="sig-name descname"><span class="pre">compute_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voxelated_cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clust_stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/individualize.html#compute_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.individualize.compute_axes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function used inside individualize_trees during tree individualization
 process. It identifies tree axes. It expects a voxelated version of the
 point cloud and a filtered (based on the verticality clustering process)
@@ -330,7 +313,7 @@ Y value, stem centroid Z value, height difference of stem centroid
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.individualize.compute_heights">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.individualize.</span></span><span class="sig-name descname"><span class="pre">compute_heights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voxelated_cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_to_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_heights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/individualize.html#compute_heights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.individualize.compute_heights" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.individualize.</span></span><span class="sig-name descname"><span class="pre">compute_heights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voxelated_cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_trees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_to_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_heights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/individualize.html#compute_heights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.individualize.compute_heights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function used inside individualize_trees during tree individualization
 process. It measures tree heights. The function creates a large-resolution
 voxel cloud to and filters voxels containing few points. This has the
@@ -372,7 +355,7 @@ axis was deviated (1) or if it was not (0).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.individualize.individualize_trees">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.individualize.</span></span><span class="sig-name descname"><span class="pre">individualize_trees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clust_stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.035</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.035</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_heights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/individualize.html#individualize_trees"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.individualize.individualize_trees" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.individualize.</span></span><span class="sig-name descname"><span class="pre">individualize_trees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clust_stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.035</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.035</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_heights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/individualize.html#individualize_trees"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.individualize.individualize_trees" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function expects a filtered (based on the clustering process)
 stripe as input, so that it only contains (hopefully) stems. Those stems
 are voxelated and enumerated, and then, their axes are identified using PCA
@@ -381,7 +364,7 @@ those axes, thus assigning each point to a tree. This last step is applied
 to the WHOLE original cloud. It also measures tree heights.</p>
 <p>It requires a height-normalized cloud in order to function properly.</p>
 <section id="inputs">
-<h3>——————                 Inputs                  ——————<a class="headerlink" href="#inputs" title="Permalink to this heading"></a></h3>
+<h3>——————                 Inputs                  ——————<a class="headerlink" href="#inputs" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>cloud<span class="classifier">numpy.ndarray</span></dt><dd><p>The point cloud. It is expected to have X, Y, Z and Z0 fields.</p>
 </dd>
@@ -454,10 +437,10 @@ deviated from vertical, thus height may be trusted.</p></li>
 
 </section>
 <section id="module-dendromatics.sections">
-<span id="dendromatics-sections-module"></span><h2>dendromatics.sections module<a class="headerlink" href="#module-dendromatics.sections" title="Permalink to this heading"></a></h2>
+<span id="computing-sections"></span><h2>Computing sections<a class="headerlink" href="#module-dendromatics.sections" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.compute_sections">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">compute_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stems</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#compute_sections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.compute_sections" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">compute_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stems</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#compute_sections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.compute_sections" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calls fit_circle_check() to compute stem diameter at
 given sections.</p>
 <dl class="field-list simple">
@@ -499,7 +482,7 @@ as belonging to said section (units is meters). Defaults to 0.02.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.fit_circle">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">fit_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#fit_circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.fit_circle" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">fit_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#fit_circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.fit_circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function fits points within a tree section into a circle by
 least squares minimization. It is to be used inside fit_circle_check().</p>
 <dl class="field-list simple">
@@ -522,7 +505,7 @@ least squares minimization. It is to be used inside fit_circle_check().</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.fit_circle_check">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">fit_circle_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#fit_circle_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.fit_circle_check" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">fit_circle_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#fit_circle_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.fit_circle_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calls fit_circle() to fit points within a section to a
 circle by least squares minimization. These circles will define tree
 sections. It checks the goodness of fit using sector_occupancy and
@@ -566,7 +549,7 @@ to be considered as valid.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.inner_circle">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">inner_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_R</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#inner_circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.inner_circle" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">inner_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_R</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#inner_circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.inner_circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that computes an internal circle inside the one fitted by
 fit_circle. This new circle is used as a validation tool and it gives
 insight on the quality of the ‘fit_circle-circle’.</p>
@@ -605,7 +588,7 @@ section.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.point_clustering">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">point_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#point_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.point_clustering" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">point_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#point_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.point_clustering" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function clusters points by distance and finds the largest
 cluster. It is to be used inside fit_circle_check().</p>
 <dl class="field-list simple">
@@ -629,7 +612,7 @@ cluster.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.sector_occupancy">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">sector_occupancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#sector_occupancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.sector_occupancy" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">sector_occupancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#sector_occupancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.sector_occupancy" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function provides quality measurements for the fitting of the
 circle. It divides the section in a number of sectors to check if there are
 points within them (so they are occupied). If there are not enough occupied
@@ -663,7 +646,7 @@ or not. 1 - valid, 0 - not valid.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.tilt_detection">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">tilt_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#tilt_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.tilt_detection" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">tilt_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#tilt_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.tilt_detection" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function finds outlier tilting values among sections within a tree
 and assigns a score to the sections based on those outliers. Two kinds of
 outliers are considered.</p>
@@ -705,7 +688,7 @@ and the relative tilting value.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.sections.tree_locator">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">tree_locator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sector_perct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outliers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#tree_locator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.tree_locator" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.sections.</span></span><span class="sig-name descname"><span class="pre">tree_locator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sector_perct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outliers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/sections.html#tree_locator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.sections.tree_locator" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function generates points that locate the individualized trees and
 computes their DBH (diameter at breast height). It uses all the quality
 measurements defined in previous functions to check whether the DBH should
@@ -751,127 +734,163 @@ Defaults to 5.</p>
 </dd></dl>
 
 </section>
-<section id="module-dendromatics.stripe">
-<span id="dendromatics-stripe-module"></span><h2>dendromatics.stripe module<a class="headerlink" href="#module-dendromatics.stripe" title="Permalink to this heading"></a></h2>
+<section id="module-dendromatics.draw">
+<span id="drawing-las-files"></span><h2>Drawing LAS files<a class="headerlink" href="#module-dendromatics.draw" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dendromatics.stripe.verticality_clustering">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_dbscan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.037</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering" title="Permalink to this definition"></a></dt>
-<dd><p>This function implements a for loop that iteratively calls
-verticality_clustering_iteration, ‘peeling off’ the stems.</p>
+<dt class="sig sig-object py" id="dendromatics.draw.draw_axes">
+<span class="sig-prename descclassname"><span class="pre">dendromatics.draw.</span></span><span class="sig-name descname"><span class="pre">draw_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename_las</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_downstep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_upstep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stripe_lower_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stripe_upper_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/draw.html#draw_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.draw.draw_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates points that comprise the axes computed by
+individualize_trees, so that they can be visualized. The axes are then
+saved in a LAS file, along some descriptive fields. Each axis corresponds
+on a one-to-one basis to the individualized trees.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stripe</strong> (<em>numpy.ndarray</em>) – The point cloud containing the stripe. It is expected to have X, Y, Z0
-fields. 3D or higher array containing data with <cite>float</cite> type.</p></li>
-<li><p><strong>scale</strong> (<em>float</em>) – Scale to be used during verticality computation to define a
-neighbourhood arounda given point. Verticality will be computed from
-the structure tensor of said neighbourhood via eigendecomposition.
-Defaults to 0.1.</p></li>
-<li><p><strong>vert_threshold</strong> (<em>float</em>) – Minimum verticality value associated to a point to consider it as part
-of a stem. Defaults to 0.7.</p></li>
-<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation. Defaults to 0.037.</p></li>
-<li><p><strong>n_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
-potential stem. Defaults to 1000.</p></li>
-<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations of ‘peeling’. Defaults to 2.</p></li>
-<li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution. Defaults to 0.02.</p></li>
-<li><p><strong>resolution_z</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
-<li><p>voxel resolution. Defaults to 0.02.</p></li>
-</ol>
-</p></li>
-<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
-the generation of each point code. Defaults to 5.</p></li>
+<li><p><strong>tree_vector</strong> (<em>numpy.ndarray</em>) – detected_trees output from individualize_trees.</p></li>
+<li><p><strong>line_downstep</strong> (<em>float</em>) – From the stripe centroid, how much (downwards direction) will the drawn
+axes extend (units is meters). Defaults to 0.5.</p></li>
+<li><p><strong>line_upstep</strong> (<em>float</em>) – From the stripe centroid, how much (upwards direction) will the drawn
+axes extend (units is meters). Defaults to 10.0.</p></li>
+<li><p><strong>stripe_lower_limit</strong> (<em>float</em>) – Lower (vertical) limit of the stripe (units is meters). Defaults to 0.5.</p></li>
+<li><p><strong>stripe_upper_limit</strong> (<em>float</em>) – Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.</p></li>
+<li><p><strong>point_interval</strong> (<em>float</em>) – Step value used to draw points (unit is meters). Defaults to 0.01.</p></li>
+<li><p><strong>filename_las</strong> (<em>char</em>) – File name for the output file.</p></li>
+<li><p><strong>X_field</strong> (<em>int</em>) – Index at which (x) coordinate is stored. Defaults to 0.</p></li>
+<li><p><strong>Y_field</strong> (<em>int</em>) – Index at which (y) coordinate is stored. Defaults to 1.</p></li>
+<li><p><strong>Z_field</strong> (<em>int</em>) – Index at which (z) coordinate is stored. Defaults to 2.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>clust_stripe</strong> – Point cloud containing the points from the stripe that are considered
-as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and
-a 4th column containing the cluster ID of the cluster that each point
-belongs to.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dendromatics.stripe.verticality_clustering_iteration">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering_iteration" title="Permalink to this definition"></a></dt>
-<dd><p>This function is to be used internally by verticality_clustering. The
-intended use of this function is to accept a stripe as an input, defined
-this as a subset of the original cloud delimited by a lower height and an
-upper height, which will narrow down a region where it is expected to only
-be stems. Then it will voxelate those points and compute the verticality
-via compute_features() from jakteristics. It will filter points based on
-their verticality value, voxelate again and then cluster the remaining
-points. Those are expected to belong to stems.</p>
+<dt class="sig sig-object py" id="dendromatics.draw.draw_circles">
+<span class="sig-prename descclassname"><span class="pre">dendromatics.draw.</span></span><span class="sig-name descname"><span class="pre">draw_circles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sector_perct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outliers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename_las</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_n_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circa_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/draw.html#draw_circles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.draw.draw_circles" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates points that comprise the circles computed by
+fit_circle_check function, so sections can be visualized. The circles are
+then saved in a LAS file, along some descriptive fields. Each circle
+corresponds on a one-to-one basis to the sections described by the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stripe</strong> (<em>numpy.ndarray</em>) – The point cloud containing the stripe. It is expected to have X, Y, Z0
-fields. 3D or higher array containing data with <cite>float</cite> type.</p></li>
-<li><p><strong>vert_scale</strong> (<em>float</em>) – Scale to be used during verticality computation to define a
-neighbourhood arounda given point. Verticality will be computed from
-the structure tensor of said neighbourhood via eigendecomposition.</p></li>
-<li><p><strong>vert_threshold</strong> (<em>float</em>) – Minimum verticality value associated to a point to consider it as part
-of a stem.</p></li>
-<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation.</p></li>
-<li><p><strong>n_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
-potential stem.</p></li>
-<li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution.</p></li>
-<li><p><strong>resolution_z</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
-<li><p>voxel resolution.</p></li>
-</ol>
-</p></li>
-<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
-the generation of each point code.</p></li>
+<li><p><strong>X_c</strong> (<em>numpy.ndarray</em>) – Matrix containing (x) coordinates of the center of the sections.</p></li>
+<li><p><strong>Y_c</strong> (<em>numpy.ndarray</em>) – Matrix containing (y) coordinates of the center of the sections.</p></li>
+<li><p><strong>R</strong> (<em>numpy.ndarray</em>) – Vector containing section radia.</p></li>
+<li><p><strong>sections</strong> (<em>numpy.ndarray</em>) – Vector containing section heights (normalized heights).</p></li>
+<li><p><strong>section_perct</strong> (<em>numpy.ndarray</em>) – Matrix containing the percentage of occupied sectors.</p></li>
+<li><p><strong>n_points_in</strong> (<em>numpy.ndarray</em>) – Matrix containing the number of points in the inner circumferences.</p></li>
+<li><p><strong>tree_vector</strong> (<em>numpy.ndarray</em>) – detected_trees output from individualize_trees.</p></li>
+<li><p><strong>outliers</strong> (<em>numpy.ndarray</em>) – Vector containing the ‘outlier probability’ of each section.</p></li>
+<li><p><strong>filename_las</strong> (<em>char</em>) – File name for the output file.</p></li>
+<li><p><strong>R_min</strong> (<em>float</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 0.03.</p></li>
+<li><p><strong>R_max</strong> (<em>float</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 0.5.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 5.</p></li>
+<li><p><strong>n_sectors</strong> (<em>int</em>) – Refer to fit_circle_check in ‘sections’ module. Defaults to 16.</p></li>
+<li><p><strong>min_n_sectors</strong> (<em>int</em>) – Refer to fit_circle_check in sections module. Defaults to 9.</p></li>
+<li><p><strong>circa_points</strong> (<em>int</em>) – Number of points used to draw each circle. Defaults to 200.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>clust_stripe</strong> (<em>numpy.ndarray</em>) – Point cloud containing the points from the stripe that are considered
-as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and
-a 4th column containing the cluster ID of the cluster that each point
-belongs to.</p></li>
-<li><p><strong>t1</strong> (<em>float</em>) – Time spent.</p></li>
-</ul>
-</p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
 <section id="module-dendromatics">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dendromatics" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dendromatics" title="Permalink to this heading">¶</a></h2>
 </section>
 </section>
 
 
-           </div>
+            <div class="clearer"></div>
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
         </div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Functions</a><ul>
+<li><a class="reference internal" href="#module-dendromatics.voxel.voxel">Voxelization</a><ul>
+<li><a class="reference internal" href="#dendromatics.voxel.voxel.voxelate"><code class="docutils literal notranslate"><span class="pre">voxelate()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics.ground">Height-normalization</a><ul>
+<li><a class="reference internal" href="#dendromatics.ground.clean_cloth"><code class="docutils literal notranslate"><span class="pre">clean_cloth()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.ground.clean_ground"><code class="docutils literal notranslate"><span class="pre">clean_ground()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.ground.generate_dtm"><code class="docutils literal notranslate"><span class="pre">generate_dtm()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.ground.normalize_heights"><code class="docutils literal notranslate"><span class="pre">normalize_heights()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics.stripe">Stem extraction</a><ul>
+<li><a class="reference internal" href="#dendromatics.stripe.verticality_clustering"><code class="docutils literal notranslate"><span class="pre">verticality_clustering()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.stripe.verticality_clustering_iteration"><code class="docutils literal notranslate"><span class="pre">verticality_clustering_iteration()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics.individualize">Tree individualization</a><ul>
+<li><a class="reference internal" href="#dendromatics.individualize.compute_axes"><code class="docutils literal notranslate"><span class="pre">compute_axes()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.individualize.compute_heights"><code class="docutils literal notranslate"><span class="pre">compute_heights()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.individualize.individualize_trees"><code class="docutils literal notranslate"><span class="pre">individualize_trees()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics.sections">Computing sections</a><ul>
+<li><a class="reference internal" href="#dendromatics.sections.compute_sections"><code class="docutils literal notranslate"><span class="pre">compute_sections()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.fit_circle"><code class="docutils literal notranslate"><span class="pre">fit_circle()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.fit_circle_check"><code class="docutils literal notranslate"><span class="pre">fit_circle_check()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.inner_circle"><code class="docutils literal notranslate"><span class="pre">inner_circle()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.point_clustering"><code class="docutils literal notranslate"><span class="pre">point_clustering()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.sector_occupancy"><code class="docutils literal notranslate"><span class="pre">sector_occupancy()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.tilt_detection"><code class="docutils literal notranslate"><span class="pre">tilt_detection()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.sections.tree_locator"><code class="docutils literal notranslate"><span class="pre">tree_locator()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics.draw">Drawing LAS files</a><ul>
+<li><a class="reference internal" href="#dendromatics.draw.draw_axes"><code class="docutils literal notranslate"><span class="pre">draw_axes()</span></code></a></li>
+<li><a class="reference internal" href="#dendromatics.draw.draw_circles"><code class="docutils literal notranslate"><span class="pre">draw_circles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dendromatics">Module contents</a></li>
+</ul>
+</li>
+</ul>
 
-</body>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/dendromatics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">dendromatics 00.00.01 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Functions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Carlos Cabo &amp; Diego Laino.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
 </html>

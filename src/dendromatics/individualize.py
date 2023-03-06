@@ -339,11 +339,9 @@ def individualize_trees(
     to the WHOLE original cloud. It also measures tree heights.
 
     It requires a height-normalized cloud in order to function properly.
-
-    -----------------------------------------------------------------------------
-    ------------------                 Inputs                  ------------------
-    -----------------------------------------------------------------------------
-
+    
+    Parameters
+    ----------
     cloud : numpy.ndarray
         The point cloud. It is expected to have X, Y, Z and Z0 fields.
     clust_stripe : numpy.ndarray. 

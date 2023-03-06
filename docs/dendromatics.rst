@@ -1,56 +1,60 @@
-dendromatics package
-====================
+Functions
+=========
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
+Voxelization
+------------
 
-   dendromatics.voxel
-
-Submodules
-----------
-
-dendromatics.draw module
-------------------------
-
-.. automodule:: dendromatics.draw
+.. automodule:: dendromatics.voxel.voxel
    :members:
    :undoc-members:
    :show-inheritance:
 
-dendromatics.ground module
---------------------------
+
+Height-normalization
+--------------------
 
 .. automodule:: dendromatics.ground
    :members:
    :undoc-members:
    :show-inheritance:
 
-dendromatics.individualize module
----------------------------------
+
+Stem extraction
+---------------
+
+.. automodule:: dendromatics.stripe
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Tree individualization
+----------------------
 
 .. automodule:: dendromatics.individualize
    :members:
    :undoc-members:
    :show-inheritance:
 
-dendromatics.sections module
-----------------------------
+
+Computing sections
+------------------
 
 .. automodule:: dendromatics.sections
    :members:
    :undoc-members:
    :show-inheritance:
 
-dendromatics.stripe module
---------------------------
 
-.. automodule:: dendromatics.stripe
+Drawing LAS files
+-----------------
+
+.. automodule:: dendromatics.draw
    :members:
    :undoc-members:
    :show-inheritance:
+
 
 Module contents
 ---------------
