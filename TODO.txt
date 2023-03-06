@@ -1,4 +1,5 @@
 1. Update ReadMe.
 2. Create tests.
 3. Add X_field, Y_field and Z_field parameters to functions (p.e., verticality_clustering)
+4. Add 'height normalization' section to Algorithm description.
 
