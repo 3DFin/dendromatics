@@ -363,58 +363,43 @@ are voxelated and enumerated, and then, their axes are identified using PCA
 those axes, thus assigning each point to a tree. This last step is applied
 to the WHOLE original cloud. It also measures tree heights.</p>
 <p>It requires a height-normalized cloud in order to function properly.</p>
-<section id="inputs">
-<h3>——————                 Inputs                  ——————<a class="headerlink" href="#inputs" title="Permalink to this heading">¶</a></h3>
-<dl class="simple">
-<dt>cloud<span class="classifier">numpy.ndarray</span></dt><dd><p>The point cloud. It is expected to have X, Y, Z and Z0 fields.</p>
-</dd>
-<dt>clust_stripe<span class="classifier">numpy.ndarray.</span></dt><dd><p>The point cloud containing the clusterized stripe from
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud. It is expected to have X, Y, Z and Z0 fields.</p></li>
+<li><p><strong>clust_stripe</strong> (<em>numpy.ndarray.</em>) – The point cloud containing the clusterized stripe from
 verticality_clustering. It is expected to have X, Y, Z0 and cluster ID
-fields.</p>
-</dd>
-<dt>resolution_z<span class="classifier">float</span></dt><dd><p>(x, y) voxel resolution in meters. Defaults to 0.035.</p>
-</dd>
-<dt>resolution_xy<span class="classifier">float</span></dt><dd><ol class="loweralpha simple" start="26">
+fields.</p></li>
+<li><p><strong>resolution_z</strong> (<em>float</em>) – (x, y) voxel resolution in meters. Defaults to 0.035.</p></li>
+<li><p><strong>resolution_xy</strong> (<em>float</em>) – <ol class="loweralpha simple" start="26">
 <li><p>voxel resolution in meters. Defaults to 0.035.</p></li>
 </ol>
-</dd>
-<dt>h_range<span class="classifier">float</span></dt><dd><p>Only stems where points extend vertically throughout a range as tall as
-defined by h_range are considered (units is meters). Defaults to 1.2.</p>
-</dd>
-<dt>d_max<span class="classifier">float</span></dt><dd><p>Points that are closer than d_max to an axis are assigned to that axis
-(units is meters). Defaults to 1.5.</p>
-</dd>
-<dt>min_points<span class="classifier">int</span></dt><dd><p>Minimum number of points in a cluster for it to be considered as a
-potential stem. Defaults to 20.</p>
-</dd>
-<dt>d<span class="classifier">float</span></dt><dd><p>Points within this distance from tree axis will be considered as
+</p></li>
+<li><p><strong>h_range</strong> (<em>float</em>) – Only stems where points extend vertically throughout a range as tall as
+defined by h_range are considered (units is meters). Defaults to 1.2.</p></li>
+<li><p><strong>d_max</strong> (<em>float</em>) – Points that are closer than d_max to an axis are assigned to that axis
+(units is meters). Defaults to 1.5.</p></li>
+<li><p><strong>min_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
+potential stem. Defaults to 20.</p></li>
+<li><p><strong>d</strong> (<em>float</em>) – Points within this distance from tree axis will be considered as
 potential points to define tree height (units is meters).
-Defaults to 15.</p>
-</dd>
-<dt>max_dev<span class="classifier">float</span></dt><dd><p>Maximum degree of vertical deviation of a tree axis to consider its
+Defaults to 15.</p></li>
+<li><p><strong>max_dev</strong> (<em>float</em>) – Maximum degree of vertical deviation of a tree axis to consider its
 tree height measurement as valid (units is sexagesimal degrees).
-Defaults to 25.</p>
+Defaults to 25.</p></li>
+<li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z))
+during the generation of each point code. Defaults to 5.</p></li>
+<li><p><strong>resolution_heights</strong> (<em>float</em>) – (x, y, z) voxel resolution in meters used during height computation.
+Defaults to 0.3</p></li>
+<li><p><strong>X_field</strong> (<em>int</em>) – Index at which (x) coordinate is stored. Defaults to 0.</p></li>
+<li><p><strong>Y_field</strong> (<em>int</em>) – Index at which (y) coordinate is stored. Defaults to 1.</p></li>
+<li><p><strong>Z_field</strong> (<em>int</em>) – Index at which (z) coordinate is stored. Defaults to 2.</p></li>
+<li><p><strong>Z0_field</strong> (<em>int</em>) – Index at which (z0) coordinate is stored. Defaults to 3.</p></li>
+<li><p><strong>tree_id_field</strong> (<em>int</em>) – Index at which cluster ID is stored. Defaults to -1.</p></li>
+</ul>
 </dd>
-<dt>n_digits<span class="classifier">int</span></dt><dd><p>Number of digits dedicated to each coordinate ((x), (y) or (z))
-during the generation of each point code. Defaults to 5.</p>
-</dd>
-<dt>resolution_heights<span class="classifier">float</span></dt><dd><p>(x, y, z) voxel resolution in meters used during height computation.
-Defaults to 0.3</p>
-</dd>
-<dt>X_field<span class="classifier">int</span></dt><dd><p>Index at which (x) coordinate is stored. Defaults to 0.</p>
-</dd>
-<dt>Y_field<span class="classifier">int</span></dt><dd><p>Index at which (y) coordinate is stored. Defaults to 1.</p>
-</dd>
-<dt>Z_field<span class="classifier">int</span></dt><dd><p>Index at which (z) coordinate is stored. Defaults to 2.</p>
-</dd>
-<dt>Z0_field<span class="classifier">int</span></dt><dd><p>Index at which (z0) coordinate is stored. Defaults to 3.</p>
-</dd>
-<dt>tree_id_field<span class="classifier">int</span></dt><dd><p>Index at which cluster ID is stored. Defaults to -1.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">returns<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
 <li><p><strong>assigned_cloud</strong> (<em>numpy.ndarray</em>) – Point cloud containing individualized trees. It consists of
 (x), (y), (z) and (z0) coordinates, a 5th column containing tree ID
 that each point belongs to and a 6th column containing point distance
@@ -430,9 +415,9 @@ a 5th column containing a binary indicator: 0 - tree was too deviated
 from vertical, and height may not be accurate, or 1 - tree was not too
 deviated from vertical, thus height may be trusted.</p></li>
 </ul>
+</p>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
 </section>

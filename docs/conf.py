@@ -31,12 +31,40 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    "sphinx_reference_rename",
+    "sphinx.ext.intersphinx",
 ]
 
 napoleon_google_docstring = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+
+
+# Modifying qualified names
+
+sphinx_reference_rename_mapping = {
+    'dendromatics.voxel.voxel.voxelate': 'voxelate',
+    'dendromatics.ground.clean_cloth': 'clean_cloth',
+    'dendromatics.ground.clean_ground': 'clean_ground',
+    'dendromatics.ground.generate_dtm': 'generate_dtm',
+    'dendromatics.ground.normalize_heights': 'normalize_heights',
+    'dendromatics.stripe.verticality_clustering': 'verticality_clustering',
+    'dendromatics.stripe.verticality_clustering_iteration': 'verticality_clustering_iteration',
+    'dendromatics.individualize.compute_axes': 'compute_axes',
+    'dendromatics.individualize.compute_heights': 'compute_heights',
+    'dendromatics.individualize.individualize_trees': 'individualize_trees',
+    'dendromatics.sections.compute_sections': 'compute_sections',
+    'dendromatics.sections.fit_circle': 'fit_circle',
+    'dendromatics.sections.fit_circle_check': 'fit_circle_check',
+    'dendromatics.sections.inner_circle': 'inner_circle',
+    'dendromatics.sections.point_clustering': 'point_clustering',
+    'dendromatics.sections.sector_occupancy': 'sector_occupancy',
+    'dendromatics.sections.tilt_detection': 'tilt_detection',
+    'dendromatics.sections.tree_locator': 'tree_locator',
+    'dendromatics.draw.draw_axes': 'draw_axes',
+    'dendromatics.draw.draw_circles': 'draw_circles',
+}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
