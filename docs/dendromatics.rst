@@ -56,12 +56,3 @@ Drawing LAS files
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: dendromatics
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,6 +1,8 @@
 Functions
 =========
 
+This page contains an index of the functions present in the package and a description of them.
+
 
 Voxelization
 ------------
@@ -51,15 +53,6 @@ Drawing LAS files
 -----------------
 
 .. automodule:: dendromatics.draw
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: dendromatics
    :members:
    :undoc-members:
    :show-inheritance:
