@@ -1,6 +1,8 @@
 Functions
 =========
 
+This page contains an index of the functions present in the package and a description of them.
+
 
 Voxelization
 ------------
