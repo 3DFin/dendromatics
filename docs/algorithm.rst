@@ -1,13 +1,13 @@
 Algorithm
 =========
 
-The algorithm is an updated version of the one presented in [CABO2018]_. It requires a height-normalized point cloud as input, as in Figure 1.
+The package functionalities are based on an updated version of the algorithm presented in [CABO2018]_. It requires a height-normalized point cloud as input, as in Figure 1.
 
-.. image:: C:/Swansea/git_repository/files/height-normalization.jpg
+.. image:: _static/height-normalization.jpg
   :width: 670
   :align: center
 
-*Figure 1. The algorithm requires height-normalized point clouds. A) Original point cloud. B) Height-normalized point cloud. From [CABO2018]_.*
+*Figure 1. The algorithm requires height-normalized point clouds. A) Original point cloud. B) Height-normalized point cloud. From* [CABO2018]_.
 
 
 1. Identification of stems among user-provided horizontal stripe
@@ -20,7 +20,7 @@ In this first step, the user selects a stripe, defined this as a subset of the o
   :width: 700
   :align: center
 
-*Figure 2. Stripe on the height-normalized point cloud, and candidate voxel groups. Points in the stripe in red, and voxel groups in random colours. From (Cabo et al. 2018).*
+*Figure 2. Stripe on the height-normalized point cloud, and candidate voxel groups. Points in the stripe in red, and voxel groups in random colours. From* [CABO2018]_.
 
 
 2. Tree individualization based on point-to-stems distances
@@ -33,7 +33,7 @@ Once the voxel groups have been computed and properly peeled-off, they are isola
   :width: 620
   :align: center
 
-*Figure 3. Isolated trees. Note that ground and understory points are assigned as well to the closest axis. From [CABO2018]_.*
+*Figure 3. Isolated trees. Note that ground and understory points are assigned as well to the closest axis. From* [CABO2018]_.
 
 
 During this step of the algorithm the tree height is computed as well. For this, and, for each tree, the points that are under a certain distance to the stem axis are selected, voxelated again using a higher resolution and clustered with DBSCAN algorithm. From the points that belong to the main cluster (the one that englobes the tree), the highest point is selected, and its height is considered as the tree height. This allows to exclude from the search of the highest point those that could belong to other trees or any noise that happened to be above the tree whilst being scanned. Figure 4 illustrates this.
@@ -43,7 +43,7 @@ During this step of the algorithm the tree height is computed as well. For this,
   :width: 200
   :align: center
 
-*Figure 4. Total tree height (TH) computation. Note that it avoids isolated point clusters that may not belong to the tree. From [CABO2018]_.*
+*Figure 4. Total tree height (TH) computation. Note that it avoids isolated point clusters that may not belong to the tree. From* [CABO2018]_.
 
 
 3. Computation of stem diameter at different section heights
