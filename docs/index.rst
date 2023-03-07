@@ -24,6 +24,8 @@ Contents
    algorithm
 
    dendromatics
+
+   examples
    
    executable
    
