@@ -89,14 +89,18 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">laspy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">dendromatics</span> <span class="k">as</span> <span class="nn">dm</span>
+
 <span class="c1"># Reading the point cloud</span>
 <span class="n">filename_las</span> <span class="o">=</span> <span class="s1">&#39;example_data.las&#39;</span> <span class="c1"># your .las file</span>
 <span class="n">entr</span> <span class="o">=</span> <span class="n">laspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename_las</span><span class="p">)</span>
 <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">entr</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entr</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entr</span><span class="o">.</span><span class="n">z</span><span class="p">))</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
 <span class="c1"># Normalizing the point cloud</span>
 <span class="n">dtm</span> <span class="o">=</span> <span class="n">dm</span><span class="o">.</span><span class="n">generate_dtm</span><span class="p">(</span><span class="n">clean_points</span><span class="p">)</span>
 <span class="n">z0_values</span> <span class="o">=</span> <span class="n">dm</span><span class="o">.</span><span class="n">normalize_heights</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">dtm</span><span class="p">)</span>
-<span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">z0_values</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># adding the normalized heights to the point cloud</span>
+
+<span class="c1"># adding the normalized heights to the point cloud</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">z0_values</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the point cloud is noisy, you might want to denoise it first before generating the DTM:</p>
@@ -107,9 +111,11 @@
 <section id="identifying-stems-from-a-stripe">
 <h2>Identifying stems from a stripe<a class="headerlink" href="#identifying-stems-from-a-stripe" title="Permalink to this heading"></a></h2>
 <p>Simply provide a stripe (from a height-normalized point cloud) as follows to iteratively ‘peel off’ the stems:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lower_limit</span> <span class="o">=</span> <span class="mf">0.5</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Defining the stripe</span>
+<span class="n">lower_limit</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="n">upper_limit</span> <span class="o">=</span> <span class="mf">2.5</span>
 <span class="n">stripe</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">lower_limit</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">upper_limit</span><span class="p">),</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+
 <span class="n">stripe_stems</span> <span class="o">=</span> <span class="n">dm</span><span class="o">.</span><span class="n">verticality_clustering</span><span class="p">(</span><span class="n">stripe</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -131,6 +137,7 @@
 <span class="n">max_h</span> <span class="o">=</span> <span class="mi">25</span>
 <span class="n">section_width</span> <span class="o">=</span> <span class="mf">0.02</span>
 <span class="n">xyz0_coords</span> <span class="o">=</span> <span class="n">assigned_cloud</span><span class="p">[(</span><span class="n">assigned_cloud</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">expected_R</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">assigned_cloud</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_h</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">assigned_cloud</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_h</span> <span class="o">+</span> <span class="n">section_width</span><span class="p">),</span> <span class="p">:]</span>
+
 <span class="n">stems</span> <span class="o">=</span> <span class="n">dm</span><span class="o">.</span><span class="n">verticality_clustering</span><span class="p">(</span><span class="n">xyz0_coords</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
 
 <span class="c1"># Computing the sections</span>
