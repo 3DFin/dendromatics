@@ -136,6 +136,7 @@ def inner_circle(X, Y, X_c, Y_c, R, times_R):
     
         - If points are closest to the inner circle, then the first fit was not
         appropiate
+        
         - On the contrary, if points are closer to the outer circle, the 
         'fit_circle-circle' is appropiate and describes well the stem diameter.
     
@@ -617,7 +618,9 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     
     The 'outlier score' consists on a weighted sum of the absolute tilting value
     and the relative tilting value.
-
+    
+    Parameters
+    ----------
     X_tree : numpy.ndarray
         Matrix containing (x) coordinates of the center of the sections.
     Y_tree : numpy.ndarray
@@ -752,7 +755,9 @@ def tree_locator(
 
     The tree locators are then saved in a LAS file. Each tree locator corresponds 
     on a one-to-one basis to the individualized trees.
-
+    
+    Parameters
+    ----------
     sections : numpy.ndarray
         Vector containing section heights (normalized heights).
     X_c : numpy.ndarray

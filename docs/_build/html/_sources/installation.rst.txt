@@ -11,5 +11,5 @@ To load the package in your current Python session, simply type the following co
 
     import dendromatics
 
-    # or to bound it to a shorter, more convenient name:
+    # or to bind it to a shorter, more convenient name:
     import dendromatics as dm
