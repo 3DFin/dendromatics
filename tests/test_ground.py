@@ -26,6 +26,7 @@ def test_clean_ground():
     
     assert output == expect
 
+
 def test_normalize_heights():
     
     # DTM:
@@ -50,9 +51,10 @@ def test_normalize_heights():
     cloud = np.append(cloud_xy, cloud_z, axis = 1)
     
     # the normalized heights should be cloud_z - 1 for every point
-    expect = np.linspace(0.0, 1.0, 11)
-    
+    expect = np.linspace(0.0, 1.0, 11)    
     output = dm.normalize_heights(cloud, dtm)
+    
+    assert output == expect
     
     
     
