@@ -10,7 +10,7 @@ dendromatics: Automatic dendrometry in terrestrial point clouds
    :maxdepth: 2
    :caption: Contents:
 
-This package provides functionalities to implement an updated version of algorithm presented in [CABO2018]_ to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis.
+This package provides functionalities to implement an updated version of the algorithm presented in [CABO2018]_. It detects the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis.
 
 
 Contents

@@ -458,13 +458,13 @@ def compute_sections(
     Parameters
     ----------
     stems : numpy.ndarray
-        Point cloud containing the individualized trees. It is expected to 
-        have X, Y, Z0 and tree_ID fields.
+        Point cloud containing the individualized trees. It is expected to have
+            X, Y, Z0 and tree_ID fields.
     sections : numpy.ndarray
         Matrix containing a range of height values at which sections will be 
         computed.
     section_width : float
-        Points within this distance from any `sections` value will be considered 
+        Points within this distance from any sections value will be considered 
         as belonging to said section (units is meters). Defaults to 0.02.
     times_R : float
         Refer to fit_circle_check. Defaults to 0.5.
@@ -492,7 +492,7 @@ def compute_sections(
         Index at which (z0) coordinate is stored. Defaults to 3.
     tree_id_field : int
         Index at which cluster ID is stored. Defaults to 4.
-        
+    
     Returns
     -------
     X_c : numpy.ndarray
@@ -505,6 +505,7 @@ def compute_sections(
         Matrix containing the percentage of occupied sectors.
     n_points_in : numpy.ndarray
         Matrix containing the number of points in the inner circles.
+    
     """
     trees = np.unique(
     stems[:, tree_id_field]
@@ -640,6 +641,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     -------
     outlier_prob : numpy.ndarray
         Vector containing the 'outlier probability' of each section.
+        
     """
 
     # This function simply defines 1st and 3rd cuartile of a vector and separates 

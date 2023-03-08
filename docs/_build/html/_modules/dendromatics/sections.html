@@ -210,6 +210,7 @@
 <span class="sd">    </span>
 <span class="sd">        - If points are closest to the inner circle, then the first fit was not</span>
 <span class="sd">        appropiate</span>
+<span class="sd">        </span>
 <span class="sd">        - On the contrary, if points are closer to the outer circle, the </span>
 <span class="sd">        &#39;fit_circle-circle&#39; is appropiate and describes well the stem diameter.</span>
 <span class="sd">    </span>
@@ -531,14 +532,14 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    stems : numpy.ndarray</span>
-<span class="sd">        Point cloud containing the individualized trees. It is expected to </span>
-<span class="sd">        have X, Y, Z0 and tree_ID fields.</span>
+<span class="sd">        Point cloud containing the individualized trees. It is expected to have</span>
+<span class="sd">            X, Y, Z0 and tree_ID fields.</span>
 <span class="sd">    sections : numpy.ndarray</span>
 <span class="sd">        Matrix containing a range of height values at which sections will be </span>
-<span class="sd">        computed.</span>
+<span class="sd">            computed.</span>
 <span class="sd">    section_width : float</span>
-<span class="sd">        Points within this distance from any `sections` value will be considered </span>
-<span class="sd">        as belonging to said section (units is meters). Defaults to 0.02.</span>
+<span class="sd">        Points within this distance from any sections value will be considered </span>
+<span class="sd">            as belonging to said section (units is meters). Defaults to 0.02.</span>
 <span class="sd">    times_R : float</span>
 <span class="sd">        Refer to fit_circle_check. Defaults to 0.5.</span>
 <span class="sd">    threshold : float</span>
@@ -565,7 +566,7 @@
 <span class="sd">        Index at which (z0) coordinate is stored. Defaults to 3.</span>
 <span class="sd">    tree_id_field : int</span>
 <span class="sd">        Index at which cluster ID is stored. Defaults to 4.</span>
-<span class="sd">        </span>
+<span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    X_c : numpy.ndarray</span>
@@ -578,6 +579,7 @@
 <span class="sd">        Matrix containing the percentage of occupied sectors.</span>
 <span class="sd">    n_points_in : numpy.ndarray</span>
 <span class="sd">        Matrix containing the number of points in the inner circles.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">trees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
     <span class="n">stems</span><span class="p">[:,</span> <span class="n">tree_id_field</span><span class="p">]</span>
@@ -691,7 +693,9 @@
 <span class="sd">    </span>
 <span class="sd">    The &#39;outlier score&#39; consists on a weighted sum of the absolute tilting value</span>
 <span class="sd">    and the relative tilting value.</span>
-
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    X_tree : numpy.ndarray</span>
 <span class="sd">        Matrix containing (x) coordinates of the center of the sections.</span>
 <span class="sd">    Y_tree : numpy.ndarray</span>
@@ -711,6 +715,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    outlier_prob : numpy.ndarray</span>
 <span class="sd">        Vector containing the &#39;outlier probability&#39; of each section.</span>
+<span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># This function simply defines 1st and 3rd cuartile of a vector and separates </span>
@@ -826,7 +831,9 @@
 
 <span class="sd">    The tree locators are then saved in a LAS file. Each tree locator corresponds </span>
 <span class="sd">    on a one-to-one basis to the individualized trees.</span>
-
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    sections : numpy.ndarray</span>
 <span class="sd">        Vector containing section heights (normalized heights).</span>
 <span class="sd">    X_c : numpy.ndarray</span>
