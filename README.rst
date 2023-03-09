@@ -93,9 +93,7 @@ tilt_detection() computes an 'outlier probability' for each section based on its
     outlier_prob = dm.tilt_detection(X_c, Y_c, R, sections)
 
 
-For further examples and more thorough explanations, please check *example.py* script in */examples* folder in the official GitHub repository:
-
-https://github.com/3DFIN/dendromatics
+For further examples and more thorough explanations, please check *example.py* script in */examples* folder.
 
 
 Dependencies
