@@ -97,10 +97,6 @@ For further examples and more thorough explanations, please check *example.py* s
 
 https://github.com/3DFIN/dendromatics
 
-```
-
-For further examples and more thorough explanations, please check `example.py` script in `/examples` folder.
-
 
 Dependencies
 ============
