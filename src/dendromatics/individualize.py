@@ -208,8 +208,6 @@ def compute_heights(
     d : float
         Points within this distance from tree axis will be considered as 
         potential points to define tree height.
-    eps : float
-        Refer to DBSCAN documentation.
     max_dev : float
         Maximum degree of vertical deviation of a tree axis to consider its 
         tree height measurement as valid.
