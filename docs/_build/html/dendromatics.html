@@ -186,14 +186,20 @@ neighbourhood of size 15.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.ground.clean_ground">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_ground</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_ground" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_ground</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_ground" title="Permalink to this definition"></a></dt>
 <dd><p>This function takes a point cloud and denoises it via DBSCAN
-clustering. It first voxelates the point cloud into 0.15 m voxels, then
-clusters the voxel cloud and excludes clusters of size less than 2.</p>
+clustering. It first voxelates the point cloud, then it clusters the voxel
+cloud and excludes clusters of size less than the value determined by
+min_points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud to be denoised. Matrix containing (x, y, z) coordinates
-of the points.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud to be denoised. Matrix containing (x, y, z) coordinates
+of the points.</p></li>
+<li><p><strong>res_ground</strong> (<em>float</em>) – (x, y, z) voxel resolution in meters. Defaults to 0.15.</p></li>
+<li><p><strong>min_points</strong> (<em>int</em>) – Clusters with size smaller than this value will be regarded as noise
+and thus eliminated from the point cloud. Defaults to 2.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>clust_cloud</strong> – The denoised point cloud. Matrix containing (x, y, z) coordinates of
