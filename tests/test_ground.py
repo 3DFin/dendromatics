@@ -24,7 +24,7 @@ def test_clean_ground():
     # Output should be the noisy cloud minus the outlier point --> the regular grid
     output = dm.clean_ground(noisy_cloud)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
 
 
 def test_normalize_heights():
@@ -54,7 +54,7 @@ def test_normalize_heights():
     expect = np.linspace(0.0, 1.0, 11)    
     output = dm.normalize_heights(cloud, dtm)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
     
     
     

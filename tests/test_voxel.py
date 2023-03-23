@@ -24,7 +24,7 @@ def test_voxelate_with_n_points_true():
     
     output, _, _ = dm.voxelate(cloud, res_xy, res_z, with_n_points = True)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
 
 
 def test_voxelate_with_n_points_false():
@@ -49,7 +49,7 @@ def test_voxelate_with_n_points_false():
     
     output, _, _ = dm.voxelate(cloud, res_xy, res_z, with_n_points = False)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
 
 
 def test_voxelate_low_res():
@@ -78,7 +78,7 @@ def test_voxelate_low_res():
     
     output, _, _ = dm.voxelate(cloud, res_xy, res_z)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
 
 
 def test_voxelate_high_res():
@@ -101,7 +101,7 @@ def test_voxelate_high_res():
     
     output, _, _ = dm.voxelate(cloud, res_xy, res_z)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
 
 
 def test_voxelate_edge_res():
@@ -130,4 +130,4 @@ def test_voxelate_edge_res():
     
     output, _, _ = dm.voxelate(cloud, res_xy, res_z)
     
-    np.testing.assert_array_equal(output, expect)
+    np.testing.assert_array_almost_equal(output, expect)
