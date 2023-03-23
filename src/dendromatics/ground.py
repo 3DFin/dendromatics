@@ -11,16 +11,22 @@ from .voxel.voxel import *
 # -----------------------------------------------------------------------------
 
 
-def clean_ground(cloud, res_ground, min_points):
+def clean_ground(cloud, res_ground=0.15, min_points=2):
     """ This function takes a point cloud and denoises it via DBSCAN 
-    clustering. It first voxelates the point cloud into 0.15 m voxels, then 
-    clusters the voxel cloud and excludes clusters of size less than 2.
+    clustering. It first voxelates the point cloud, then it clusters the voxel 
+    cloud and excludes clusters of size less than the value determined by
+    min_points.
 
     Parameters
     ----------
     cloud : numpy.ndarray
         The point cloud to be denoised. Matrix containing (x, y, z) coordinates
         of the points.
+    res_ground : float
+        (x, y, z) voxel resolution in meters. Defaults to 0.15.
+    min_points : int
+        Clusters with size smaller than this value will be regarded as noise 
+        and thus eliminated from the point cloud. Defaults to 2.
     
     Returns
     -------
