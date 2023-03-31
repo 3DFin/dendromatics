@@ -6,8 +6,7 @@ import numpy as np
 # draw_circles
 # -----------------------------------------------------------------------------
 
-
-def draw_circles(
+def generate_circles_cloud(
     X_c,
     Y_c,
     R,
@@ -17,7 +16,6 @@ def draw_circles(
     n_points_in,
     tree_vector,
     outliers,
-    filename_las,
     R_min=0.03,
     R_max=0.5,
     threshold=5,
@@ -26,9 +24,9 @@ def draw_circles(
     circa_points=200,
 ):
     """ This function generates points that comprise the circles computed by 
-    fit_circle_check function, so sections can be visualized. The circles are 
-    then saved in a LAS file, along some descriptive fields. Each circle 
-    corresponds on a one-to-one basis to the sections described by the user.
+    fit_circle_check function, so sections can be visualized. The circles
+    points cloud along with their associated meta data are retuned as a Matrix
+    (numpy.ndarray) 
     
     Parameters
     ----------
@@ -48,8 +46,6 @@ def draw_circles(
         detected_trees output from individualize_trees.
     outliers : numpy.ndarray
         Vector containing the 'outlier probability' of each section.
-    filename_las : char
-        File name for the output file.
     R_min : float
         Refer to fit_circle_check in 'sections' module. Defaults to 0.03.
     R_max : float
@@ -62,8 +58,13 @@ def draw_circles(
         Refer to fit_circle_check in sections module. Defaults to 9.
     circa_points : int
         Number of points used to draw each circle. Defaults to 200.
+    
+    Returns
+    -------
+    coords : numpy.ndarray 
+        Matrix containing the circles coordinates and their associated meta data
     """
-
+        
     # Empty vector to be filled. It has as many elements as the vector containing
     # the center of the circles for a given tree.
     tree_section = X_c.shape
@@ -140,6 +141,81 @@ def draw_circles(
             coords[start:end, 10] = 1  # does not pass quality checks
         else:
             coords[start:end, 10] = 0  # passes quality checks
+    return coords
+
+def draw_circles(
+    X_c,
+    Y_c,
+    R,
+    sections,
+    check_circle,
+    sector_perct,
+    n_points_in,
+    tree_vector,
+    outliers,
+    filename_las,
+    R_min=0.03,
+    R_max=0.5,
+    threshold=5,
+    n_sectors=16,
+    min_n_sectors=9,
+    circa_points=200,
+):
+    """ This function generates points that comprise the circles computed by 
+    fit_circle_check function, so sections can be visualized. The circles are 
+    then saved in a LAS file, along some descriptive fields. Each circle 
+    corresponds on a one-to-one basis to the sections described by the user.
+    
+    Parameters
+    ----------
+    X_c : numpy.ndarray
+        Matrix containing (x) coordinates of the center of the sections.
+    Y_c : numpy.ndarray
+        Matrix containing (y) coordinates of the center of the sections.
+    R : numpy.ndarray
+        Vector containing section radia.
+    sections : numpy.ndarray
+        Vector containing section heights (normalized heights).
+    section_perct : numpy.ndarray
+        Matrix containing the percentage of occupied sectors.
+    n_points_in : numpy.ndarray
+        Matrix containing the number of points in the inner circumferences.
+    tree_vector : numpy.ndarray
+        detected_trees output from individualize_trees.
+    outliers : numpy.ndarray
+        Vector containing the 'outlier probability' of each section.
+    filename_las : char
+        File name for the output file.
+    R_min : float
+        Refer to fit_circle_check in 'sections' module. Defaults to 0.03.
+    R_max : float
+        Refer to fit_circle_check in 'sections' module. Defaults to 0.5.
+    threshold : float
+        Refer to fit_circle_check in 'sections' module. Defaults to 5.
+    n_sectors : int
+        Refer to fit_circle_check in 'sections' module. Defaults to 16.
+    min_n_sectors: int
+        Refer to fit_circle_check in sections module. Defaults to 9.
+    circa_points : int
+        Number of points used to draw each circle. Defaults to 200.
+    """
+    coords = generate_circles_cloud(
+        X_c,
+        Y_c,
+        R,
+        sections,
+        check_circle,
+        sector_perct,
+        n_points_in,
+        tree_vector,
+        outliers,
+        R_min,
+        R_max,
+        threshold,
+        n_sectors,
+        min_n_sectors,
+        circa_points,
+    )
 
     # LAS file containing circle coordinates.
     las_circ = laspy.create(point_format=2, file_version="1.2")
@@ -184,10 +260,8 @@ def draw_circles(
 # draw_axes
 # -----------------------------------------------------------------------------
 
-
-def draw_axes(
+def generate_axis_cloud(    
     tree_vector,
-    filename_las,
     line_downstep=0.5,
     line_upstep=10.0,
     stripe_lower_limit=0.5,
@@ -198,14 +272,16 @@ def draw_axes(
     Z_field=2,
 ):
     """ This function generates points that comprise the axes computed by 
-    individualize_trees, so that they can be visualized. The axes are then 
-    saved in a LAS file, along some descriptive fields. Each axis corresponds 
-    on a one-to-one basis to the individualized trees.
-
+        individualize_trees, so that they can be visualized. It output two
+        numpy.ndarray that describes the point cloud of the axis 
+        and their associated tilt.
+    
     Parameters
     ----------
     tree_vector : numpy.ndarray
         detected_trees output from individualize_trees.
+    filename_las : char
+        File name for the output file
     line_downstep : float
         From the stripe centroid, how much (downwards direction) will the drawn
         axes extend (units is meters). Defaults to 0.5. 
@@ -217,17 +293,22 @@ def draw_axes(
     stripe_upper_limit : float
         Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.
     point_interval : float
-        Step value used to draw points (unit is meters). Defaults to 0.01.
-    filename_las : char
-        File name for the output file.
+        Step value used to draw points (unit is meters). Defaults to 0.01..
     X_field : int
         Index at which (x) coordinate is stored. Defaults to 0.
     Y_field : int
         Index at which (y) coordinate is stored. Defaults to 1.
     Z_field : int
         Index at which (z) coordinate is stored. Defaults to 2.
-    """
+    
+    Returns:
+    --------
+    axes_point : numpy.ndarray
+        Matrix that describes the point cloud of the axes
 
+    tilt : numpy.ndarray
+        Matrix that describes the tilt of each axes
+    """
     stripe_centroid = (stripe_lower_limit + stripe_upper_limit) / 2
     mean_descend = stripe_centroid + line_downstep
     mean_rise = line_upstep - stripe_centroid
@@ -263,6 +344,60 @@ def draw_axes(
             ind = ind + up_iter + down_iter
 
     axes_points = axes_points[: np.int_(ind), :]
+    return (axes_points, tilt)
+    
+
+def draw_axes(
+    tree_vector,
+    filename_las,
+    line_downstep=0.5,
+    line_upstep=10.0,
+    stripe_lower_limit=0.5,
+    stripe_upper_limit=2.5,
+    point_interval=0.01,
+    X_field=0,
+    Y_field=1,
+    Z_field=2,
+):
+    """ This function generates points that comprise the axes computed by 
+    individualize_trees, so that they can be visualized. The axes are then 
+    saved in a LAS file, along some descriptive fields. Each axis corresponds 
+    on a one-to-one basis to the individualized trees.
+
+    Parameters
+    ----------
+    tree_vector : numpy.ndarray
+        detected_trees output from individualize_trees.
+    filename_las : char
+        File name for the output file
+    line_downstep : float
+        From the stripe centroid, how much (downwards direction) will the drawn
+        axes extend (units is meters). Defaults to 0.5. 
+    line_upstep : float
+        From the stripe centroid, how much (upwards direction) will the drawn
+        axes extend (units is meters). Defaults to 10.0.
+    stripe_lower_limit : float
+        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.5. 
+    stripe_upper_limit : float
+        Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.
+    point_interval : float
+        Step value used to draw points (unit is meters). Defaults to 0.01..
+    X_field : int
+        Index at which (x) coordinate is stored. Defaults to 0.
+    Y_field : int
+        Index at which (y) coordinate is stored. Defaults to 1.
+    Z_field : int
+        Index at which (z) coordinate is stored. Defaults to 2.
+    """
+    axes_points, tilt = generate_axis_cloud(
+        tree_vector, 
+        line_downstep, 
+        line_upstep, 
+        stripe_lower_limit, 
+        stripe_upper_limit, 
+        point_interval
+    )
+
     las_axes = laspy.create(point_format=2, file_version="1.2")
     las_axes.x = axes_points[:, X_field]
     las_axes.y = axes_points[:, Y_field]
