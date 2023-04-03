@@ -111,7 +111,7 @@ def fit_circle(X, Y):
     # points within the section. 'ier' is a flag indicating whether the solution
     # was found (ier = 1, 2, 3 or 4) or not (otherwise).
     circle_c, ier = opt.leastsq(
-        f_2, barycenter, args=(X, Y)
+        f_2, barycenter, args=(X, Y), maxfev = 2000
     )  
     
     X_c, Y_c = circle_c
