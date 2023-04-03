@@ -111,7 +111,7 @@ def fit_circle(X, Y):
     # points within the section. 'ier' is a flag indicating whether the solution
     # was found (ier = 1, 2, 3 or 4) or not (otherwise).
     circle_c, ier = opt.leastsq(
-        f_2, barycenter, args=(X, Y)
+        f_2, barycenter, args=(X, Y), maxfev = 2000
     )  
     
     X_c, Y_c = circle_c
@@ -136,7 +136,6 @@ def inner_circle(X, Y, X_c, Y_c, R, times_R):
     
         - If points are closest to the inner circle, then the first fit was not
         appropiate
-        
         - On the contrary, if points are closer to the outer circle, the 
         'fit_circle-circle' is appropiate and describes well the stem diameter.
     
@@ -207,7 +206,7 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
         to be considered as valid.
     width : float
         Width around the fitted circle to look for points (units is 
-        milimeters).
+        meters).
 
     Returns
     -------
@@ -230,8 +229,8 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
     )  # angular coordinate. This function from numpy directly computes it.
 
     # Points that are close enough to the circle that will be checked.
-    points_within = (radial_coord > (R - width / 100)) * (
-        radial_coord < (R + width / 100)
+    points_within = (radial_coord > (R - width)) * (
+        radial_coord < (R + width)
     )
 
     # Codification of points in each sector. Basically the range of angular coordinates
@@ -458,13 +457,13 @@ def compute_sections(
     Parameters
     ----------
     stems : numpy.ndarray
-        Point cloud containing the individualized trees. It is expected to have
-            X, Y, Z0 and tree_ID fields.
+        Point cloud containing the individualized trees. It is expected to 
+        have X, Y, Z0 and tree_ID fields.
     sections : numpy.ndarray
         Matrix containing a range of height values at which sections will be 
         computed.
     section_width : float
-        Points within this distance from any sections value will be considered 
+        Points within this distance from any `sections` value will be considered 
         as belonging to said section (units is meters). Defaults to 0.02.
     times_R : float
         Refer to fit_circle_check. Defaults to 0.5.
@@ -492,7 +491,7 @@ def compute_sections(
         Index at which (z0) coordinate is stored. Defaults to 3.
     tree_id_field : int
         Index at which cluster ID is stored. Defaults to 4.
-    
+        
     Returns
     -------
     X_c : numpy.ndarray
@@ -505,7 +504,6 @@ def compute_sections(
         Matrix containing the percentage of occupied sectors.
     n_points_in : numpy.ndarray
         Matrix containing the number of points in the inner circles.
-    
     """
     trees = np.unique(
     stems[:, tree_id_field]
@@ -619,9 +617,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     
     The 'outlier score' consists on a weighted sum of the absolute tilting value
     and the relative tilting value.
-    
-    Parameters
-    ----------
+
     X_tree : numpy.ndarray
         Matrix containing (x) coordinates of the center of the sections.
     Y_tree : numpy.ndarray
@@ -641,7 +637,6 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     -------
     outlier_prob : numpy.ndarray
         Vector containing the 'outlier probability' of each section.
-        
     """
 
     # This function simply defines 1st and 3rd cuartile of a vector and separates 
@@ -757,9 +752,7 @@ def tree_locator(
 
     The tree locators are then saved in a LAS file. Each tree locator corresponds 
     on a one-to-one basis to the individualized trees.
-    
-    Parameters
-    ----------
+
     sections : numpy.ndarray
         Vector containing section heights (normalized heights).
     X_c : numpy.ndarray

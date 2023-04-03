@@ -23,7 +23,7 @@ To generate the DTM itself, a cloth-simulation filter (CSF) as described in [ZHA
 1. Identification of stems among user-provided horizontal stripe
 ----------------------------------------------------------------
 
-In this first step, the user selects a stripe, defined this as a subset of the original cloud delimited by a lower height (:math:`Z_{h(low)}`) and an upper height (:math:`Z_{h(high)}`), which will narrow down a region where it is expected to only encounter stems. The points within the stripe will be voxelated and their verticality will be computed, based on fixed radius neighbourhoods. Then, they will be filtered based on their verticality value. After this, the remaining points will be clustered using the DBSCAN algorithm ([ESTE2018]_). These procedures will be repeated iteratively a user-defined number of times. At this stage, the potential stems are referred as ‘voxel groups’. Figure 2 illustrates this step of the algorithm.
+In this first step, the user selects a stripe, defined this as a subset of the original cloud delimited by a lower height (:math:`Z_{h(low)}`) and an upper height (:math:`Z_{h(high)}`), which will narrow down a region where it is expected to only encounter stems. The points within the stripe will be voxelated and their verticality will be computed, based on fixed radius neighbourhoods. Then, they will be filtered based on their verticality value. After this, the remaining points will be clustered using the DBSCAN algorithm ([ESTE1996]_). These procedures will be repeated iteratively a user-defined number of times. At this stage, the potential stems are referred as ‘voxel groups’. Figure 2 illustrates this step of the algorithm.
 
 
 .. image:: C:/Swansea/git_repository/files/stripe_and_groups.jpg

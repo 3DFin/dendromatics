@@ -78,8 +78,8 @@ def draw_circles(
     # Double for loop to iterate through each combination of coordinates
     for i in range(tree_section[0]):
         for j in range(tree_section[1]):
-            # If distance is within range (0, 1), then proceed.
-            if R[i, j] > 0 and R[i, j] < 1:
+            # If distance is within range (R_min, R_max), then proceed.
+            if R[i, j] >= R_min and R[i, j] <= R_max:
                 # Filling the array with the appropiate data
                 section_c_xyz[section, :] = [
                     X_c[i, j],
@@ -213,9 +213,9 @@ def draw_axes(
         From the stripe centroid, how much (upwards direction) will the drawn
         axes extend (units is meters). Defaults to 10.0.
     stripe_lower_limit : float
-        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.5. 
+        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.7. 
     stripe_upper_limit : float
-        Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.
+        Upper (vertical) limit of the stripe (units is meters). Defaults to 3.5.
     point_interval : float
         Step value used to draw points (unit is meters). Defaults to 0.01.
     filename_las : char

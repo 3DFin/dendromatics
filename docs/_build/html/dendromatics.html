@@ -186,14 +186,20 @@ neighbourhood of size 15.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.ground.clean_ground">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_ground" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.ground.</span></span><span class="sig-name descname"><span class="pre">clean_ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_ground</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/ground.html#clean_ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.ground.clean_ground" title="Permalink to this definition"></a></dt>
 <dd><p>This function takes a point cloud and denoises it via DBSCAN
-clustering. It first voxelates the point cloud into 0.15 m voxels, then
-clusters the voxel cloud and excludes clusters of size less than 2.</p>
+clustering. It first voxelates the point cloud, then it clusters the voxel
+cloud and excludes clusters of size less than the value determined by
+min_points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud to be denoised. Matrix containing (x, y, z) coordinates
-of the points.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cloud</strong> (<em>numpy.ndarray</em>) – The point cloud to be denoised. Matrix containing (x, y, z) coordinates
+of the points.</p></li>
+<li><p><strong>res_ground</strong> (<em>float</em>) – (x, y, z) voxel resolution in meters. Defaults to 0.15.</p></li>
+<li><p><strong>min_points</strong> (<em>int</em>) – Clusters with size smaller than this value will be regarded as noise
+and thus eliminated from the point cloud. Defaults to 2.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>clust_cloud</strong> – The denoised point cloud. Matrix containing (x, y, z) coordinates of
@@ -261,7 +267,7 @@ normalizes the heights of the first based on the second.</p>
 <span id="stem-extraction"></span><h2>Stem extraction<a class="headerlink" href="#module-dendromatics.stripe" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.stripe.verticality_clustering">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_dbscan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.037</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering" title="Permalink to this definition"></a></dt>
 <dd><p>This function implements a for loop that iteratively calls
 verticality_clustering_iteration, ‘peeling off’ the stems.</p>
 <dl class="field-list simple">
@@ -275,7 +281,6 @@ the structure tensor of said neighbourhood via eigendecomposition.
 Defaults to 0.1.</p></li>
 <li><p><strong>vert_threshold</strong> (<em>float</em>) – Minimum verticality value associated to a point to consider it as part
 of a stem. Defaults to 0.7.</p></li>
-<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation. Defaults to 0.037.</p></li>
 <li><p><strong>n_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
 potential stem. Defaults to 1000.</p></li>
 <li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations of ‘peeling’. Defaults to 2.</p></li>
@@ -302,7 +307,7 @@ belongs to.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendromatics.stripe.verticality_clustering_iteration">
-<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering_iteration" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendromatics.stripe.</span></span><span class="sig-name descname"><span class="pre">verticality_clustering_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stripe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vert_treshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_digits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dendromatics/stripe.html#verticality_clustering_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendromatics.stripe.verticality_clustering_iteration" title="Permalink to this definition"></a></dt>
 <dd><p>This function is to be used internally by verticality_clustering. The
 intended use of this function is to accept a stripe as an input, defined
 this as a subset of the original cloud delimited by a lower height and an
@@ -321,7 +326,6 @@ neighbourhood arounda given point. Verticality will be computed from
 the structure tensor of said neighbourhood via eigendecomposition.</p></li>
 <li><p><strong>vert_threshold</strong> (<em>float</em>) – Minimum verticality value associated to a point to consider it as part
 of a stem.</p></li>
-<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation.</p></li>
 <li><p><strong>n_points</strong> (<em>int</em>) – Minimum number of points in a cluster for it to be considered as a
 potential stem.</p></li>
 <li><p><strong>resolution_xy</strong> (<em>float</em>) – (x, y) voxel resolution.</p></li>
@@ -411,7 +415,6 @@ identify the highest point within the remaining voxels.</p>
 <li><p><strong>tree_id_vector</strong> (<em>numpynd.array</em>) – See compute_axes.</p></li>
 <li><p><strong>d</strong> (<em>float</em>) – Points within this distance from tree axis will be considered as
 potential points to define tree height.</p></li>
-<li><p><strong>eps</strong> (<em>float</em>) – Refer to DBSCAN documentation.</p></li>
 <li><p><strong>max_dev</strong> (<em>float</em>) – Maximum degree of vertical deviation of a tree axis to consider its
 tree height measurement as valid.</p></li>
 <li><p><strong>n_digits</strong> (<em>int</em>) – Number of digits dedicated to each coordinate ((x), (y) or (z)) during
@@ -513,14 +516,11 @@ given sections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stems</strong> (<em>numpy.ndarray</em>) – <dl class="simple">
-<dt>Point cloud containing the individualized trees. It is expected to have</dt><dd><p>X, Y, Z0 and tree_ID fields.</p>
-</dd>
-</dl>
-</p></li>
+<li><p><strong>stems</strong> (<em>numpy.ndarray</em>) – Point cloud containing the individualized trees. It is expected to
+have X, Y, Z0 and tree_ID fields.</p></li>
 <li><p><strong>sections</strong> (<em>numpy.ndarray</em>) – Matrix containing a range of height values at which sections will be
 computed.</p></li>
-<li><p><strong>section_width</strong> (<em>float</em>) – Points within this distance from any sections value will be considered
+<li><p><strong>section_width</strong> (<em>float</em>) – Points within this distance from any <cite>sections</cite> value will be considered
 as belonging to said section (units is meters). Defaults to 0.02.</p></li>
 <li><p><strong>times_R</strong> (<em>float</em>) – Refer to fit_circle_check. Defaults to 0.5.</p></li>
 <li><p><strong>threshold</strong> (<em>float</em>) – Refer to fit_circle_check. Defaults to 5.</p></li>
@@ -627,11 +627,9 @@ insight on the quality of the ‘fit_circle-circle’.</p>
 <div><ul class="simple">
 <li><p>If points are closest to the inner circle, then the first fit was not</p></li>
 </ul>
-<p>appropiate</p>
-<ul class="simple">
-<li><p>On the contrary, if points are closer to the outer circle, the</p></li>
-</ul>
-<p>‘fit_circle-circle’ is appropiate and describes well the stem diameter.</p>
+<p>appropiate
+- On the contrary, if points are closer to the outer circle, the
+‘fit_circle-circle’ is appropiate and describes well the stem diameter.</p>
 </div></blockquote>
 <p>Instead of directly computing the inner circle, it just takes a proportion
 (less than one) of the original circle radius and its center. Then, it just
@@ -702,7 +700,7 @@ anomale, non desirable structure.</p>
 <li><p><strong>min_n_sectors</strong> (<em>int</em>) – Minimum number of occupied sectors in a section for its fitted circle
 to be considered as valid.</p></li>
 <li><p><strong>width</strong> (<em>float</em>) – Width around the fitted circle to look for points (units is
-milimeters).</p></li>
+meters).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -732,23 +730,28 @@ relative to a certain axis)</p>
 </div></blockquote>
 <p>The ‘outlier score’ consists on a weighted sum of the absolute tilting value
 and the relative tilting value.</p>
+<dl class="simple">
+<dt>X_tree<span class="classifier">numpy.ndarray</span></dt><dd><p>Matrix containing (x) coordinates of the center of the sections.</p>
+</dd>
+<dt>Y_tree<span class="classifier">numpy.ndarray</span></dt><dd><p>Matrix containing (y) coordinates of the center of the sections.</p>
+</dd>
+<dt>radius<span class="classifier">numpy.ndarray</span></dt><dd><p>Vector containing section radii.</p>
+</dd>
+<dt>sections<span class="classifier">numpy.ndarray</span></dt><dd><p>Vector containing the height of the section associated to each section.</p>
+</dd>
+<dt>Z_field<span class="classifier">int</span></dt><dd><p>Index at which (z) coordinate is stored. Defaults to 2.</p>
+</dd>
+<dt>w_1<span class="classifier">float</span></dt><dd><p>Weight of absolute deviation. Defaults to 3.0.</p>
+</dd>
+<dt>w_2<span class="classifier">float</span></dt><dd><p>Weight of relative deviation. Defaults to 1.0.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X_tree</strong> (<em>numpy.ndarray</em>) – Matrix containing (x) coordinates of the center of the sections.</p></li>
-<li><p><strong>Y_tree</strong> (<em>numpy.ndarray</em>) – Matrix containing (y) coordinates of the center of the sections.</p></li>
-<li><p><strong>radius</strong> (<em>numpy.ndarray</em>) – Vector containing section radii.</p></li>
-<li><p><strong>sections</strong> (<em>numpy.ndarray</em>) – Vector containing the height of the section associated to each section.</p></li>
-<li><p><strong>Z_field</strong> (<em>int</em>) – Index at which (z) coordinate is stored. Defaults to 2.</p></li>
-<li><p><strong>w_1</strong> (<em>float</em>) – Weight of absolute deviation. Defaults to 3.0.</p></li>
-<li><p><strong>w_2</strong> (<em>float</em>) – Weight of relative deviation. Defaults to 1.0.</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>outlier_prob</strong> – Vector containing the ‘outlier probability’ of each section.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>outlier_prob</strong> – Vector containing the ‘outlier probability’ of each section.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -762,26 +765,36 @@ measurements defined in previous functions to check whether the DBH should
 be computed or not and to check which point should be used as the tree locator.</p>
 <p>The tree locators are then saved in a LAS file. Each tree locator corresponds
 on a one-to-one basis to the individualized trees.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sections</strong> (<em>numpy.ndarray</em>) – Vector containing section heights (normalized heights).</p></li>
-<li><p><strong>X_c</strong> (<em>numpy.ndarray</em>) – Matrix containing (x) coordinates of the center of the sections.</p></li>
-<li><p><strong>Y_c</strong> (<em>numpy.ndarray</em>) – Matrix containing (y) coordinates of the center of the sections.</p></li>
-<li><p><strong>tree_vector</strong> (<em>numpy.ndarray</em>) – detected_trees output from individualize_trees.</p></li>
-<li><p><strong>sector_perct</strong> (<em>numpy.ndarray</em>) – Matrix containing the percentage of occupied sectors.</p></li>
-<li><p><strong>R</strong> (<em>numpy.ndarray</em>) – Vector containing section radii.</p></li>
-<li><p><strong>outliers</strong> (<em>numpy.ndarray</em>) – Vector containing the ‘outlier probability’ of each section.</p></li>
-<li><p><strong>n_points_in</strong> (<em>numpy.ndarray</em>) – Matrix containing the number of points in the inner circles.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) – Minimum number of points in inner circle for a fitted circle to be valid.
-Defaults to 5.</p></li>
-<li><p><strong>X_field</strong> (<em>int</em>) – Index at which (x) coordinate is stored. Defaults to 0.</p></li>
-<li><p><strong>Y_field</strong> (<em>int</em>) – Index at which (y) coordinate is stored. Defaults to 1.</p></li>
-<li><p><strong>Z_field</strong> (<em>int</em>) – Index at which (z) coordinate is stored. Defaults to 2.</p></li>
-</ul>
+<dl class="simple">
+<dt>sections<span class="classifier">numpy.ndarray</span></dt><dd><p>Vector containing section heights (normalized heights).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
+<dt>X_c<span class="classifier">numpy.ndarray</span></dt><dd><p>Matrix containing (x) coordinates of the center of the sections.</p>
+</dd>
+<dt>Y_c<span class="classifier">numpy.ndarray</span></dt><dd><p>Matrix containing (y) coordinates of the center of the sections.</p>
+</dd>
+<dt>tree_vector<span class="classifier">numpy.ndarray</span></dt><dd><p>detected_trees output from individualize_trees.</p>
+</dd>
+<dt>sector_perct<span class="classifier">numpy.ndarray</span></dt><dd><p>Matrix containing the percentage of occupied sectors.</p>
+</dd>
+<dt>R<span class="classifier">numpy.ndarray</span></dt><dd><p>Vector containing section radii.</p>
+</dd>
+<dt>outliers<span class="classifier">numpy.ndarray</span></dt><dd><p>Vector containing the ‘outlier probability’ of each section.</p>
+</dd>
+<dt>n_points_in<span class="classifier">numpy.ndarray</span></dt><dd><p>Matrix containing the number of points in the inner circles.</p>
+</dd>
+<dt>threshold<span class="classifier">float</span></dt><dd><p>Minimum number of points in inner circle for a fitted circle to be valid.
+Defaults to 5.</p>
+</dd>
+<dt>X_field<span class="classifier">int</span></dt><dd><p>Index at which (x) coordinate is stored. Defaults to 0.</p>
+</dd>
+<dt>Y_field<span class="classifier">int</span></dt><dd><p>Index at which (y) coordinate is stored. Defaults to 1.</p>
+</dd>
+<dt>Z_field<span class="classifier">int</span></dt><dd><p>Index at which (z) coordinate is stored. Defaults to 2.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
 <li><p><strong>dbh_values</strong> (<em>numpy.ndarray</em>) – Vector containing DBH values.</p></li>
 <li><p><strong>tree_locations</strong> (<em>numpy.ndarray</em>) – Matrix containing (x, y, z) coordinates of each tree locator.</p></li>
 </ul>

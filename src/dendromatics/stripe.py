@@ -15,7 +15,6 @@ def verticality_clustering_iteration(
     stripe,
     vert_scale,
     vert_treshold,
-    eps,
     n_points,
     resolution_xy,
     resolution_z,
@@ -42,8 +41,6 @@ def verticality_clustering_iteration(
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part 
         of a stem.
-    eps : float
-        Refer to DBSCAN documentation.
     n_points : int
         Minimum number of points in a cluster for it to be considered as a 
         potential stem.
@@ -100,7 +97,8 @@ def verticality_clustering_iteration(
     vox_filt_stripe, vox_to_filt_stripe_ind, filt_stripe_to_vox_ind = voxelate(
         filt_stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
-
+    
+    eps = resolution_xy * 1.9
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
     clustering = DBSCAN(eps=eps, min_samples=2).fit(vox_filt_stripe)
 
@@ -155,7 +153,6 @@ def verticality_clustering(
     stripe,
     scale=0.1,
     vert_treshold=0.7,
-    eps_dbscan=0.037,
     n_points=1000,
     n_iter=2,
     resolution_xy=0.02,
@@ -178,8 +175,6 @@ def verticality_clustering(
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part 
         of a stem. Defaults to 0.7.
-    eps : float
-        Refer to DBSCAN documentation. Defaults to 0.037.
     n_points : int
         Minimum number of points in a cluster for it to be considered as a 
         potential stem. Defaults to 1000.
@@ -223,7 +218,6 @@ def verticality_clustering(
             aux_stripe,
             scale,
             vert_treshold,
-            eps_dbscan,
             n_points,
             resolution_xy,
             resolution_z,
