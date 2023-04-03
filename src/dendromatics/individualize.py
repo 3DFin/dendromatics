@@ -43,9 +43,9 @@ def compute_axes(
         The point cloud containing the clusterized stripe (the stems) from 
         verticality_clustering.
     stripe_lower_limit : float
-        Lower (vertical) limit of the stripe (units is meters).
+        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.7. 
     stripe_upper_limit : float
-        Upper (vertical) limit of the stripe (units is meters).
+        Upper (vertical) limit of the stripe (units is meters). Defaults to 3.5.
     h_range : float
         Only stems where points extend vertically throughout a range as tall as
         defined by h_range are considered.
@@ -173,7 +173,9 @@ def compute_axes(
             valid_points = (axis_dist < d_max) & ((axis_dist - dist_to_axis) < 0)
             tree_id_vector[valid_points] = i
             dist_to_axis[valid_points] = axis_dist[valid_points]
-
+    
+    # This deletes the trailing rows that only contains zeros
+    detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
     return (detected_trees, dist_to_axis, tree_id_vector)
 
 
@@ -292,6 +294,7 @@ def compute_heights(
     # Eliminating all points that belong to clusters with less than 2 points (large voxels)
     voxelated_cloud = voxelated_cloud[np.isin(voxelated_cloud[:, -2], large_clusters)]
 
+    # Only pick the actual trees: 
     n_trees = detected_trees.shape[0]
     tree_heights = np.zeros((n_trees, 5))
 
