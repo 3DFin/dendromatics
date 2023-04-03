@@ -11,16 +11,22 @@ from .voxel.voxel import *
 # -----------------------------------------------------------------------------
 
 
-def clean_ground(cloud):
+def clean_ground(cloud, res_ground=0.15, min_points=2):
     """ This function takes a point cloud and denoises it via DBSCAN 
-    clustering. It first voxelates the point cloud into 0.15 m voxels, then 
-    clusters the voxel cloud and excludes clusters of size less than 2.
+    clustering. It first voxelates the point cloud, then it clusters the voxel 
+    cloud and excludes clusters of size less than the value determined by
+    min_points.
 
     Parameters
     ----------
     cloud : numpy.ndarray
         The point cloud to be denoised. Matrix containing (x, y, z) coordinates
         of the points.
+    res_ground : float
+        (x, y, z) voxel resolution in meters. Defaults to 0.15.
+    min_points : int
+        Clusters with size smaller than this value will be regarded as noise 
+        and thus eliminated from the point cloud. Defaults to 2.
     
     Returns
     -------
@@ -30,11 +36,11 @@ def clean_ground(cloud):
     """
 
     vox_cloud, vox_to_cloud_ind, cloud_to_vox_ind = voxelate(
-        cloud, 0.15, 0.15, with_n_points=False
+        cloud, res_ground, res_ground, with_n_points=False
     )
     # Cluster labels are appended to the FILTERED cloud. They map each point to
     # the cluster they belong to, according to the clustering algorithm.
-    clustering = DBSCAN(eps=0.3, min_samples=2).fit(vox_cloud)
+    clustering = DBSCAN(eps=0.3, min_samples=min_points).fit(vox_cloud)
 
     cloud_labs = np.append(
         cloud, np.expand_dims(clustering.labels_[vox_to_cloud_ind], axis=1), axis=1
@@ -46,7 +52,7 @@ def clean_ground(cloud):
 
     # Filtering of labels associated only to clusters that contain a minimum 
     # number of points.
-    large_clusters = cluster_id[K > 2]
+    large_clusters = cluster_id[K > min_points]
 
     # ID = -1 is always created by DBSCAN() to include points that were not 
     # included in any cluster.

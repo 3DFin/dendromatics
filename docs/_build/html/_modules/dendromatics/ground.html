@@ -86,16 +86,22 @@
 <span class="c1"># -----------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="clean_ground"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.ground.clean_ground">[docs]</a><span class="k">def</span> <span class="nf">clean_ground</span><span class="p">(</span><span class="n">cloud</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_ground"><a class="viewcode-back" href="../../dendromatics.html#dendromatics.ground.clean_ground">[docs]</a><span class="k">def</span> <span class="nf">clean_ground</span><span class="p">(</span><span class="n">cloud</span><span class="p">,</span> <span class="n">res_ground</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">min_points</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; This function takes a point cloud and denoises it via DBSCAN </span>
-<span class="sd">    clustering. It first voxelates the point cloud into 0.15 m voxels, then </span>
-<span class="sd">    clusters the voxel cloud and excludes clusters of size less than 2.</span>
+<span class="sd">    clustering. It first voxelates the point cloud, then it clusters the voxel </span>
+<span class="sd">    cloud and excludes clusters of size less than the value determined by</span>
+<span class="sd">    min_points.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    cloud : numpy.ndarray</span>
 <span class="sd">        The point cloud to be denoised. Matrix containing (x, y, z) coordinates</span>
 <span class="sd">        of the points.</span>
+<span class="sd">    res_ground : float</span>
+<span class="sd">        (x, y, z) voxel resolution in meters. Defaults to 0.15.</span>
+<span class="sd">    min_points : int</span>
+<span class="sd">        Clusters with size smaller than this value will be regarded as noise </span>
+<span class="sd">        and thus eliminated from the point cloud. Defaults to 2.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -105,11 +111,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">vox_cloud</span><span class="p">,</span> <span class="n">vox_to_cloud_ind</span><span class="p">,</span> <span class="n">cloud_to_vox_ind</span> <span class="o">=</span> <span class="n">voxelate</span><span class="p">(</span>
-        <span class="n">cloud</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="n">with_n_points</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">cloud</span><span class="p">,</span> <span class="n">res_ground</span><span class="p">,</span> <span class="n">res_ground</span><span class="p">,</span> <span class="n">with_n_points</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
     <span class="c1"># Cluster labels are appended to the FILTERED cloud. They map each point to</span>
     <span class="c1"># the cluster they belong to, according to the clustering algorithm.</span>
-    <span class="n">clustering</span> <span class="o">=</span> <span class="n">DBSCAN</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vox_cloud</span><span class="p">)</span>
+    <span class="n">clustering</span> <span class="o">=</span> <span class="n">DBSCAN</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="n">min_points</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vox_cloud</span><span class="p">)</span>
 
     <span class="n">cloud_labs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">cloud</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">vox_to_cloud_ind</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
@@ -121,7 +127,7 @@
 
     <span class="c1"># Filtering of labels associated only to clusters that contain a minimum </span>
     <span class="c1"># number of points.</span>
-    <span class="n">large_clusters</span> <span class="o">=</span> <span class="n">cluster_id</span><span class="p">[</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">large_clusters</span> <span class="o">=</span> <span class="n">cluster_id</span><span class="p">[</span><span class="n">K</span> <span class="o">&gt;</span> <span class="n">min_points</span><span class="p">]</span>
 
     <span class="c1"># ID = -1 is always created by DBSCAN() to include points that were not </span>
     <span class="c1"># included in any cluster.</span>

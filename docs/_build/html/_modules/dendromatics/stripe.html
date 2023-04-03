@@ -90,7 +90,6 @@
     <span class="n">stripe</span><span class="p">,</span>
     <span class="n">vert_scale</span><span class="p">,</span>
     <span class="n">vert_treshold</span><span class="p">,</span>
-    <span class="n">eps</span><span class="p">,</span>
     <span class="n">n_points</span><span class="p">,</span>
     <span class="n">resolution_xy</span><span class="p">,</span>
     <span class="n">resolution_z</span><span class="p">,</span>
@@ -117,8 +116,6 @@
 <span class="sd">    vert_threshold : float</span>
 <span class="sd">        Minimum verticality value associated to a point to consider it as part </span>
 <span class="sd">        of a stem.</span>
-<span class="sd">    eps : float</span>
-<span class="sd">        Refer to DBSCAN documentation.</span>
 <span class="sd">    n_points : int</span>
 <span class="sd">        Minimum number of points in a cluster for it to be considered as a </span>
 <span class="sd">        potential stem.</span>
@@ -175,7 +172,8 @@
     <span class="n">vox_filt_stripe</span><span class="p">,</span> <span class="n">vox_to_filt_stripe_ind</span><span class="p">,</span> <span class="n">filt_stripe_to_vox_ind</span> <span class="o">=</span> <span class="n">voxelate</span><span class="p">(</span>
         <span class="n">filt_stripe</span><span class="p">,</span> <span class="n">resolution_xy</span><span class="p">,</span> <span class="n">resolution_z</span><span class="p">,</span> <span class="n">n_digits</span><span class="p">,</span> <span class="n">with_n_points</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
-
+    
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">resolution_xy</span> <span class="o">*</span> <span class="mf">1.9</span>
     <span class="c1"># Clusterization of the voxelated cloud obtained from the filtered cloud.</span>
     <span class="n">clustering</span> <span class="o">=</span> <span class="n">DBSCAN</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vox_filt_stripe</span><span class="p">)</span>
 
@@ -230,7 +228,6 @@
     <span class="n">stripe</span><span class="p">,</span>
     <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
     <span class="n">vert_treshold</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
-    <span class="n">eps_dbscan</span><span class="o">=</span><span class="mf">0.037</span><span class="p">,</span>
     <span class="n">n_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">n_iter</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">resolution_xy</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
@@ -253,8 +250,6 @@
 <span class="sd">    vert_threshold : float</span>
 <span class="sd">        Minimum verticality value associated to a point to consider it as part </span>
 <span class="sd">        of a stem. Defaults to 0.7.</span>
-<span class="sd">    eps : float</span>
-<span class="sd">        Refer to DBSCAN documentation. Defaults to 0.037.</span>
 <span class="sd">    n_points : int</span>
 <span class="sd">        Minimum number of points in a cluster for it to be considered as a </span>
 <span class="sd">        potential stem. Defaults to 1000.</span>
@@ -298,7 +293,6 @@
             <span class="n">aux_stripe</span><span class="p">,</span>
             <span class="n">scale</span><span class="p">,</span>
             <span class="n">vert_treshold</span><span class="p">,</span>
-            <span class="n">eps_dbscan</span><span class="p">,</span>
             <span class="n">n_points</span><span class="p">,</span>
             <span class="n">resolution_xy</span><span class="p">,</span>
             <span class="n">resolution_z</span><span class="p">,</span>
