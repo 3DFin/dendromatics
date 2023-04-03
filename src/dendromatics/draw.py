@@ -78,8 +78,8 @@ def draw_circles(
     # Double for loop to iterate through each combination of coordinates
     for i in range(tree_section[0]):
         for j in range(tree_section[1]):
-            # If distance is within range (0, 1), then proceed.
-            if R[i, j] > 0 and R[i, j] < 1:
+            # If distance is within range (R_min, R_max), then proceed.
+            if R[i, j] >= R_min and R[i, j] <= R_max:
                 # Filling the array with the appropiate data
                 section_c_xyz[section, :] = [
                     X_c[i, j],
