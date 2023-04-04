@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dendromatics"
+dynamic = ["version"]
+description = "Automatic dendrometry and forest inventory for terrestrial point clouds"
+readme = "README.rst"
+license = "GPL-3.0-or-later"
+authors = [
+    { name = "Carlos Cabo", email = "carloscabo@uniovi.es" },
+    { name = "Diego Laino", email = "diegolainor@gmail.com" },
+]
+keywords = [
+    "forestry",
+    "lidar",
+    "tls",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+    "CSF @ git+https://github.com/jianboqi/CSF@875127d12e1d25c43f511d4cfce34854b8caa234#subdirectory=python",
+    "jakteristics",
+    "laspy",
+    "numpy",
+    "scikit_learn",
+    "scipy",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.urls]
+Source = "https://github.com/3DFIN/dendromatics"
+# TODO: to be changed when sphinx documentation is deployed
+Documentation = "https://github.com/3DFIN/3DFIN#README.md"
+Issues = "https://github.com/3DFIN/dendromatics/issues"
+
+[tool.hatch.version]
+path = "src/dendromatics/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+]
