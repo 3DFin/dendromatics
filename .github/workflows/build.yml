@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build standalone 3DFin windows version
+    name: Build dendromatics source package
     runs-on: windows-latest
 
     steps:
@@ -33,7 +33,7 @@ jobs:
         if-no-files-found: error
 
   publish:
-    name: Publish source package
+    name: Publish dendromatics source package
     needs:
     - build
     runs-on: windows-latest
