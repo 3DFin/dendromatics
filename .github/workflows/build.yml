@@ -1,0 +1,54 @@
+name: build and release on PyPi
+
+on: push
+# this action should only be triggered for a release
+# for now it's not the case in order to test the process
+    # tags:
+    # - hatch-v*
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-standalone-${{ github.head_ref }}
+
+jobs:
+  build:
+    name: Build standalone 3DFin windows version
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Hatch
+      run: python -m pip install --upgrade hatch
+    
+    - name: Build source package
+      run: hatch build
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: artifacts
+        path: dist/*
+        if-no-files-found: error
+
+  publish:
+    name: Publish source package
+    needs:
+    - build
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: artifacts
+        path: dist
+
+#     todo: release in pypy
+#     - name: Publish on PiPy
+#      uses: pypa/gh-action-pypi-publish@v1.8.4
+#      if: startsWith(github.ref, 'refs/tags/')
+#      with:
+#        skip_existing: true
+#        user: should be in a token
+#        password: ${{ secrets.PYPI_TOKEN }}
