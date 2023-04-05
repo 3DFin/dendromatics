@@ -1,10 +1,11 @@
 name: build and release on PyPi
 
-on: push
+on: 
+  push:
 # this action should only be triggered for a release
 # for now it's not the case in order to test the process
     # tags:
-    # - hatch-v*
+    # - v*
 
 permissions:
   contents: write
