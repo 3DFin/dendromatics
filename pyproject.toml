@@ -97,6 +97,13 @@ sort-import = "isort --check-only --diff --color src/ tests/"
 all = ["check-static", "format", "sort-import"]
 
 [tool.ruff]
+select = ["E", "F", "B"] # TODO Add D
+target-version = "py310"
 # Ignore import errors for now.
-# TODO: Ignore Line too long error as well becaus it needs to be discussed 
-ignore = ["F405", "F403", "E501"] 
+# TODO: Ignore Line too long error in comments or check them manually
+line-length = 88
+ignore = ["F405", "F403", "E501"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
