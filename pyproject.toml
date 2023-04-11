@@ -25,11 +25,11 @@ classifiers = [
 ]
 dependencies = [
     "CSF @ git+https://github.com/jianboqi/CSF@875127d12e1d25c43f511d4cfce34854b8caa234#subdirectory=python",
-    "jakteristics",
-    "laspy",
-    "numpy",
-    "scikit_learn",
-    "scipy",
+    "jakteristics>=0.5.0",
+    "laspy>=2.4.0",
+    "numpy>=1.24.0",
+    "scikit_learn>=1.2.0",
+    "scipy>=1.10.0",
 ]
 
 [tool.hatch.metadata]
@@ -37,7 +37,7 @@ allow-direct-references = true
 
 [project.urls]
 Source = "https://github.com/3DFIN/dendromatics"
-# TODO: to be changed when sphinx documentation is deployed
+# TODO: to be changed once sphinx documentation is deployed
 Documentation = "https://github.com/3DFIN/3DFIN#README.md"
 Issues = "https://github.com/3DFIN/dendromatics/issues"
 
