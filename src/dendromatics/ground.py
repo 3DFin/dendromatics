@@ -127,9 +127,9 @@ def generate_dtm(
 
     # Retrieving the cloth nodes
     with open("cloth_nodes.txt", "r+") as f:
-        l = [[float(num) for num in line.split("\t")] for line in f]
+        raw_nodes = [[float(num) for num in line.split("\t")] for line in f]
 
-    cloth_nodes = np.asarray(l)
+    cloth_nodes = np.asarray(raw_nodes)
 
     return cloth_nodes
 

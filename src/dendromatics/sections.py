@@ -849,9 +849,12 @@ def tree_locator(
             which_valid_sector_perct = (
                 sector_perct[i, close_to_dbh] > 30
             )  # only those with sector occupancy higher than 30 %
-            which_valid_points = (
-                n_points_in[i, close_to_dbh] < threshold
-            )  # only those with enough points in inner circle
+           
+            # valid points could be retrieved as well
+            # i.e. only those with enough points in inner circle
+            # which_valid_points = (
+            #    n_points_in[i, close_to_dbh] < threshold
+            #)
 
             # If there are valid sections among the selected
             if (np.any(which_valid_R)) & (np.any(which_valid_out)):

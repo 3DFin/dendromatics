@@ -80,3 +80,16 @@ dependencies = [
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build docs docs/_build"
 serve = "python -m http.server docs/_build"
+
+[tool.hatch.envs.lint]
+dependencies = [
+  "ruff",
+]
+[tool.hatch.envs.lint.scripts]
+# static analysis with ruff
+check-static = "ruff check src/"
+
+[tool.ruff]
+# Ignore import errors for now.
+# TODO: Ignore Line too long error as well becaus it needs to be discussed 
+ignore = ["F405", "F403", "E501"] 

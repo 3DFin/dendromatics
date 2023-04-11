@@ -174,7 +174,7 @@ def voxelate(
 
     # Boolean parameter that includes or not a 4th column with the number of 
     # points in each voxel
-    if with_n_points == True:
+    if with_n_points is True:
         voxelated_cloud = np.append(voxelated_cloud, vox_points[:, np.newaxis], axis=1)
 
     if not silent:
