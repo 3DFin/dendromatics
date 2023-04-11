@@ -85,12 +85,16 @@ serve = "python -m http.server docs/_build"
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
-  "ruff",
+  "ruff>=0.0.261",
+  "black>=23.3.0",
+  "isort>=5.12.0"
 ]
 [tool.hatch.envs.lint.scripts]
 # static analysis with ruff
-check-static = "ruff check src/"
-fortmat = "black"
+check-static = "ruff check src/ tests/"
+format = "black --check --diff --color src/ tests/"
+sort-import = "isort --check-only --diff --color src/ tests/"
+all = ["check-static", "format", "sort-import"]
 
 [tool.ruff]
 # Ignore import errors for now.
