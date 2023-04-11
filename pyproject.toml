@@ -72,6 +72,7 @@ exclude_lines = [
 ]
 
 [tool.hatch.envs.docs]
+detached = true
 dependencies = [
   "sphinx",
   "sphinx-reference-rename",
@@ -82,12 +83,14 @@ build = "sphinx-build docs docs/_build"
 serve = "python -m http.server docs/_build"
 
 [tool.hatch.envs.lint]
+detached = true
 dependencies = [
   "ruff",
 ]
 [tool.hatch.envs.lint.scripts]
 # static analysis with ruff
 check-static = "ruff check src/"
+fortmat = "black"
 
 [tool.ruff]
 # Ignore import errors for now.
