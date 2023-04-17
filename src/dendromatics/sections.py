@@ -134,9 +134,10 @@ def inner_circle(X, Y, X_c, Y_c, R, times_R):
     insight on the quality of the 'fit_circle-circle'.
 
         - If points are closest to the inner circle, then the first fit was not
-        appropiate
+          appropiate
+
         - On the contrary, if points are closer to the outer circle, the
-        'fit_circle-circle' is appropiate and describes well the stem diameter.
+          'fit_circle-circle' is appropiate and describes well the stem diameter.
 
     Instead of directly computing the inner circle, it just takes a proportion
     (less than one) of the original circle radius and its center. Then, it just
@@ -604,17 +605,19 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     and assigns a score to the sections based on those outliers. Two kinds of
     outliers are considered.
 
-        Absolute outliers are obtained from the sum of the deviations from
-        every section center to all axes within a tree (the most tilted sections
-        relative to all axes)
+        - Absolute outliers are obtained from the sum of the deviations from
+          every section center to all axes within a tree (the most tilted sections
+          relative to all axes)
 
-        Relative outliers are obtained from the deviations of other section
-        centers from a certain axis, within a tree (the most tilted sections
-        relative to a certain axis)
+        - Relative outliers are obtained from the deviations of other section
+          centers from a certain axis, within a tree (the most tilted sections
+          relative to a certain axis)
 
     The 'outlier score' consists on a weighted sum of the absolute tilting value
     and the relative tilting value.
 
+    Parameters
+    ----------
     X_tree : numpy.ndarray
         Matrix containing (x) coordinates of the center of the sections.
     Y_tree : numpy.ndarray
@@ -750,6 +753,8 @@ def tree_locator(
     The tree locators are then saved in a LAS file. Each tree locator corresponds
     on a one-to-one basis to the individualized trees.
 
+    Parameters
+    ----------
     sections : numpy.ndarray
         Vector containing section heights (normalized heights).
     X_c : numpy.ndarray

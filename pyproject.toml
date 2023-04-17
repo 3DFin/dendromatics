@@ -80,7 +80,7 @@ dependencies = [
 ]
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build docs docs/_build"
-serve = "python -m http.server docs/_build"
+serve = "python -m http.server --directory docs/_build"
 
 [tool.hatch.envs.lint]
 detached = true
