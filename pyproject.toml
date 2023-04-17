@@ -103,7 +103,8 @@ fix-all = [
 ]
 
 [tool.ruff]
-select = ["E", "W", "YTT", "PTH", "NPY", "RET", "PYI", "Q", "F", "B", "I"] #TODO Add D
+select = ["E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I"] 
+# TODO Add D, PTH, RET, disabled for now as they collides with intial choices
 target-version = "py310"
 line-length = 88
 # TODO: for now we ignore "Line too long error (E501)" 
