@@ -96,20 +96,30 @@ tilt_detection() computes an 'outlier probability' for each section based on its
 For further examples and more thorough explanations, please check *example.py* script in */examples* folder.
 
 
-Dependencies
-============
+Install
+=======
 
-CSF
+dendromatics in available on `PyPi <TODO PyPi link>`_ and the full documentation can be consulted on `TBD <TODO doc link>`_
 
-jakteristics
+The list of dependencies is available in the `pyproject.toml` file.
 
-laspy
+dendromatics rely on `hatch <https://github.com/pypa/hatch>`_
 
-numpy
+Depending on your version of Python and your OS, you should also need a C/C++ compiler to compile
+some of the mandatory dependencies (CSF and jakteristics). But in any case you would not have to run
+the compiler by yourself, the build system will manage dependencies and compilation for you. 
 
-scikit_learn
+.. code-block:: console
+    
+    python -m pip install hatch
 
-scipy
+.. code-block:: console
+    
+    hatch run test .
+
+.. code-block:: console
+   
+    hatch run docs:build
 
 
 References
