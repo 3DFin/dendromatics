@@ -156,7 +156,7 @@ def clean_cloth(dtm_points):
     """
 
     tree = cKDTree(dtm_points[:, :2])
-    d, indexes = tree.query(dtm_points[:, :2], 15)
+    _, indexes = tree.query(dtm_points[:, :2], 15)
     abs_devs = np.abs(dtm_points[:, 2] - np.median(dtm_points[:, 2][indexes], axis=1))
     mads = np.median(abs_devs)
     clean_points = dtm_points[abs_devs < 2 * mads]

@@ -1,6 +1,5 @@
-import numpy as np
-
 import dendromatics as dm
+import numpy as np
 
 
 def test_voxelate_with_n_points_true():
