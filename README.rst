@@ -20,7 +20,7 @@ Examples
 Height-normalization
 --------------------
 
-Almost all functions in the module expect a height-normalized point cloud to work as intended. If your point cloud is not height-normalized, you can do it in a simple way using some of the module functions
+Almost all functions in the module expect a height-normalized point cloud to work as intended. If your point cloud is not height-normalized, you can do it in a simple way using some of the module functions.
 
 .. code-block:: python
     
@@ -40,7 +40,7 @@ Almost all functions in the module expect a height-normalized point cloud to wor
     # adding the normalized heights to the point cloud
     coords = np.append(coords, np.expand_dims(z0_values, axis = 1), 1) 
 
-If the point cloud is noisy, you might want to denoise it first before generating the DTM
+If the point cloud is noisy, you might want to denoise it first before generating the DTM.
 
 .. code-block:: python
 
@@ -50,7 +50,7 @@ If the point cloud is noisy, you might want to denoise it first before generatin
 Identifying stems from a stripe
 -------------------------------
 
-Simply provide a stripe (from a height-normalized point cloud) as follows to iteratively 'peel off' the stems
+Simply provide a stripe (from a height-normalized point cloud) as follows to iteratively 'peel off' the stems.
 
 .. code-block:: python
 
@@ -65,7 +65,7 @@ Simply provide a stripe (from a height-normalized point cloud) as follows to ite
 Individualizing trees
 ---------------------
 
-Once the stems have been identified in the stripe, they can be used to individualize the trees in the point cloud::
+Once the stems have been identified in the stripe, they can be used to individualize the trees in the point cloud.
 
 .. code-block:: python
    
@@ -75,7 +75,7 @@ Once the stems have been identified in the stripe, they can be used to individua
 Computing sections along the stems
 ----------------------------------
 
-compute_sections() can be used to compute sections along the stems of the individualized trees
+compute_sections() can be used to compute sections along the stems of the individualized trees.
 
 .. code-block:: python
 
@@ -98,7 +98,8 @@ compute_sections() can be used to compute sections along the stems of the indivi
 Tilt detection 
 --------------
 
-tilt_detection() computes an 'outlier probability' for each section based on its tilting relative to neighbour sections and the relative to the tree axis
+tilt_detection() computes an 'outlier probability' for each section based on its tilting relative to neighbour sections and relative to the tree axis.
+
 .. code-block:: python
     
     outlier_prob = dm.tilt_detection(X_c, Y_c, R, sections)
@@ -122,30 +123,30 @@ Prendes, C., Cabo, C., Ordoñez, C., Majada, J., & Canga, E. (2021). An algorith
 Install
 =======
 
-*dendromatics* in available on `PyPi <TODO PyPi link>`_ and the full documentation can be consulted on `TBD <TODO doc link>`_
+*dendromatics* is available on `PyPI <TODO PyPi link>`_ and the full documentation can be consulted on `TBD <TODO doc link>`_
 
 The list of dependencies is available in the *pyproject.toml* file.
 
-*dendromatics* rely on `hatch <https://github.com/pypa/hatch>`_
+*dendromatics* relies on `hatch <https://github.com/pypa/hatch>`_
 
-Depending on your version of Python and your OS, you should also need a C/C++ compiler to compile some of the mandatory dependencies (CSF and jakteristics). 
+Depending on your version of Python and your OS, you might also need a C/C++ compiler to compile some of the mandatory dependencies (CSF and jakteristics). 
 But in any case you would not have to run the compiler by yourself, the build system will manage dependencies and compilation for you. 
 
 .. code-block:: console
     
     python -m pip install hatch
 
-You can run test to ensure it works on your computer.
+You can run tests to ensure it works on your computer.
 
 .. code-block:: console
     
     hatch run cov
 
-it is also possible to build doc locally
+It is also possible to build doc locally.
 
 .. code-block:: console
    
     hatch run docs:build
     hatch run docs:serve
 
-and then go to `http://localhost:8000 <http://localhost:8000>`_ to browse it  
+and then go to `http://localhost:8000 <http://localhost:8000>`_ to browse it.
