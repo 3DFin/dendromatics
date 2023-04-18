@@ -26,7 +26,7 @@ To generate the DTM itself, a cloth-simulation filter (CSF) as described in [ZHA
 In this first step, the user selects a stripe, defined this as a subset of the original cloud delimited by a lower height (:math:`Z_{h(low)}`) and an upper height (:math:`Z_{h(high)}`), which will narrow down a region where it is expected to only encounter stems. The points within the stripe will be voxelated and their verticality will be computed, based on fixed radius neighbourhoods. Then, they will be filtered based on their verticality value. After this, the remaining points will be clustered using the DBSCAN algorithm ([ESTE1996]_). These procedures will be repeated iteratively a user-defined number of times. At this stage, the potential stems are referred as ‘voxel groups’. Figure 2 illustrates this step of the algorithm.
 
 
-.. image:: C:/Swansea/git_repository/files/stripe_and_groups.jpg
+.. image:: _static/stripe_and_groups.jpg
   :width: 700
   :align: center
 
@@ -39,7 +39,7 @@ In this first step, the user selects a stripe, defined this as a subset of the o
 Once the voxel groups have been computed and properly peeled-off, they are isolated and enumerated, and then, their axes are identified using PCA (PCA1 direction). These axes will be henceforth considered as stem axes. This allows to group points based on their distance to those axes, thus assigning each point to a tree. This is illustrated in Figure 3. 
 
 
-.. image:: C:/Swansea/git_repository/files/individualized_trees.jpg
+.. image:: _static/individualized_trees.jpg
   :width: 620
   :align: center
 
@@ -49,7 +49,7 @@ Once the voxel groups have been computed and properly peeled-off, they are isola
 During this step of the algorithm the tree height is computed as well. For this, and, for each tree, the points that are under a certain distance to the stem axis are selected, voxelated again using a higher resolution and clustered with DBSCAN algorithm. From the points that belong to the main cluster (the one that englobes the tree), the highest point is selected, and its height is considered as the tree height. This allows to exclude from the search of the highest point those that could belong to other trees or any noise that happened to be above the tree whilst being scanned. Figure 4 illustrates this.
 
 
-.. image:: C:/Swansea/git_repository/files/tree_height.jpg
+.. image:: _static/tree_height.jpg
   :width: 200
   :align: center
 
@@ -76,7 +76,7 @@ First, a complementary, inner circle is fitted as well, which will be used to ch
 On top of all goodness of fit tests, there is a last layer or robustness while computing the diameters. If the first fit is not appropriate, another circle will be fitted to substitute it using only points from the largest cluster in the slice of points, and the goodness of fit will be tested again. Figure 5 illustrates an example of some fitted circles after all tests and their respective axes.
 
 
-.. image:: C:/Swansea/git_repository/files/sections_and_axes.jpg
+.. image:: _static/sections_and_axes.jpg
   :width: 680
   :align: center
 

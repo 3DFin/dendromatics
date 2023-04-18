@@ -1,5 +1,6 @@
 #### IMPORTS ####
 import timeit
+
 import jakteristics as jak
 import numpy as np
 from sklearn.cluster import DBSCAN
@@ -20,13 +21,13 @@ def verticality_clustering_iteration(
     resolution_z,
     n_digits,
 ):
-    """ This function is to be used internally by verticality_clustering. The 
-    intended use of this function is to accept a stripe as an input, defined 
-    this as a subset of the original cloud delimited by a lower height and an 
-    upper height, which will narrow down a region where it is expected to only 
+    """This function is to be used internally by verticality_clustering. The
+    intended use of this function is to accept a stripe as an input, defined
+    this as a subset of the original cloud delimited by a lower height and an
+    upper height, which will narrow down a region where it is expected to only
     be stems. Then it will voxelate those points and compute the verticality
-    via compute_features() from jakteristics. It will filter points based on 
-    their verticality value, voxelate again and then cluster the remaining 
+    via compute_features() from jakteristics. It will filter points based on
+    their verticality value, voxelate again and then cluster the remaining
     points. Those are expected to belong to stems.
 
     Parameters
@@ -35,29 +36,29 @@ def verticality_clustering_iteration(
         The point cloud containing the stripe. It is expected to have X, Y, Z0
         fields. 3D or higher array containing data with `float` type.
     vert_scale : float
-        Scale to be used during verticality computation to define a 
-        neighbourhood arounda given point. Verticality will be computed from 
+        Scale to be used during verticality computation to define a
+        neighbourhood arounda given point. Verticality will be computed from
         the structure tensor of said neighbourhood via eigendecomposition.
     vert_threshold : float
-        Minimum verticality value associated to a point to consider it as part 
+        Minimum verticality value associated to a point to consider it as part
         of a stem.
     n_points : int
-        Minimum number of points in a cluster for it to be considered as a 
+        Minimum number of points in a cluster for it to be considered as a
         potential stem.
     resolution_xy : float
         (x, y) voxel resolution.
     resolution_z : float
         (z) voxel resolution.
     n_digits : int
-        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during
         the generation of each point code.
 
     Returns
     -------
     clust_stripe: numpy.ndarray
-        Point cloud containing the points from the stripe that are considered 
-        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and 
-        a 4th column containing the cluster ID of the cluster that each point 
+        Point cloud containing the points from the stripe that are considered
+        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and
+        a 4th column containing the cluster ID of the cluster that each point
         belongs to.
     t1 : float
         Time spent.
@@ -71,8 +72,8 @@ def verticality_clustering_iteration(
         stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
 
-    # Computation of verticality values associated to voxels using 
-    # 'compute_features' function. It needs a vicinity radius, provided by 
+    # Computation of verticality values associated to voxels using
+    # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
     vert_values = jak.compute_features(
         voxelated_stripe, search_radius=vert_scale, feature_names=["verticality"]
@@ -86,7 +87,7 @@ def verticality_clustering_iteration(
     # original-cloud indexes.
     vert_stripe = np.append(stripe, vert_values[vox_to_stripe_ind], axis=1)
 
-    # Filtering of points that were in voxels whose verticality value is under 
+    # Filtering of points that were in voxels whose verticality value is under
     # the threshold. Output is a filtered cloud.
     filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_treshold]
 
@@ -97,7 +98,7 @@ def verticality_clustering_iteration(
     vox_filt_stripe, vox_to_filt_stripe_ind, filt_stripe_to_vox_ind = voxelate(
         filt_stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
-    
+
     eps = resolution_xy * 1.9
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
     clustering = DBSCAN(eps=eps, min_samples=2).fit(vox_filt_stripe)
@@ -117,15 +118,15 @@ def verticality_clustering_iteration(
         axis=1,
     )
 
-    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K}, 
+    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
-    # Filtering of labels associated only to clusters that contain a minimum 
+    # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
     large_clusters = cluster_id[K > n_points]
 
-    # ID = -1 is always created by DBSCAN() to include points that were not 
+    # ID = -1 is always created by DBSCAN() to include points that were not
     # included in any cluster.
     large_clusters = large_clusters[large_clusters != -1]
 
@@ -159,24 +160,24 @@ def verticality_clustering(
     resolution_z=0.02,
     n_digits=5,
 ):
-    """ This function implements a for loop that iteratively calls 
+    """This function implements a for loop that iteratively calls
     verticality_clustering_iteration, 'peeling off' the stems.
-    
+
     Parameters
     ----------
     stripe : numpy.ndarray
         The point cloud containing the stripe. It is expected to have X, Y, Z0
         fields. 3D or higher array containing data with `float` type.
     scale : float
-        Scale to be used during verticality computation to define a 
-        neighbourhood arounda given point. Verticality will be computed from 
+        Scale to be used during verticality computation to define a
+        neighbourhood arounda given point. Verticality will be computed from
         the structure tensor of said neighbourhood via eigendecomposition.
         Defaults to 0.1.
     vert_threshold : float
-        Minimum verticality value associated to a point to consider it as part 
+        Minimum verticality value associated to a point to consider it as part
         of a stem. Defaults to 0.7.
     n_points : int
-        Minimum number of points in a cluster for it to be considered as a 
+        Minimum number of points in a cluster for it to be considered as a
         potential stem. Defaults to 1000.
     n_iter : int
         Number of iterations of 'peeling'. Defaults to 2.
@@ -185,22 +186,22 @@ def verticality_clustering(
     resolution_z : float
         (z) voxel resolution. Defaults to 0.02.
     n_digits : int
-        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during
         the generation of each point code. Defaults to 5.
-    
+
     Returns
     -------
     clust_stripe : numpy.ndarray
-        Point cloud containing the points from the stripe that are considered 
-        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and 
-        a 4th column containing the cluster ID of the cluster that each point 
+        Point cloud containing the points from the stripe that are considered
+        as stems. It consists of 4 columns: (x), (y) and (z) coordinates, and
+        a 4th column containing the cluster ID of the cluster that each point
         belongs to.
     """
 
-    # This first if loop is just a fix that allows to compute everything 
-    # ignoring verticality. It should be addressed as it currently computes 
-    # verticality when n_iter = 0 and that should not happen (although, in 
-    # practice, n_iter should never be 0). It does not provide wrong results 
+    # This first if loop is just a fix that allows to compute everything
+    # ignoring verticality. It should be addressed as it currently computes
+    # verticality when n_iter = 0 and that should not happen (although, in
+    # practice, n_iter should never be 0). It does not provide wrong results
     # but it slows down the process needlessly.
     if n_iter == 0:
         n_iter = 1

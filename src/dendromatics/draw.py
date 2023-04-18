@@ -25,11 +25,11 @@ def draw_circles(
     min_n_sectors=9,
     circa_points=200,
 ):
-    """ This function generates points that comprise the circles computed by 
-    fit_circle_check function, so sections can be visualized. The circles are 
-    then saved in a LAS file, along some descriptive fields. Each circle 
+    """This function generates points that comprise the circles computed by
+    fit_circle_check function, so sections can be visualized. The circles are
+    then saved in a LAS file, along some descriptive fields. Each circle
     corresponds on a one-to-one basis to the sections described by the user.
-    
+
     Parameters
     ----------
     X_c : numpy.ndarray
@@ -197,9 +197,9 @@ def draw_axes(
     Y_field=1,
     Z_field=2,
 ):
-    """ This function generates points that comprise the axes computed by 
-    individualize_trees, so that they can be visualized. The axes are then 
-    saved in a LAS file, along some descriptive fields. Each axis corresponds 
+    """This function generates points that comprise the axes computed by
+    individualize_trees, so that they can be visualized. The axes are then
+    saved in a LAS file, along some descriptive fields. Each axis corresponds
     on a one-to-one basis to the individualized trees.
 
     Parameters
@@ -208,12 +208,12 @@ def draw_axes(
         detected_trees output from individualize_trees.
     line_downstep : float
         From the stripe centroid, how much (downwards direction) will the drawn
-        axes extend (units is meters). Defaults to 0.5. 
+        axes extend (units is meters). Defaults to 0.5.
     line_upstep : float
         From the stripe centroid, how much (upwards direction) will the drawn
         axes extend (units is meters). Defaults to 10.0.
     stripe_lower_limit : float
-        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.7. 
+        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.7.
     stripe_upper_limit : float
         Upper (vertical) limit of the stripe (units is meters). Defaults to 3.5.
     point_interval : float
