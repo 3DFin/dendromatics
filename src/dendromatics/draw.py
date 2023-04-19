@@ -255,7 +255,7 @@ def draw_circles(
     las_circ.add_extra_dim(laspy.ExtraBytesParams(name="quality", type=np.int32))
     las_circ.quality = coords[:, 10]
 
-    las_circ.write(filename_las[:-4] + "_circ.las")
+    las_circ.write(filename_las)
 
 
 # -----------------------------------------------------------------------------
@@ -410,4 +410,4 @@ def draw_axes(
     )
     las_axes.tilting_degree = tilt
 
-    las_axes.write(filename_las[:-4] + "_axes.las")
+    las_axes.write(filename_las)
