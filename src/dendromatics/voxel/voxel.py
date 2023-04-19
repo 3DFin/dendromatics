@@ -1,5 +1,6 @@
 #### IMPORTS ####
 import timeit
+
 import numpy as np
 
 # -----------------------------------------------------------------------------------------------------------------------------------
@@ -18,23 +19,23 @@ def voxelate(
     with_n_points=True,
     silent=False,
 ):
-    """ Function used to voxelate point clouds. It allows to use a different 
-    resolution for (z), but (x, y) will always share the same resolution. It 
+    """Function used to voxelate point clouds. It allows to use a different
+    resolution for (z), but (x, y) will always share the same resolution. It
     also allows to revert the process, by creating a unique code for each point
-    in the point cloud, thus voxelated cloud can be seamlessly reverted to the 
+    in the point cloud, thus voxelated cloud can be seamlessly reverted to the
     original point cloud.
-    
+
     Parameters
     ----------
     cloud : numpy.ndarray
-        The point cloud to be voxelated. It is expected to have X, Y, Z fields. 
-        3D or higher array containing data with `float` type. 
-    resolution_xy : float 
+        The point cloud to be voxelated. It is expected to have X, Y, Z fields.
+        3D or higher array containing data with `float` type.
+    resolution_xy : float
         (x, y) voxel resolution.
     resolution_z : float
         (z) voxel resolution.
     n_digits : int
-        Number of digits dedicated to each coordinate ((x), (y) or (z)) during 
+        Number of digits dedicated to each coordinate ((x), (y) or (z)) during
         the generation of each point code. Defaults to 5.
     X_field : int
         Index at which (x) coordinate is stored. Defaults to 0.
@@ -43,20 +44,20 @@ def voxelate(
     Z_field : int
         Index at which (z) coordinate is stored. Defaults to 2.
     with_n_points : boolean
-        If True, output voxelated cloud will have a field including the number 
+        If True, output voxelated cloud will have a field including the number
         of points that each voxel contains. Defaults to True.
 
     Returns
     -------
     voxelated_cloud : numpy.ndarray
-        The voxelated cloud. It consists of 3 columns, each with (x), (y) and 
+        The voxelated cloud. It consists of 3 columns, each with (x), (y) and
         (z) coordinates, and an optional 4th column having the number of points
         included in each voxel if with_n_points = True.
     vox_to_cloud_ind : numpy.ndarray
-        Vector containing the indexes to revert to the original point cloud 
+        Vector containing the indexes to revert to the original point cloud
         from the voxelated cloud.
     cloud_to_vox_ind : numpy.ndarray
-        Vector containing the indexes to directly go from the original point 
+        Vector containing the indexes to directly go from the original point
         cloud to the voxelated cloud.
     """
 
@@ -118,7 +119,7 @@ def voxelate(
     # Unique values of said 'pixel code':
     # unique_code: Unique values. They contain codified coordinates of which will
     #   later be the voxel centroids.
-    # vox_first_point_id. Index corresponding to the point of each voxel that 
+    # vox_first_point_id. Index corresponding to the point of each voxel that
     #   corresponds to the first point, among those in the same voxel, in the original cloud.
     # inverse_id: Indexes that allow to revert the voxelization.
     # vox_points: Number of points in each voxel
@@ -130,7 +131,7 @@ def voxelate(
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: extracting uniques values")
 
-    # Indexes that directly associate each voxel to its corresponding points in 
+    # Indexes that directly associate each voxel to its corresponding points in
     # the original cloud (unordered)
     vox_to_cloud_ind = inverse_id[vox_order_ind_inverse]
 
@@ -172,9 +173,9 @@ def voxelate(
         + resolution_xy / 2
     )
 
-    # Boolean parameter that includes or not a 4th column with the number of 
+    # Boolean parameter that includes or not a 4th column with the number of
     # points in each voxel
-    if with_n_points == True:
+    if with_n_points is True:
         voxelated_cloud = np.append(voxelated_cloud, vox_points[:, np.newaxis], axis=1)
 
     if not silent:
