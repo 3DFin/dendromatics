@@ -275,9 +275,9 @@ def generate_axis_cloud(
     Z_field=2,
 ):
     """This function generates points that comprise the axes computed by
-        individualize_trees, so that they can be visualized. It output two
-        numpy.ndarray that describes the point cloud of the axis
-        and their associated tilt.
+    individualize_trees, so that they can be visualized. It output two
+    numpy.ndarray that describes the point cloud of the axis
+    and their associated tilt.
 
     Parameters
     ----------
