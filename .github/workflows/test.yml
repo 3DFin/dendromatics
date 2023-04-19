@@ -1,13 +1,11 @@
 name: Test dendromatics
 
-# we only want to trigger this on main branch (Push and PRs)
+# we only want to trigger this on main branch for PR and all branch for Push.
 on:
-  push
-#    branches:
-#    - main
-#  pull_request:
-#    branches:
-#    - main
+  push:
+  pull_request:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
@@ -18,25 +16,24 @@ jobs:
     name: Python ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false # do not fail if one fail in order to get full report
+      fail-fast: false # the full workflow does not fail if one build fail in order to get full report
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        os: [ubuntu-latest, windows-latest] # we need to modify jakteristics to renable macOS.
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Get latest hatch version
-      run: python -m pip install --upgrade hatch
-        
-    - name: Run tests
-      run: hatch run cov
-      env:
-        if: matrix.os == "macos-latest"
-          CC: gcc-12 
-          CXX: g++-12
+      - name: Get latest hatch version
+        run: python -m pip install --upgrade hatch
+
+      - name: Run static and style checks
+        run: hatch run lint:check-all
+
+      - name: Run tests
+        run: hatch run cov
