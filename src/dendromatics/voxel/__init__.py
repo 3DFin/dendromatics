@@ -1,3 +1,3 @@
-__all__ = ['voxel']
+__all__ = ["voxel"]
 
 from .voxel import *

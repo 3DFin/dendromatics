@@ -1,4 +1,0 @@
-laspy
-numpy
-tox
--e .

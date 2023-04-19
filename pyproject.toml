@@ -25,11 +25,11 @@ classifiers = [
 ]
 dependencies = [
     "CSF @ git+https://github.com/jianboqi/CSF@875127d12e1d25c43f511d4cfce34854b8caa234#subdirectory=python",
-    "jakteristics",
-    "laspy",
-    "numpy",
-    "scikit_learn",
-    "scipy",
+    "jakteristics>=0.5.0",
+    "laspy>=2.4.0",
+    "numpy>=1.24.0",
+    "scikit_learn>=1.2.0",
+    "scipy>=1.10.0",
 ]
 
 [tool.hatch.metadata]
@@ -37,7 +37,7 @@ allow-direct-references = true
 
 [project.urls]
 Source = "https://github.com/3DFIN/dendromatics"
-# TODO: to be changed when sphinx documentation is deployed
+# TODO: to be changed once sphinx documentation is deployed
 Documentation = "https://github.com/3DFIN/3DFIN#README.md"
 Issues = "https://github.com/3DFIN/dendromatics/issues"
 
@@ -70,3 +70,57 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.hatch.envs.docs]
+detached = true
+dependencies = [
+  "sphinx",
+  "sphinx-reference-rename",
+  "sphinx-rtd-theme"
+]
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build docs docs/_build"
+serve = "python -m http.server --directory docs/_build"
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "ruff>=0.0.261",
+  "black>=23.3.0",
+  "isort>=5.12.0"
+]
+[tool.hatch.envs.lint.scripts]
+# static analysis with ruff
+check-static = "ruff check {args:.}"
+check-format = "black --check --diff --color {args:.}"
+fix-static = "ruff --fix {args:.}"
+fix-format = "black {args:.}"
+check-all = ["check-static", "check-format"]
+fix-all = [
+  "fix-static",
+  "fix-format",
+  "check-all",
+]
+
+[tool.ruff]
+select = ["E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I"] 
+# TODO Add D, PTH, RET, disabled for now as they collides with intial choices
+target-version = "py310"
+line-length = 88
+# TODO: for now we ignore "Line too long error (E501)" 
+# because our comments are too longs
+# Black will take care of the line lenght in code anyway
+ignore = ["E501", 
+# Ignore docstring in public package and module
+  "D100", "D104",
+# Blank line before class
+  "D203",
+# multiline summary second line
+  "D213",
+# Temporary because global imports are a design choice
+  "F405", "F403"
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]

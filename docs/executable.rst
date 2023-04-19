@@ -2,7 +2,7 @@
 =====
 
 
-.. image:: C:/Swansea/py_exe/3dfin_2_png.png
+.. image:: _static/3dfin_2_png.png
   :width: 400
   :align: center
 
