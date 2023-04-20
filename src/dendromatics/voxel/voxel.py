@@ -84,7 +84,7 @@ def voxelate(
             "{:.2f}".format(resolution_z),
             "m",
         )
-        print("        ", "%.2f" % elapsed, "s: escaling and translading")
+        print("        ", "%.2f" % elapsed, "s: scaling and translating")
 
     # Generation of 'pixel code'. It provides each point with an unique identifier.
     code = (
@@ -180,7 +180,7 @@ def voxelate(
 
     if not silent:
         elapsed = timeit.default_timer() - t
-        print("        ", "%.2f" % elapsed, "s: reescaling and translading back")
+        print("        ", "%.2f" % elapsed, "s: rescaling and translating back")
         print(
             "        ",
             "{:.2f}".format(vox_to_cloud_ind.shape[0] / 1000000),

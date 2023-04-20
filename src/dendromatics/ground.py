@@ -74,7 +74,6 @@ def generate_dtm(
     bSloopSmooth=True,
     cloth_resolution=0.5,
     classify_threshold=0.1,
-    exportCloth=True,
 ):
     """This function takes a point cloud and generates a Digital Terrain Model
     (DTM) based on its ground. It's based on 'Cloth Simulation Filter' by
@@ -95,8 +94,6 @@ def generate_dtm(
     classify_threshold : float
         The height threshold used to classify the point cloud into ground and
         non-ground parts. Refer to CSF documentation. Defaults to 0.1.
-    exportCloth : Boolean
-        The DTM will be exported. Refer to CSF documentation. Defaults to True.
 
     Returns
     -------
@@ -121,9 +118,7 @@ def generate_dtm(
         CSF.VecInt()
     )  # a list to indicate the index of non-ground points after calculation
 
-    csf.do_filtering(
-        ground, non_ground, exportCloth=exportCloth
-    )  # do actual filtering.
+    csf.do_filtering(ground, non_ground, exportCloth=True)  # do actual filtering.
 
     # Retrieving the cloth nodes
     with open("cloth_nodes.txt", "r+") as f:
