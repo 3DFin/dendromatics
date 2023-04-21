@@ -460,7 +460,6 @@ def individualize_trees(
         X_field,
         Y_field,
         Z_field,
-        Z0_field,
     )
 
     # Two new fields are added to the original cloud: - tree ID (id of closest axis)
