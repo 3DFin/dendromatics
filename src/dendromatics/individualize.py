@@ -197,7 +197,6 @@ def compute_heights(
     X_field,
     Y_field,
     Z_field,
-    Z0_field,
 ):
     """Function used inside individualize_trees during tree individualization
     process. It measures tree heights. The function creates a large-resolution
@@ -223,21 +222,17 @@ def compute_heights(
     max_dev : float
         Maximum degree of vertical deviation of a tree axis to consider its
         tree height measurement as valid.
+    resolution_heights : float
+        (x, y, z) voxel resolution.
     n_digits : int
         Number of digits dedicated to each coordinate ((x), (y) or (z)) during
         the generation of each point code.
-    resolution_heights : float
-        (x, y, z) voxel resolution.
     X_field : int
         Index at which (x) coordinates are stored.
     Y_field : int
         Index at which (y) coordinates are stored.
     Z_field : int
         Index at which (z) coordinates are stored.
-    Z0_field : int
-        Index at which (z0) coordinates are stored.
-    tree_id_field : int
-        Index at which cluster ID is stored.
 
     Returns
     -------

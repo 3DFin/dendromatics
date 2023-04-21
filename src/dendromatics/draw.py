@@ -270,9 +270,6 @@ def generate_axis_cloud(
     stripe_lower_limit=0.5,
     stripe_upper_limit=2.5,
     point_interval=0.01,
-    X_field=0,
-    Y_field=1,
-    Z_field=2,
 ):
     """This function generates points that comprise the axes computed by
     individualize_trees, so that they can be visualized. It output two
@@ -296,13 +293,7 @@ def generate_axis_cloud(
     stripe_upper_limit : float
         Upper (vertical) limit of the stripe (units is meters). Defaults to 3.5.
     point_interval : float
-        Step value used to draw points (unit is meters). Defaults to 0.01..
-    X_field : int
-        Index at which (x) coordinate is stored. Defaults to 0.
-    Y_field : int
-        Index at which (y) coordinate is stored. Defaults to 1.
-    Z_field : int
-        Index at which (z) coordinate is stored. Defaults to 2.
+        Step value used to draw points (unit is meters). Defaults to 0.01.
 
     Returns:
     --------
@@ -358,9 +349,6 @@ def draw_axes(
     stripe_lower_limit=0.5,
     stripe_upper_limit=2.5,
     point_interval=0.01,
-    X_field=0,
-    Y_field=1,
-    Z_field=2,
 ):
     """This function generates points that comprise the axes computed by
     individualize_trees, so that they can be visualized. The axes are then
@@ -385,12 +373,6 @@ def draw_axes(
         Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.
     point_interval : float
         Step value used to draw points (unit is meters). Defaults to 0.01..
-    X_field : int
-        Index at which (x) coordinate is stored. Defaults to 0.
-    Y_field : int
-        Index at which (y) coordinate is stored. Defaults to 1.
-    Z_field : int
-        Index at which (z) coordinate is stored. Defaults to 2.
     """
     axes_points, tilt = generate_axis_cloud(
         tree_vector,
@@ -402,9 +384,9 @@ def draw_axes(
     )
 
     las_axes = laspy.create(point_format=2, file_version="1.2")
-    las_axes.x = axes_points[:, X_field]
-    las_axes.y = axes_points[:, Y_field]
-    las_axes.z = axes_points[:, Z_field]
+    las_axes.x = axes_points[:, 0]
+    las_axes.y = axes_points[:, 1]
+    las_axes.z = axes_points[:, 2]
     las_axes.add_extra_dim(
         laspy.ExtraBytesParams(name="tilting_degree", type=np.float64)
     )
