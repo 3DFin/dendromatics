@@ -25,7 +25,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
 ]
 dependencies = [
-    "cloth-simulation @ git+https://github.com/jianboqi/CSF",    
+    "cloth-simulation-filter>=1.1.4",    
     "jakteristics>=0.5.1",
     "laspy>=2.4.0",
     "numpy>=1.24.0",
