@@ -111,20 +111,9 @@ def generate_dtm(
     csf.params.classify_threshold = classify_threshold  # default is 0.5 m
 
     csf.setPointCloud(cloud)  # pass the (x), (y), (z) list to csf
-    ground = (
-        CSF.VecInt()
-    )  # a list to indicate the index of ground points after calculation
-    non_ground = (
-        CSF.VecInt()
-    )  # a list to indicate the index of non-ground points after calculation
 
-    csf.do_filtering(ground, non_ground, exportCloth=True)  # do actual filtering.
-
-    # Retrieving the cloth nodes
-    with open("cloth_nodes.txt", "r+") as f:
-        raw_nodes = [[float(num) for num in line.split("\t")] for line in f]
-
-    cloth_nodes = np.asarray(raw_nodes)
+    raw_nodes = csf.do_cloth_export()  # do actual filtering and export cloth
+    cloth_nodes = np.reshape(np.array(raw_nodes), (-1, 3))
 
     return cloth_nodes
 
