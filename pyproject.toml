@@ -38,8 +38,7 @@ allow-direct-references = true
 
 [project.urls]
 Source = "https://github.com/3DFin/dendromatics"
-# TODO: to be changed once sphinx documentation is deployed
-Documentation = "https://github.com/3DFin/dendromatics#README.md"
+Documentation = "https://dendromatics.readthedocs.io/en/latest/"
 Issues = "https://github.com/3DFin/dendromatics/issues"
 
 [tool.hatch.version]
