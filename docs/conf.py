@@ -28,7 +28,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-#   "sphinx_reference_rename",
+    #   "sphinx_reference_rename",
     "sphinx.ext.intersphinx",
 ]
 
