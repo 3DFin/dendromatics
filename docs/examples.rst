@@ -80,7 +80,7 @@ tilt_detection() computes an 'outlier probability' for each section based on its
 
 For further examples and more thorough explanations, please check *example.py* script in */examples* folder in the official GitHub repository:
 
-https://github.com/3DFIN/dendromatics
+https://github.com/3DFin/dendromatics
 
 
 
