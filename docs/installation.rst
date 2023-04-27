@@ -1,7 +1,7 @@
 Installation
 ============
 
-The source Python code of the package is currently hosted on GitHub at: https://github.com/3DFIN/dendromatics
+The source Python code of the package is currently hosted on GitHub at: https://github.com/3DFin/dendromatics
 
 To install dendromatics, simply type the following command in a terminal::
 
