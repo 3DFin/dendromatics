@@ -123,7 +123,11 @@ Prendes, C., Cabo, C., Ordoñez, C., Majada, J., & Canga, E. (2021). An algorith
 Install
 =======
 
-*dendromatics* is available on `PyPI <TODO PyPi link>`_ and the full documentation can be consulted on `TBD <TODO doc link>`_
+*dendromatics* is available on `PyPI <https://pypi.org/project/dendromatics/>`_ and the full documentation can be consulted on `ReadTheDocs.io <https://dendromatics.readthedocs.io/en/latest/>`_
+
+.. code-block:: console
+    
+    python -m pip install dendromatics
 
 The list of dependencies is available in the *pyproject.toml* file.
 
