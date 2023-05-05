@@ -1,3 +1,10 @@
+|docs|
+
+.. |docs| image:: https://readthedocs.org/projects/dendromatics/badge/?version=latest
+    :alt: Documentation Status
+    :scale: 100%
+    :target: https://docs.readthedocs.io/en/latest/?badge=latest
+
 Description
 ===========
 
