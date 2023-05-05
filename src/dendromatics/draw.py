@@ -299,7 +299,6 @@ def generate_axis_cloud(
     --------
     axes_point : numpy.ndarray
         Matrix that describes the point cloud of the axes
-
     tilt : numpy.ndarray
         Matrix that describes the tilt of each axes
     """
