@@ -1,3 +1,10 @@
+.. image:: https://github.com/3DFin/dendromatics/blob/docs_badge/docs/_static/dendromatics_logo.png
+  :width: 300
+  :align: center
+
+Dendromatics
+============
+
 |docs| |pypi| |tests|
 
 .. |docs| image:: https://readthedocs.org/projects/dendromatics/badge/?version=latest
@@ -14,6 +21,7 @@
     :alt: Tests status
     :scale: 100%
     :target: https://github.com/3DFin/dendromatics/blob/main/.github/workflows/test.yml
+
 
 Description
 ===========
