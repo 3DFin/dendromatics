@@ -20,7 +20,7 @@ Dendromatics
 .. |tests| image:: https://github.com/3DFin/dendromatics/actions/workflows/test.yml/badge.svg
     :alt: Tests status
     :scale: 100%
-    :target: https://github.com/3DFin/dendromatics/blob/main/.github/workflows/test.yml
+    :target:  https://github.com/3DFin/dendromatics/actions
 
 
 Description
