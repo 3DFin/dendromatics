@@ -4,16 +4,16 @@ Algorithm
 The package functionalities are based on an updated version of the algorithm presented in [CABO2018]_. What follows is a description of the main steps of the algorithm.
 
 
-0. Height-normalization of the point cloud (pre-requisite)
+0. Height-normalization of the point cloud
 ----------------------------------------------------------------
 
-The algorithm requires a height-normalized point cloud as input, as in Figure 1. 
+The algorithm starts with a height-normalized point cloud as input, as in Figure 1. Functionality to compute normalized heights is provided in ground module.
 
 .. image:: _static/height-normalization.jpg
   :width: 670
   :align: center
 
-*Figure 1. The algorithm requires height-normalized point clouds. A) Original point cloud. B) Height-normalized point cloud. From* [CABO2018]_.
+*Figure 1. The algorithm uses normalized heights, which can be computed using dendromatics functionalities. A) Original point cloud. B) Height-normalized point cloud. From* [CABO2018]_.
 
 To achieve this, a digital terrain model (DTM) is generated and the normalized heights for each point in the cloud are obtained as the difference between their (z) value and the (z) value of the DTM points that are below. 
 

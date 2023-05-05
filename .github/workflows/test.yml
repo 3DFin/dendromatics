@@ -1,4 +1,4 @@
-name: Test dendromatics
+name: Tests
 
 # we only want to trigger this on main branch for PR and all branch for Push.
 on:

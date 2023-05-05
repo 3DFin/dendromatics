@@ -1,18 +1,36 @@
-|docs|
+.. image:: https://github.com/3DFin/dendromatics/blob/docs_badge/docs/_static/dendromatics_logo.png
+  :width: 300
+  :align: center
+
+Dendromatics
+============
+
+|docs| |pypi| |tests|
 
 .. |docs| image:: https://readthedocs.org/projects/dendromatics/badge/?version=latest
     :alt: Documentation Status
     :scale: 100%
-    :target: https://docs.readthedocs.io/en/latest/?badge=latest
+    :target: https://dendromatics.readthedocs.io/en/latest/?badge=latest
+
+.. |pypi| image:: https://badge.fury.io/py/dendromatics.svg
+    :alt: PyPI status
+    :scale: 100%
+    :target: https://badge.fury.io/py/dendromatics
+
+.. |tests| image:: https://github.com/3DFin/dendromatics/actions/workflows/test.yml/badge.svg
+    :alt: Tests status
+    :scale: 100%
+    :target:  https://github.com/3DFin/dendromatics/actions
+
 
 Description
 ===========
 
-The `src` folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. These are based on an updated version of the algorithm proposed by (Cabo et al., 2018).
+The *src* folder contains functionalities to detect the trees present in a terrestrial 3D point cloud from a forest plot, and compute individual tree parameters: tree height, tree location, diameters along the stem (including DBH), and stem axis. These are based on an updated version of the algorithm proposed by (Cabo et al., 2018).
 
 The functionalities may be divided in four main steps:
 
-0. Height-normalization of the point cloud (pre-requisite). 
+0. Height-normalization of the point cloud. 
 1. Identification of stems among user-provided stripe.
 2. Tree individualization based on point-to-stems distances.
 3. Robust computation of stems diameter at different section heights.
@@ -27,7 +45,7 @@ Examples
 Height-normalization
 --------------------
 
-Almost all functions in the module expect a height-normalized point cloud to work as intended. If your point cloud is not height-normalized, you can do it in a simple way using some of the module functions.
+Almost all functions in the module expect a height-normalized point cloud to work as intended. If your point cloud is not height-normalized, you can do it in a simple way using some of the module functions. I'ts based on 'Cloth simulation Filter' (Zhang et al., 2016).
 
 .. code-block:: python
     
@@ -121,10 +139,10 @@ References
 Cabo, C., Ordóñez, C., López-Sánchez, C. A., & Armesto, J. (2018). Automatic dendrometry: Tree detection, tree height and diameter estimation using terrestrial laser scanning. International Journal of Applied Earth Observation and Geoinformation, 69, 164–174. https://doi.org/10.1016/j.jag.2018.01.011
 
 
-Ester, M., Kriegel, H.-P., Sander, J., & Xu, X. (1996). A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise. www.aaai.org
-
-
 Prendes, C., Cabo, C., Ordoñez, C., Majada, J., & Canga, E. (2021). An algorithm for the automatic parametrization of wood volume equations from Terrestrial Laser Scanning point clouds: application in Pinus pinaster. GIScience and Remote Sensing, 58(7), 1130–1150. https://doi.org/10.1080/15481603.2021.1972712 
+
+
+Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., & Yan, G. (2016). An\neasy-to-use airborne LiDAR data filtering method based on cloth simulation. Remote Sensing, 8(6). https://doi.org/10.3390/rs8060501
 
 
 Install

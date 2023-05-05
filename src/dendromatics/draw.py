@@ -295,11 +295,10 @@ def generate_axis_cloud(
     point_interval : float
         Step value used to draw points (unit is meters). Defaults to 0.01.
 
-    Returns:
+    Returns
     --------
     axes_point : numpy.ndarray
         Matrix that describes the point cloud of the axes
-
     tilt : numpy.ndarray
         Matrix that describes the tilt of each axes
     """
