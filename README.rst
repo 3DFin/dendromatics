@@ -1,9 +1,19 @@
-|docs|
+|docs| |pypi| |tests|
 
 .. |docs| image:: https://readthedocs.org/projects/dendromatics/badge/?version=latest
     :alt: Documentation Status
     :scale: 100%
-    :target: https://docs.readthedocs.io/en/latest/?badge=latest
+    :target: https://dendromatics.readthedocs.io/en/latest/?badge=latest
+
+.. |pypi| image:: https://badge.fury.io/py/dendromatics.svg
+    :alt: PyPI status
+    :scale: 100%
+    :target: https://badge.fury.io/py/dendromatics
+
+.. |tests| image:: https://github.com/3DFin/dendromatics/actions/workflows/test.yml/badge.svg
+    :alt: Tests status
+    :scale: 100%
+    :target: https://github.com/3DFin/dendromatics/blob/main/.github/workflows/test.yml
 
 Description
 ===========
