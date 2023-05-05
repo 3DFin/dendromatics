@@ -2,7 +2,7 @@
 =====
 
 
-.. image:: _static/3dfin_2_png.png
+.. image:: _static/3dfin_logo.png
   :width: 400
   :align: center
 
