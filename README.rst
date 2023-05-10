@@ -1,4 +1,4 @@
-.. image:: https://github.com/3DFin/dendromatics/blob/docs_badge/docs/_static/dendromatics_logo.png
+.. image:: https://github.com/3DFin/dendromatics/blob/main/docs/_static/dendromatics_logo.png
   :width: 300
   :align: center
 
