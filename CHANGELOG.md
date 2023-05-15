@@ -10,15 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - This CHANGELOG file.
-- Documentation is now live at `ReadTheDocs.io`
-
+- Documentation is now live at `ReadTheDocs.io`.
+- A `process_hook` in order to replace the current embedded progress logging.
+  
 ### Changed
 
 - `3DFIN` organization was renamed `3DFin`. All links have been changed accordingly.
 
 ### Fixed
 
-- Links to `PyPI` and documentation longer point to placeholders on `README.md`  
+- Links to `PyPI` and documentation longer point to placeholders on `README.md`.
 
 ## [0.1.0] - 2023-03-27
 

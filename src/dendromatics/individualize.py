@@ -402,8 +402,9 @@ def individualize_trees(
         Index at which (z0) coordinate is stored. Defaults to 3.
     tree_id_field : int
         Index at which cluster ID is stored. Defaults to -1.
-    progress
-
+    progress_hook : callable, optional
+        A hook that take two int, the first is the current number of iteration
+        and the second is the targetted number iteration. Defaults to None.
 
     Returns
     -------
