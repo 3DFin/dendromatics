@@ -1,5 +1,4 @@
 #### IMPORTS ####
-import sys
 
 import numpy as np
 from scipy import optimize as opt
@@ -489,6 +488,8 @@ def compute_sections(
         Index at which (z0) coordinate is stored. Defaults to 3.
     tree_id_field : int
         Index at which cluster ID is stored. Defaults to 4.
+    progress : Pogress
+        Progress bar implementation
 
     Returns
     -------
@@ -530,17 +531,14 @@ def compute_sections(
     # Auxiliar index for first loop
     tree = -1  # Loop will start at -1
 
+    progress.reset(trees.shape[0])
+    progress.start()
     # First loop: iterates over each tree
     for tr in trees:
         # Tree ID is used to iterate over trees
         tree_i = stems[stems[:, tree_id_field] == tr, :]
         tree = tree + 1
-
-        sys.stdout.write(
-            "\r%d%%" % np.float64((trees.shape[0] - tree) * 100 / trees.shape[0])
-        )
-        sys.stdout.flush()
-
+        progress.update(tree)
         # Auxiliar index for second loop
         section = 0
 
@@ -591,7 +589,7 @@ def compute_sections(
             n_points_in[tree, section] = n_points_in_fill
 
             section = section + 1
-
+    progress.finish()
     return (X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in)
 
 
