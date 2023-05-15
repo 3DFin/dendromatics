@@ -447,6 +447,7 @@ def compute_sections(
     Y_field=1,
     Z0_field=3,
     tree_id_field=4,
+    progress_hook=None,
 ):
     """This function calls fit_circle_check() to compute stem diameter at
     given sections.
@@ -488,8 +489,9 @@ def compute_sections(
         Index at which (z0) coordinate is stored. Defaults to 3.
     tree_id_field : int
         Index at which cluster ID is stored. Defaults to 4.
-    progress : Pogress
-        Progress bar implementation
+    progress_hook : callable, optional
+        A hook that take two int, the first is the current number of iteration
+        and the second is the targetted number iteration. Defaults to None.
 
     Returns
     -------
@@ -531,14 +533,15 @@ def compute_sections(
     # Auxiliar index for first loop
     tree = -1  # Loop will start at -1
 
-    progress.reset(trees.shape[0])
-    progress.start()
+    if progress_hook is not None:
+        progress_hook(0, n_trees)
     # First loop: iterates over each tree
     for tr in trees:
         # Tree ID is used to iterate over trees
         tree_i = stems[stems[:, tree_id_field] == tr, :]
         tree = tree + 1
-        progress.update(tree)
+        if progress_hook is not None:
+            progress_hook(tree, n_trees)
         # Auxiliar index for second loop
         section = 0
 
@@ -589,7 +592,6 @@ def compute_sections(
             n_points_in[tree, section] = n_points_in_fill
 
             section = section + 1
-    progress.finish()
     return (X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in)
 
 
