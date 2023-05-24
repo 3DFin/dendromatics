@@ -142,7 +142,7 @@ Cabo, C., Ordóñez, C., López-Sánchez, C. A., & Armesto, J. (2018). Automatic
 Prendes, C., Cabo, C., Ordoñez, C., Majada, J., & Canga, E. (2021). An algorithm for the automatic parametrization of wood volume equations from Terrestrial Laser Scanning point clouds: application in Pinus pinaster. GIScience and Remote Sensing, 58(7), 1130–1150. https://doi.org/10.1080/15481603.2021.1972712 
 
 
-Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., & Yan, G. (2016). An\neasy-to-use airborne LiDAR data filtering method based on cloth simulation. Remote Sensing, 8(6). https://doi.org/10.3390/rs8060501
+Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., & Yan, G. (2016). An easy-to-use airborne LiDAR data filtering method based on cloth simulation. Remote Sensing, 8(6). https://doi.org/10.3390/rs8060501
 
 
 Install
