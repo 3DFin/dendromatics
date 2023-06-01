@@ -1,9 +1,9 @@
 #### IMPORTS ####
 import CSF
 import numpy as np
+from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 from sklearn.cluster import DBSCAN
-
 from .voxel.voxel import *
 
 # -----------------------------------------------------------------------------
