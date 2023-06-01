@@ -153,8 +153,9 @@ def clean_cloth(dtm_points):
 # complete_dtm
 # -----------------------------------------------------------------------------
 
+
 def complete_dtm(dtm_points):
-    """This function uses scipy.interpolate.griddata to interpolate the missing 
+    """This function uses scipy.interpolate.griddata to interpolate the missing
     values in a Digital Terrain Model (DTM).
 
     Parameters
@@ -168,7 +169,6 @@ def complete_dtm(dtm_points):
         Matrix containing (x, y, z) coordinates of the completed DTM points.
     """
 
-
     # Separate x, y, z coordinates
     x = dtm_points[:, 0]
     y = dtm_points[:, 1]
@@ -180,7 +180,7 @@ def complete_dtm(dtm_points):
     xi, yi = np.meshgrid(xi, yi)
 
     # Interpolate missing values using griddata
-    zi = griddata((x, y), z, (xi, yi), method='cubic')
+    zi = griddata((x, y), z, (xi, yi), method="cubic")
 
     # Combine interpolated points with existing points
     completed_dtm = np.hstack((xi.reshape(-1, 1), yi.reshape(-1, 1), zi.reshape(-1, 1)))
