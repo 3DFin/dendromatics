@@ -4,6 +4,7 @@ import numpy as np
 from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 from sklearn.cluster import DBSCAN
+
 from .voxel.voxel import *
 
 # -----------------------------------------------------------------------------
@@ -153,8 +154,8 @@ def clean_cloth(dtm_points):
 # -----------------------------------------------------------------------------
 
 def complete_dtm(dtm_points):
-        """This function uses scipy.interpolate.griddata to interpolate the missing 
-        values in a Digital Terrain Model (DTM).
+    """This function uses scipy.interpolate.griddata to interpolate the missing 
+    values in a Digital Terrain Model (DTM).
 
     Parameters
     ----------
