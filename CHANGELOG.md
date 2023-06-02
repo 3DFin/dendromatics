@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2023-06-02
+
 ### Added
 
 - This CHANGELOG file.
 - Documentation is now live at `ReadTheDocs.io`.
 - A `process_hook` in order to replace the current embedded progress logging.
-  
+- DTM interpolation
+
 ### Changed
 
 - `3DFIN` organization was renamed `3DFin`. All links have been changed accordingly.
