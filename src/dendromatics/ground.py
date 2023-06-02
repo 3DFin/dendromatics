@@ -1,6 +1,7 @@
 #### IMPORTS ####
 import CSF
 import numpy as np
+from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 from sklearn.cluster import DBSCAN
 
@@ -146,6 +147,48 @@ def clean_cloth(dtm_points):
     clean_points = dtm_points[abs_devs < 2 * mads]
 
     return clean_points
+
+
+# -----------------------------------------------------------------------------
+# complete_dtm
+# -----------------------------------------------------------------------------
+
+
+def complete_dtm(dtm_points):
+    """This function uses scipy.interpolate.griddata to interpolate the missing
+    values in a Digital Terrain Model (DTM).
+
+    Parameters
+    ----------
+    dtm_points : numpy array
+        Matrix containing (x, y, z) coordinates of the DTM points.
+
+    Returns
+    -------
+    completed_dtm : numpy.ndarray
+        Matrix containing (x, y, z) coordinates of the completed DTM points.
+    """
+
+    # Separate x, y, z coordinates
+    x = dtm_points[:, 0]
+    y = dtm_points[:, 1]
+    z = dtm_points[:, 2]
+
+    # Generate a grid of points based on min x, y values
+    xi = np.linspace(min(x), max(x), 100)
+    yi = np.linspace(min(y), max(y), 100)
+    xi, yi = np.meshgrid(xi, yi)
+
+    # Interpolate missing values using griddata
+    zi = griddata((x, y), z, (xi, yi), method="cubic")
+
+    # Combine interpolated points with existing points
+    completed_dtm = np.hstack((xi.reshape(-1, 1), yi.reshape(-1, 1), zi.reshape(-1, 1)))
+
+    # Remove nan values which may arise from interpolation
+    completed_dtm = completed_dtm[~np.isnan(completed_dtm).any(axis=1)]
+
+    return completed_dtm
 
 
 # -----------------------------------------------------------------------------
