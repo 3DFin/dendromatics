@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Removed few harmless unused variables.
+- Use las format '1.4' instead of '1.2' in draw functions. extra_dim mecanism is officially available starting from '1.4' version
+of the standard.
 
 ## [0.2.1] - 2023-07-10
 

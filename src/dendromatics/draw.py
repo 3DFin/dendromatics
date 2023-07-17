@@ -219,7 +219,7 @@ def draw_circles(
     )
 
     # LAS file containing circle coordinates.
-    las_circ = laspy.create(point_format=2, file_version="1.2")
+    las_circ = laspy.create(point_format=2, file_version="1.4")
     las_circ.x = coords[:, 0]
     las_circ.y = coords[:, 1]
     las_circ.z = coords[:, 2]
@@ -370,7 +370,7 @@ def draw_axes(
     stripe_upper_limit : float
         Upper (vertical) limit of the stripe (units is meters). Defaults to 2.5.
     point_interval : float
-        Step value used to draw points (unit is meters). Defaults to 0.01..
+        Step value used to draw points (unit is meters). Defaults to 0.01.
     """
     axes_points, tilt = generate_axis_cloud(
         tree_vector,
@@ -381,7 +381,7 @@ def draw_axes(
         point_interval,
     )
 
-    las_axes = laspy.create(point_format=2, file_version="1.2")
+    las_axes = laspy.create(point_format=2, file_version="1.4")
     las_axes.x = axes_points[:, 0]
     las_axes.y = axes_points[:, 1]
     las_axes.z = axes_points[:, 2]
