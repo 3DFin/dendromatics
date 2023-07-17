@@ -1,4 +1,3 @@
-#### IMPORTS ####
 import timeit
 
 import jakteristics as jak
@@ -68,7 +67,7 @@ def verticality_clustering_iteration(
     print(" -Computing verticality...")
 
     # Call to 'voxelate' function to voxelate the cloud.
-    voxelated_stripe, vox_to_stripe_ind, stripe_to_vox_ind = voxelate(
+    voxelated_stripe, vox_to_stripe_ind, _ = voxelate(
         stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
 
@@ -95,7 +94,7 @@ def verticality_clustering_iteration(
     print(" -Clustering...")
 
     # The filtered cloud is voxelated.
-    vox_filt_stripe, vox_to_filt_stripe_ind, filt_stripe_to_vox_ind = voxelate(
+    vox_filt_stripe, vox_to_filt_stripe_ind, _ = voxelate(
         filt_stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
 

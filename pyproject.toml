@@ -116,7 +116,7 @@ ignore = ["E501",
   "D203",
 # multiline summary second line
   "D213",
-# Temporary because global imports are a design choice
+# Temporary because relative imports seem to be a design choice
   "F405", "F403"
 ]
 
