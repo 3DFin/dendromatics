@@ -1,5 +1,3 @@
-#### IMPORTS ####
-
 import numpy as np
 from scipy import optimize as opt
 from scipy.cluster import hierarchy as sch
@@ -110,9 +108,7 @@ def fit_circle(X, Y):
     # Least square minimization to find the circle that best fits all
     # points within the section. 'ier' is a flag indicating whether the solution
     # was found (ier = 1, 2, 3 or 4) or not (otherwise).
-    circle_c, ier = opt.leastsq(f_2, barycenter, args=(X, Y), maxfev=2000)
-
-    X_c, Y_c = circle_c
+    circle_c, _ = opt.leastsq(f_2, barycenter, args=(X, Y), maxfev=2000)
 
     # Its radius
     radius = calc_R(X, Y, *circle_c)
