@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2024-01-09
+
+### Added
+
+- Added clearer error messages in certain situations where point density of input point cloud was low and no clusters were found in step "1.-Extracting the stripe and peeling the stems". Previous error message was Numpy's default "zero-size array to reduction operation minimum which has no identity".
+
 ## [0.2.1] - 2023-06-14
 
 ### Fixed
@@ -28,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Links to `PyPI` and documentation longer point to placeholders on `README.md`.
+- Links to `PyPI` and documentation no longer point to placeholders on `README.md`.
 
 ## [0.1.0] - 2023-03-27
 
