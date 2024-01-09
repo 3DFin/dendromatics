@@ -71,7 +71,7 @@ def verticality_clustering_iteration(
     voxelated_stripe, vox_to_stripe_ind, stripe_to_vox_ind = voxelate(
         stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
-    print("   %.2f" % voxelated_stripe.shape, "voxels remaining")
+    print("   ", voxelated_stripe.shape, "voxels remaining")
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
@@ -93,10 +93,12 @@ def verticality_clustering_iteration(
 
     # Check there are enough points to continue
     if filt_stripe.shape[0] == 0:
-        raise ValueError("No vertical clusters where found with these parameters."
-                         "Suggestion: decrease n points/voxel size or verticality "
-                         "threshold.")
-    
+        raise ValueError(
+            "No vertical clusters where found with these parameters."
+            "Suggestion: decrease n points/voxel size or verticality "
+            "threshold."
+        )
+
     t = timeit.default_timer()
     print(" -Clustering...")
 
@@ -112,7 +114,7 @@ def verticality_clustering_iteration(
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
-        
+
     elapsed = timeit.default_timer() - t
     print("   %.2f" % elapsed, "s")
     t1 = elapsed + t1
