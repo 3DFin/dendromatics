@@ -1,5 +1,3 @@
-#### IMPORTS ####
-
 import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
@@ -249,7 +247,7 @@ def compute_heights(
     # The cloud is re-voxelated to a larger resolution to then be clusterized.
     # Small clusters containing 1-2 voxels will be discarded to eliminate
     # outliers points that could interfere in height measurement.
-    large_voxels_cloud, large_vox_to_cloud_ind, cloud_to_large_vox_ind = voxelate(
+    large_voxels_cloud, large_vox_to_cloud_ind, _ = voxelate(
         voxelated_cloud,
         resolution_heights,
         resolution_heights,
@@ -428,7 +426,7 @@ def individualize_trees(
     """
 
     # Whole original cloud voxelization
-    voxelated_cloud, vox_to_cloud_ind, cloud_to_vox_ind = voxelate(
+    voxelated_cloud, vox_to_cloud_ind, _ = voxelate(
         cloud,
         resolution_z,
         resolution_xy,

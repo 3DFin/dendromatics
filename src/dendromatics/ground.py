@@ -1,4 +1,3 @@
-#### IMPORTS ####
 import CSF
 import numpy as np
 from scipy.interpolate import griddata
@@ -36,7 +35,7 @@ def clean_ground(cloud, res_ground=0.15, min_points=2):
         the denoised points.
     """
 
-    vox_cloud, vox_to_cloud_ind, cloud_to_vox_ind = voxelate(
+    vox_cloud, vox_to_cloud_ind, _ = voxelate(
         cloud, res_ground, res_ground, with_n_points=False
     )
     # Cluster labels are appended to the FILTERED cloud. They map each point to
