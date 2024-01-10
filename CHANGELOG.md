@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.2] - 2024-01-09
+### Fixed
+
+- Removed few harmless unused variables.
 
 ### Added
 
 - Added clearer error messages in certain situations where point density of input point cloud was low and no clusters were found in step "1.-Extracting the stripe and peeling the stems". Previous error messages were Python's defaults "zero-size array to reduction operation minimum which has no identity" and "min() arg is an empty sequence".
 
-## [0.2.1] - 2023-06-14
+## [0.2.1] - 2023-07-10
 
 ### Fixed
 
