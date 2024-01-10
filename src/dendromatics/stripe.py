@@ -70,7 +70,6 @@ def verticality_clustering_iteration(
     voxelated_stripe, vox_to_stripe_ind, _ = voxelate(
         stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
-    print("   ", voxelated_stripe.shape, "voxels remaining")
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
