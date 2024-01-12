@@ -70,7 +70,6 @@ def verticality_clustering_iteration(
     voxelated_stripe, vox_to_stripe_ind, _ = voxelate(
         stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
-
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
@@ -90,6 +89,14 @@ def verticality_clustering_iteration(
     # the threshold. Output is a filtered cloud.
     filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_treshold]
 
+    # Check there are enough points to continue
+    if filt_stripe.shape[0] == 0:
+        raise ValueError(
+            "No vertical clusters where found with these parameters."
+            "Suggestion: decrease n points/voxel size or verticality "
+            "threshold."
+        )
+
     t = timeit.default_timer()
     print(" -Clustering...")
 
@@ -101,6 +108,10 @@ def verticality_clustering_iteration(
     eps = resolution_xy * 1.9
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
     clustering = DBSCAN(eps=eps, min_samples=2).fit(vox_filt_stripe)
+
+    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
+    # K = 'number of clusters'.
+    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
     elapsed = timeit.default_timer() - t
     print("   %.2f" % elapsed, "s")
@@ -116,10 +127,6 @@ def verticality_clustering_iteration(
         np.expand_dims(clustering.labels_[vox_to_filt_stripe_ind], axis=1),
         axis=1,
     )
-
-    # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
-    # K = 'number of clusters'.
-    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
