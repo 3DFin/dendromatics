@@ -220,3 +220,57 @@ def normalize_heights(cloud, dtm_points):
         dtm_points[:, 2][idx_pt_mesh], weights=d, axis=1
     )
     return zs_diff_triples
+
+
+# -----------------------------------------------------------------------------
+# check_normalization()
+# -----------------------------------------------------------------------------
+
+
+def check_normalization(cloud, n_digits, original_area, z_min=-0.1, z_max=0.1):
+    """Compare the area of a slice of points from a point cloud to another area and
+    store a warning indicator if difference is greater than 10 %.
+
+    Parameters
+    ----------
+    cloud : numpy.ndarray
+        A 2D numpy array storing the point cloud.
+    n_digits : int
+        See dendromatics.voxel.voxelate()
+    original_area : float
+        Area to compare with.
+    z_min: float
+        The minimum Z value that defines the slice. Defaults to -0.1.
+    z_max: float
+        The maximum Z value that defines the slice. Defaults to 0.1.
+    
+    Returns
+    -------
+    area_warning : bool
+        True if area difference is greater than 10 %, False if not.
+    """
+    # Select a slice of points from the cloud where Z value is within (z_min, z_max)
+    ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
+
+    # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
+    _, _, voxelated_slice = dm.voxelate(
+                ground_slice, 1, 2000, n_digits = n_digits, with_n_points=False, silent=False
+            )
+    
+    # Area of the voxelated ground slice (number of 1 m2 voxels)
+    slice_area = voxelated_slice.shape[0]
+    
+    # Calculate 10 % of the original area
+    ten_percent_of_area = 0.1 * abs(original_area)
+
+    # Calculate the absolute difference between the two areas
+    difference = abs(original_area - slice_area)
+
+    # Check if the difference is greater than 10 % of the first number
+    if difference >= ten_percent_of_area:
+        area_warning = True
+    else:
+        area_warning = False
+
+    return area_warning
+    
