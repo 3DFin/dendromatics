@@ -1,5 +1,6 @@
 import CSF
 import numpy as np
+import warnings
 from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 from sklearn.cluster import DBSCAN
@@ -145,9 +146,10 @@ def clean_cloth(dtm_points):
             "input DTM is too small (less than 15 points). Denoising cannot be done."
         )
     elif dtm_points.shape[0] == 15:
-        raise Warning(
+        warnings.warn(
             "input DTM contains exactly 15 points, which is the minimum input size"
-            "accepted by clean_cloth()."
+            "accepted by clean_cloth().",
+            Warning
         )
     tree = cKDTree(dtm_points[:, :2])
     _, indexes = tree.query(dtm_points[:, :2], 15)
