@@ -227,7 +227,9 @@ def normalize_heights(cloud, dtm_points):
 # -----------------------------------------------------------------------------
 
 
-def check_normalization(cloud, original_area, res_xy = 0.5, z_min=-0.1, z_max=0.1, warning_thresh = 0.1):
+def check_normalization(
+    cloud, original_area, res_xy=0.5, z_min=-0.1, z_max=0.1, warning_thresh=0.1
+):
     """Compare the area of a slice of points from a point cloud to another area and
     store a warning indicator if difference is greater than a certain threshold. Area
     of the slice will be approximated from a voxelated version of it.
@@ -255,13 +257,9 @@ def check_normalization(cloud, original_area, res_xy = 0.5, z_min=-0.1, z_max=0.
 
     # (z) voxel resolution.
     if z_min > z_max:
-        raise ValueError(
-            "z_min must be smaller than z_max"
-        )
+        raise ValueError("z_min must be smaller than z_max")
     elif z_min == z_max:
-        raise ValueError(
-            "z_min and z_max must be different"
-        )
+        raise ValueError("z_min and z_max must be different")
     else:
         res_z = (z_max - z_min) * 1.01
 
@@ -274,12 +272,10 @@ def check_normalization(cloud, original_area, res_xy = 0.5, z_min=-0.1, z_max=0.
     )
 
     # Area of the voxelated ground slice (n of voxels * area of voxel base)
-    slice_area = voxelated_slice.shape[0] * res_xy ** 2
+    slice_area = voxelated_slice.shape[0] * res_xy**2
 
     if original_area <= 0:
-        raise ValueError(
-            "Original area to compare with must be positive"
-        )
+        raise ValueError("Original area to compare with must be positive")
     elif not 0 < warning_thresh < 1:
         raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
 
