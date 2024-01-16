@@ -149,7 +149,7 @@ def clean_cloth(dtm_points):
         warnings.warn(
             "input DTM contains exactly 15 points, which is the minimum input size"
             "accepted by clean_cloth().",
-            Warning
+            Warning,
         )
     tree = cKDTree(dtm_points[:, :2])
     _, indexes = tree.query(dtm_points[:, :2], 15)
