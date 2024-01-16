@@ -146,7 +146,7 @@ def verticality_clustering_iteration(
     # Raise error if there are no large clusters.
     if large_clusters.size == 0:
         raise ValueError(
-            "Clusters were found, but they are too small to be considered potential"
+            "Clusters were found, but they are too small to be considered potential "
             "stems using current settings. Suggestion: increase n points."
         )
 
