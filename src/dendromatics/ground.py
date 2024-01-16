@@ -139,7 +139,16 @@ def clean_cloth(dtm_points):
     clean_points : numpy.ndarray
         Matrix containing (x, y, z) coordinates of the denoised DTM points.
     """
-
+    
+    if dtm_points.shape[0] < 15:
+        raise ValueError(
+            "input DTM is too small (less than 15 points). Denoising cannot be done."
+        )
+    elif dtm_points.shape[0] == 15:
+        raise Warning(
+            "input DTM contains exactly 15 points, which is the minimum input size"
+            "accepted by clean_cloth()."
+        )
     tree = cKDTree(dtm_points[:, :2])
     _, indexes = tree.query(dtm_points[:, :2], 15)
     abs_devs = np.abs(dtm_points[:, 2] - np.median(dtm_points[:, 2][indexes], axis=1))
