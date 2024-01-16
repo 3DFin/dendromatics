@@ -227,7 +227,7 @@ def normalize_heights(cloud, dtm_points):
 # -----------------------------------------------------------------------------
 
 
-def check_normalization(cloud, n_digits, original_area, z_min=-0.1, z_max=0.1):
+def check_normalization(cloud, original_area, res_xy = 0.5, res_z = 1.0, z_min=-0.1, z_max=0.1, warning_thresh):
     """Compare the area of a slice of points from a point cloud to another area and
     store a warning indicator if difference is greater than 10 %.
 
@@ -235,8 +235,6 @@ def check_normalization(cloud, n_digits, original_area, z_min=-0.1, z_max=0.1):
     ----------
     cloud : numpy.ndarray
         A 2D numpy array storing the point cloud.
-    n_digits : int
-        See dendromatics.voxel.voxelate()
     original_area : float
         Area to compare with.
     z_min: float
@@ -254,20 +252,20 @@ def check_normalization(cloud, n_digits, original_area, z_min=-0.1, z_max=0.1):
 
     # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
     _, _, voxelated_slice = dm.voxelate(
-        ground_slice, 1, 2000, n_digits=n_digits, with_n_points=False, silent=False
+        ground_slice, res_xy, res_z, with_n_points=False, silent=False
     )
 
-    # Area of the voxelated ground slice (number of 1 m2 voxels)
-    slice_area = voxelated_slice.shape[0]
+    # Area of the voxelated ground slice (n of voxels / area of voxel base)
+    slice_area = voxelated_slice.shape[0] / res_xy ** 2
 
-    # Calculate 10 % of the original area
-    ten_percent_of_area = 0.1 * abs(original_area)
+    # Calculate difference in area that breaks the threshold
+    threshold_difference = warning_thresh * abs(original_area)
 
     # Calculate the absolute difference between the two areas
     difference = abs(original_area - slice_area)
 
     # Check if the difference is greater than 10 % of the first number
-    if difference >= ten_percent_of_area:
+    if difference >= threshold_difference:
         area_warning = True
     else:
         area_warning = False
