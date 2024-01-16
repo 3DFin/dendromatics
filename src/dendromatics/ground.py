@@ -282,7 +282,7 @@ def check_normalization(cloud, original_area, res_xy = 0.5, z_min=-0.1, z_max=0.
         )
     elif not 0 < warning_thresh < 1:
         raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
-    
+
     else:
         # Calculate difference in area that breaks the threshold
         threshold_difference = warning_thresh * original_area
