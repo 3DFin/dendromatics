@@ -138,11 +138,18 @@ def verticality_clustering_iteration(
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
     large_clusters = cluster_id[K > n_points]
-
+    
     # ID = -1 is always created by DBSCAN() to include points that were not
     # included in any cluster.
     large_clusters = large_clusters[large_clusters != -1]
 
+    # Raise error if there are no large clusters.
+    if large_clusters.size == 0:
+        raise ValueError(
+            "Clusters were found, but they are too small to be considered potential"
+            "stems using current settings. Suggestion: increase n points."
+        )
+    
     # Removing the points that are not in valid clusters.
     clust_stripe = vox_filt_lab_stripe[
         np.isin(vox_filt_lab_stripe[:, -1], large_clusters)
