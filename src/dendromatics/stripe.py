@@ -113,6 +113,11 @@ def verticality_clustering_iteration(
     # K = 'number of clusters'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
+    # Raise error if there's only one cluster id (-1)
+    if len(cluster_id) == 1 and cluster_id[0] == -1:
+        raise ValueError("No stems were found with the current configuration."
+                         "Suggestion: increase n points/voxel size.")
+
     elapsed = timeit.default_timer() - t
     print("   %.2f" % elapsed, "s")
     t1 = elapsed + t1
