@@ -1,6 +1,7 @@
+import warnings
+
 import CSF
 import numpy as np
-import warnings
 from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 from sklearn.cluster import DBSCAN
