@@ -139,7 +139,7 @@ def clean_cloth(dtm_points):
     clean_points : numpy.ndarray
         Matrix containing (x, y, z) coordinates of the denoised DTM points.
     """
-    
+
     if dtm_points.shape[0] < 15:
         raise ValueError(
             "input DTM is too small (less than 15 points). Denoising cannot be done."

@@ -103,7 +103,7 @@ def test_clean_cloth_barely_big_cloth():
     cloud = np.append(xy, z, axis=1)
 
     # two points are removed, so there are 14 points
-    cloud = cloud[0:(cloud.shape[0] - 2)]
+    cloud = cloud[0 : (cloud.shape[0] - 2)]
 
     # Adding noise/outlier: point outside the grid, at z = 2
     z_outlier = np.array([[0.5, 0.5, 2]])
