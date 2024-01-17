@@ -23,14 +23,19 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: GIS",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "cloth-simulation-filter>=1.1.4",    
-    "jakteristics>=0.5.1",
-    "laspy>=2.4.0",
-    "numpy>=1.24.0",
-    "scikit_learn>=1.2.0",
-    "scipy>=1.10.0",
+    "cloth-simulation-filter==1.1.4",    
+    "jakteristics~=0.6.0",
+    "laspy~=2.5.3",
+    "numpy~=1.24",
+    "scikit_learn~=1.2",
+    "scipy~=1.10",
 ]
 
 [tool.hatch.metadata]
@@ -55,7 +60,7 @@ cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/de
 no-cov = "cov --no-cov {args}"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["38", "39", "310", "311"]
+python = ["38","39", "310", "311", "312"]
 
 [tool.coverage.run]
 branch = true
