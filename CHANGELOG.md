@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Changed `scipy.spatial.cKDTree` for `scipy.spatial.KDTree` and use parallel queries to speed up computations.
+
 ### Fixed
 
 - Removed few harmless unused variables.
