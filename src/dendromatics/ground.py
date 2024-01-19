@@ -232,3 +232,76 @@ def normalize_heights(cloud, dtm_points):
         dtm_points[:, 2][idx_pt_mesh], weights=d, axis=1
     )
     return zs_diff_triples
+
+
+# -----------------------------------------------------------------------------
+# check_normalization()
+# -----------------------------------------------------------------------------
+
+
+def check_normalization(
+    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
+):
+    """Compare the area of a slice of points from a point cloud to another area and
+    store a warning indicator if difference is greater than a certain threshold. Area
+    of the slice will be approximated from a voxelated version of it.
+
+    Parameters
+    ----------
+    cloud : numpy.ndarray
+        A 2D numpy array storing the point cloud. It must be a normalized point cloud.
+    original_area : float
+        Area to compare with.
+    res_xy : float
+        (x, y) voxel resolution. Defaults to 1.0 m.
+    z_min: float
+        The minimum Z value that defines the slice. Defaults to -0.10 m.
+    z_max: float
+        The maximum Z value that defines the slice. Defaults to 0.15 m.
+    warning_thresh: float
+        Threshold area difference. Defaults to 0.1 (10 % difference in area).
+
+    Returns
+    -------
+    area_warning : bool
+        True if area difference is greater than threshold, False if not.
+    """
+
+    # (z) voxel resolution.
+    if z_min > z_max:
+        raise ValueError("z_min must be smaller than z_max")
+    elif z_min == z_max:
+        raise ValueError("z_min and z_max must be different")
+    else:
+        res_z = (z_max - z_min) * 1.01
+
+    # Select a slice of points from the cloud where Z value is within (z_min, z_max)
+    ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
+
+    # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
+    _, _, voxelated_slice = dm.voxelate(
+        ground_slice, res_xy, res_z, with_n_points=False, silent=False
+    )
+
+    # Area of the voxelated ground slice (n of voxels * area of voxel base)
+    slice_area = voxelated_slice.shape[0] * res_xy**2
+
+    if original_area <= 0:
+        raise ValueError("Original area to compare with must be positive")
+    elif not 0 < warning_thresh < 1:
+        raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
+
+    else:
+        # Calculate difference in area that breaks the threshold
+        threshold_difference = warning_thresh * original_area
+
+    # Calculate the absolute difference between the two areas
+    difference = original_area - slice_area
+
+    # Check if the difference is greater than 10 % of the first number
+    if difference >= threshold_difference:
+        area_warning = True
+    else:
+        area_warning = False
+
+    return area_warning
