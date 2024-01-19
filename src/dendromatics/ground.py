@@ -243,9 +243,9 @@ def check_normalization(
     res_xy : float
         (x, y) voxel resolution. Defaults to 1.0 m.
     z_min: float
-        The minimum Z value that defines the slice. Defaults to -0.1.
+        The minimum Z value that defines the slice. Defaults to -0.10 m.
     z_max: float
-        The maximum Z value that defines the slice. Defaults to 0.1.
+        The maximum Z value that defines the slice. Defaults to 0.15 m.
     warning_thresh: float
         Threshold area difference. Defaults to 0.1 (10 % difference in area).
 
