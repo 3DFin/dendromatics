@@ -113,6 +113,13 @@ def verticality_clustering_iteration(
     # K = 'number of clusters'.
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
+    # Raise error if there's only one cluster id (-1)
+    if len(cluster_id) == 1 and cluster_id[0] == -1:
+        raise ValueError(
+            "No stems were found with the current configuration."
+            "Suggestion: increase n points/voxel size."
+        )
+
     elapsed = timeit.default_timer() - t
     print("   %.2f" % elapsed, "s")
     t1 = elapsed + t1
@@ -135,6 +142,13 @@ def verticality_clustering_iteration(
     # ID = -1 is always created by DBSCAN() to include points that were not
     # included in any cluster.
     large_clusters = large_clusters[large_clusters != -1]
+
+    # Raise error if there are no large clusters.
+    if large_clusters.size == 0:
+        raise ValueError(
+            "Clusters were found, but they are too small to be considered potential "
+            "stems using current settings. Suggestion: increase n points."
+        )
 
     # Removing the points that are not in valid clusters.
     clust_stripe = vox_filt_lab_stripe[

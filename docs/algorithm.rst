@@ -17,7 +17,7 @@ The algorithm starts with a height-normalized point cloud as input, as in Figure
 
 To achieve this, a digital terrain model (DTM) is generated and the normalized heights for each point in the cloud are obtained as the difference between their (z) value and the (z) value of the DTM points that are below. 
 
-To generate the DTM itself, a cloth-simulation filter (CSF) as described in [ZHAN2016]_ is applied to the point cloud. To obtain the DTM points that are below a certain cloud point, a cKDtree is generated and the 3 closest DTM points are identified. Then, a weighted average of the (z) value based on the distance to the cloud point is obtained, and the normalized height value is computed as the difference between the (z) value of the cloud point and the weighted average (z) value of the DTM points.
+To generate the DTM itself, a cloth-simulation filter (CSF) as described in [ZHAN2016]_ is applied to the point cloud. To obtain the DTM points that are below a certain cloud point, a KDtree is generated and the 3 closest DTM points are identified. Then, a weighted average of the (z) value based on the distance to the cloud point is obtained, and the normalized height value is computed as the difference between the (z) value of the cloud point and the weighted average (z) value of the DTM points.
 
 
 1. Identification of stems among user-provided horizontal stripe
