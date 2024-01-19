@@ -228,7 +228,7 @@ def normalize_heights(cloud, dtm_points):
 
 
 def check_normalization(
-    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.1, warning_thresh=0.1
+    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
 ):
     """Compare the area of a slice of points from a point cloud to another area and
     store a warning indicator if difference is greater than a certain threshold. Area
