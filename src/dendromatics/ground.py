@@ -279,7 +279,7 @@ def check_normalization(
     ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
 
     # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
-    _, _, voxelated_slice = dm.voxelate(
+    _, _, voxelated_slice = voxelate(
         ground_slice, res_xy, res_z, with_n_points=False, silent=False
     )
 

@@ -38,8 +38,12 @@ dependencies = [
     "scipy~=1.10",
 ]
 
-[tool.hatch.metadata]
-allow-direct-references = true
+[project.optional-dependencies]
+docs = [
+  "sphinx",
+  "sphinx-reference-rename",
+  "sphinx-rtd-theme",
+]
 
 [project.urls]
 Source = "https://github.com/3DFin/dendromatics"

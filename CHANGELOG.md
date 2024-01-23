@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2023-01-23
+
+### Fixed
+
+- Fixed a malformed call to `voxelate` inside `ground.check_normalization`.
+- Fixed the documentation build int RTD.
+
+### Added
+
+- Added an optional group of dependencies for documentation (`docs`) in the project file. 
+
 ## [0.3.0] - 2023-01-19
 
 ### Changed
