@@ -239,12 +239,97 @@ def normalize_heights(cloud, dtm_points):
 # -----------------------------------------------------------------------------
 
 
+def check_normalization_discrepancy(
+    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
+):
+    """Compare the area of a slice of points from a point cloud to another area and
+    return a warning indicator if difference is greater than a certain threshold. The
+    percentage of discrepancy between the too area is also returned. Area of the slice
+    will be approximated from a voxelated version of it.
+
+    Parameters
+    ----------
+    cloud : numpy.ndarray
+        A 2D numpy array storing the point cloud. It must be a normalized point cloud.
+    original_area : float
+        Area to compare with.
+    res_xy : float
+        (x, y) voxel resolution. Defaults to 1.0 m.
+    z_min: float
+        The minimum Z value that defines the slice. Defaults to -0.10 m.
+    z_max: float
+        The maximum Z value that defines the slice. Defaults to 0.15 m.
+    warning_thresh: float
+        Threshold area difference. Defaults to 0.1 (10 % difference in area).
+
+    Returns
+    -------
+    area_warning : bool
+        True if area difference is greater than threshold, False if not.
+    difference_percentage:
+        The percentage of discrepancy between the original area and the slice area.
+    """
+
+    # (z) voxel resolution.
+    if z_min > z_max:
+        raise ValueError("z_min must be smaller than z_max")
+
+    if z_min == z_max:
+        raise ValueError("z_min and z_max must be different")
+
+    # original_area
+    if original_area <= 0:
+        raise ValueError("Original area to compare with must be positive")
+
+    # warning_threshold
+    if not 0 < warning_thresh < 1:
+        raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
+
+    # Compute the z resolution as a function of z_max - z_min
+    res_z = (z_max - z_min) * 1.01
+
+    # Select a slice of points from the cloud where Z value is within (z_min, z_max)
+    ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
+
+    # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
+    _, _, voxelated_slice = voxelate(
+        ground_slice, res_xy, res_z, with_n_points=False, silent=False
+    )
+
+    # Area of the voxelated ground slice (n of voxels * area of voxel base)
+    slice_area = voxelated_slice.shape[0] * res_xy**2
+
+    # Calculate difference in area that breaks the threshold
+    threshold_difference = warning_thresh * original_area
+
+    # Calculate the absolute difference between the two areas
+    area_difference = abs(original_area - slice_area)
+
+    # TODO: In very rare occasions, the slice area could be larger than the original
+    # area. The function should account for that, and return a different kind of
+    # warning for those situations (and its threshold could be different).
+    # For instance, if the original area has been computed through a grid of voxels
+    # (as this function does to compute slice_area) using a smaller voxel size,
+    # this could happen. We haven't tested it yet as we do not have access
+    # to any point clouds where this situation happens.
+
+    # Check if the difference is greater than 10 % of the first number
+    if area_difference >= threshold_difference:
+        area_warning = True
+    else:
+        area_warning = False
+
+    return area_warning, area_difference * 100 / original_area
+
+
 def check_normalization(
     cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
 ):
     """Compare the area of a slice of points from a point cloud to another area and
     store a warning indicator if difference is greater than a certain threshold. Area
-    of the slice will be approximated from a voxelated version of it.
+    of the slice will be approximated from a voxelated version of it. This function is
+    kept for backward compatibility and call check_normalization_discrepancy under the
+    hood.
 
     Parameters
     ----------
@@ -266,42 +351,7 @@ def check_normalization(
     area_warning : bool
         True if area difference is greater than threshold, False if not.
     """
-
-    # (z) voxel resolution.
-    if z_min > z_max:
-        raise ValueError("z_min must be smaller than z_max")
-    elif z_min == z_max:
-        raise ValueError("z_min and z_max must be different")
-    else:
-        res_z = (z_max - z_min) * 1.01
-
-    # Select a slice of points from the cloud where Z value is within (z_min, z_max)
-    ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
-
-    # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
-    _, _, voxelated_slice = voxelate(
-        ground_slice, res_xy, res_z, with_n_points=False, silent=False
+    indicator, _ = check_normalization_discrepancy(
+        cloud, original_area, res_xy, z_min, z_max, warning_thresh
     )
-
-    # Area of the voxelated ground slice (n of voxels * area of voxel base)
-    slice_area = voxelated_slice.shape[0] * res_xy**2
-
-    if original_area <= 0:
-        raise ValueError("Original area to compare with must be positive")
-    elif not 0 < warning_thresh < 1:
-        raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
-
-    else:
-        # Calculate difference in area that breaks the threshold
-        threshold_difference = warning_thresh * original_area
-
-    # Calculate the absolute difference between the two areas
-    difference = original_area - slice_area
-
-    # Check if the difference is greater than 10 % of the first number
-    if difference >= threshold_difference:
-        area_warning = True
-    else:
-        area_warning = False
-
-    return area_warning
+    return indicator
