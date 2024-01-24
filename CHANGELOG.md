@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+## [0.4.0] - 2024-01-24
 
-- `ground.check_normalization` returns the indicator and the percentage of discrepancy between the original area
-and the slice area.
+### Added
 
-## [0.3.1] - 2023-01-23
+- `ground.check_normalization_discrepancy` returns the indicator and the percentage of discrepancy
+between the original area and the slice area.
+
+## [0.3.1] - 2024-01-23
 
 ### Fixed
 
@@ -23,7 +25,7 @@ and the slice area.
 
 - Added an optional group of dependencies for documentation (`docs`) in the project file. 
 
-## [0.3.0] - 2023-01-19
+## [0.3.0] - 2024-01-19
 
 ### Changed
 
