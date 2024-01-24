@@ -304,11 +304,11 @@ def check_normalization(
     # Calculate the absolute difference between the two areas
     area_difference = abs(original_area - slice_area)
 
-    # TODO: In very rare occasions, the slice area could be larger than the original 
-    # area. The function should account for that, and return a different kind of 
+    # TODO: In very rare occasions, the slice area could be larger than the original
+    # area. The function should account for that, and return a different kind of
     # warning for those situations (and its threshold could be different).
     # For instance, if the original area has been computed through a grid of voxels
-    # (as this function does to compute slice_area) using a smaller voxel size, 
+    # (as this function does to compute slice_area) using a smaller voxel size,
     # this could happen. We haven't tested it yet as we do not have access
     # to any point clouds where this situation happens.
 
