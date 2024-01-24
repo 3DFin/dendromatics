@@ -268,16 +268,26 @@ def check_normalization(
     slice_area : float
         Area of the slice of the point cloud
     area_difference : float
-        The difference 
+        The absolute difference between the area and the area of the slice
     """
 
     # (z) voxel resolution.
     if z_min > z_max:
         raise ValueError("z_min must be smaller than z_max")
-    elif z_min == z_max:
+
+    if z_min == z_max:
         raise ValueError("z_min and z_max must be different")
-    else:
-        res_z = (z_max - z_min) * 1.01
+
+    # original_area
+    if original_area <= 0:
+        raise ValueError("Original area to compare with must be positive")
+
+    # warning_threshold
+    if 0 < warning_thresh < 1:
+        raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
+
+    # Compute the z resolution as a function of z_max - z_min
+    res_z = (z_max - z_min) * 1.01
 
     # Select a slice of points from the cloud where Z value is within (z_min, z_max)
     ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
@@ -290,17 +300,11 @@ def check_normalization(
     # Area of the voxelated ground slice (n of voxels * area of voxel base)
     slice_area = voxelated_slice.shape[0] * res_xy**2
 
-    if original_area <= 0:
-        raise ValueError("Original area to compare with must be positive")
-    elif not 0 < warning_thresh < 1:
-        raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
-
-    else:
-        # Calculate difference in area that breaks the threshold
-        threshold_difference = warning_thresh * original_area
+    # Calculate difference in area that breaks the threshold
+    threshold_difference = warning_thresh * original_area
 
     # Calculate the absolute difference between the two areas
-    area_difference = original_area - slice_area
+    area_difference = abs(original_area - slice_area)
 
     # Check if the difference is greater than 10 % of the first number
     if area_difference >= threshold_difference:
