@@ -239,12 +239,13 @@ def normalize_heights(cloud, dtm_points):
 # -----------------------------------------------------------------------------
 
 
-def check_normalization(
+def check_normalization_discrepancy(
     cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
 ):
     """Compare the area of a slice of points from a point cloud to another area and
-    store a warning indicator if difference is greater than a certain threshold. Area
-    of the slice will be approximated from a voxelated version of it.
+    return a warning indicator if difference is greater than a certain threshold. The
+    percentage of discrepancy between the too area is also returned. Area of the slice
+    will be approximated from a voxelated version of it.
 
     Parameters
     ----------
@@ -319,3 +320,38 @@ def check_normalization(
         area_warning = False
 
     return area_warning, area_difference * 100 / original_area
+
+
+def check_normalization(
+    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
+):
+    """Compare the area of a slice of points from a point cloud to another area and
+    store a warning indicator if difference is greater than a certain threshold. Area
+    of the slice will be approximated from a voxelated version of it. This function is
+    kept for backward compatibility and call check_normalization_discrepancy under the
+    hood.
+
+    Parameters
+    ----------
+    cloud : numpy.ndarray
+        A 2D numpy array storing the point cloud. It must be a normalized point cloud.
+    original_area : float
+        Area to compare with.
+    res_xy : float
+        (x, y) voxel resolution. Defaults to 1.0 m.
+    z_min: float
+        The minimum Z value that defines the slice. Defaults to -0.10 m.
+    z_max: float
+        The maximum Z value that defines the slice. Defaults to 0.15 m.
+    warning_thresh: float
+        Threshold area difference. Defaults to 0.1 (10 % difference in area).
+
+    Returns
+    -------
+    area_warning : bool
+        True if area difference is greater than threshold, False if not.
+    """
+    indicator, _ = check_normalization_discrepancy(
+        cloud, original_area, res_xy, z_min, z_max, warning_thresh
+    )
+    return indicator
