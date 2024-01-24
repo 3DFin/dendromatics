@@ -281,7 +281,7 @@ def check_normalization(
         raise ValueError("Original area to compare with must be positive")
 
     # warning_threshold
-    if 0 < warning_thresh < 1:
+    if not 0 < warning_thresh < 1:
         raise ValueError("warning_thresh must be larger than 0 and smaller than 1")
 
     # Compute the z resolution as a function of z_max - z_min
