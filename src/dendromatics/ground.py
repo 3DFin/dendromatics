@@ -265,10 +265,8 @@ def check_normalization(
     -------
     area_warning : bool
         True if area difference is greater than threshold, False if not.
-    slice_area : float
-        Area of the slice of the point cloud
-    area_difference : float
-        The absolute difference between the area and the area of the slice
+    difference_percentage:
+        The percentage of discrepancy between the original area and the slice area.
     """
 
     # (z) voxel resolution.
@@ -312,4 +310,4 @@ def check_normalization(
     else:
         area_warning = False
 
-    return area_warning, slice_area, area_difference
+    return area_warning, area_difference * 100 / original_area

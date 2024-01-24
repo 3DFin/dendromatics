@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `ground.check_normalization` returns now the area of the slice and the area difference 
+- `ground.check_normalization` returns the indicator and the percentage of discrepancy between the original area
+and the slice area.
 
 ## [0.3.1] - 2023-01-23
 
