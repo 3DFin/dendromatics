@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2024-02-07
+
+### Changed
+
+- Update `CSF` to point to the CSF-3DFin fork. This add a fix that improve numpy array - CSF interop. 
+Height normalization processing is faster (depdending the size of the cloud it could be of several orders of magnitude)
+
 ## [0.4.0] - 2024-01-24
 
 ### Added

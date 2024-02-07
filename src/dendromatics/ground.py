@@ -1,6 +1,6 @@
 import warnings
 
-import CSF
+import CSF_3DFin as CSF
 import numpy as np
 from scipy.interpolate import griddata
 from scipy.spatial import KDTree
