@@ -105,8 +105,12 @@ def compute_axes(
 
     detected_trees = np.zeros((np.size(filt_unique_values, 0), 9))
 
-    # Auxiliar index used to display progress information.
-    ind = 0
+    # Index used to display progress information.
+    # we use this index because filt_unique_values contains tree_id that
+    # could be non contiguous
+    id_progress = 0
+    # Index used to keep track of valid trees and index the detected_trees array.
+    id_valid = 0
 
     # Height range (actual value, not the %) that points should extend throughout
     h_range_value = (stripe_upper_limit - stripe_lower_limit) * h_range
@@ -140,25 +144,25 @@ def compute_axes(
             centroid = np.mean(stem_i, 0)
 
             # Values are stored in tree vector
-            detected_trees[ind, 0] = i  # tree ID
-            detected_trees[ind, 1:4] = pca_out.components_[
+            detected_trees[id_valid, 0] = i  # tree ID
+            detected_trees[id_valid, 1:4] = pca_out.components_[
                 0, :
             ]  # PCA1 X value | PCA1 Y value | PCA1 Z value
-            detected_trees[ind, 4:7] = (
+            detected_trees[id_valid, 4:7] = (
                 centroid  # stem centroid X value | stem centroid Y value | stem centroid Z value
             )
-            detected_trees[ind, 7] = diff_z_z0  # Height difference
-            detected_trees[ind, 8] = np.abs(
+            detected_trees[id_valid, 7] = diff_z_z0  # Height difference
+            detected_trees[id_valid, 8] = np.abs(
                 np.arctan(
-                    np.sqrt(detected_trees[ind, 1] ** 2 + detected_trees[ind, 2] ** 2)
-                    / detected_trees[ind, 3]
+                    np.sqrt(
+                        detected_trees[id_valid, 1] ** 2
+                        + detected_trees[id_valid, 2] ** 2
+                    )
+                    / detected_trees[id_valid, 3]
                 )
                 * 180
                 / np.pi
             )
-            ind = ind + 1
-            if progress_hook is not None:
-                progress_hook(ind, n_values)
 
             # Coordinate transformation from original to PCA. Done for EVERY
             # point of the original cloud from the PCA of a SINGLE stem.
@@ -167,7 +171,7 @@ def compute_axes(
             )
 
             # Distance from every point in the new coordinate system to the axes.
-            # It is directly computed from the cuadratic component of PC2 and PC3
+            # It is directly computed from the quadratic component of PC2 and PC3
             axis_dist = np.hypot(cloud_pca_coords[:, 1], cloud_pca_coords[:, 2])
 
             # Points that are closer than d_max to an axis are assigned to that axis.
@@ -177,6 +181,17 @@ def compute_axes(
             valid_points = (axis_dist < d_max) & ((axis_dist - dist_to_axis) < 0)
             tree_id_vector[valid_points] = i
             dist_to_axis[valid_points] = axis_dist[valid_points]
+
+            # Progress hook
+            id_valid = id_valid + 1
+            id_progress = id_progress + 1
+            if progress_hook is not None:
+                progress_hook(id_progress, n_values)
+        else:
+            # we keep track of the progres even if the tree is not valid
+            id_progress = id_progress + 1
+            if progress_hook is not None:
+                progress_hook(id_progress, n_values)
     # This deletes the trailing rows that only contains zeros
     detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
     return (detected_trees, dist_to_axis, tree_id_vector)

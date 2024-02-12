@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Take into account all iterations in `individualize.compute_axes` to fix inconsistencies with progress bar
+
 ## [0.4.1] - 2024-02-07
 
 ### Changed
