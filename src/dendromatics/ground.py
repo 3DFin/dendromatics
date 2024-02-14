@@ -43,10 +43,12 @@ def clean_ground(cloud, res_ground=0.15, min_points=2):
     # Cluster labels are appended to the FILTERED cloud. They map each point to
     # the cluster they belong to, according to the clustering algorithm.
     eps = res_ground * 1.75
-    clustering = DBSCAN(eps=eps, min_samples=min_points).fit(vox_cloud)
+    clustering = DBSCAN(eps=eps, min_samples=min_points, n_jobs=-1).fit(vox_cloud)
 
     cloud_labs = np.append(
-        cloud, np.expand_dims(clustering.labels_[vox_to_cloud_ind], axis=1), axis=1
+        cloud,
+        np.expand_dims(clustering.labels_[vox_to_cloud_ind], axis=1),
+        axis=1,
     )
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},

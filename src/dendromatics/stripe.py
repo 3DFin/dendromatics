@@ -107,7 +107,7 @@ def verticality_clustering_iteration(
 
     eps = resolution_xy * 1.9
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
-    clustering = DBSCAN(eps=eps, min_samples=2).fit(vox_filt_stripe)
+    clustering = DBSCAN(eps=eps, min_samples=2, n_jobs=-1).fit(vox_filt_stripe)
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
