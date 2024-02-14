@@ -277,7 +277,11 @@ def compute_heights(
     eps_heights = resolution_heights * 1.9
 
     # Large-resolution voxelated cloud is clusterized
-    clustering = DBSCAN(eps=eps_heights, min_samples=2).fit(large_voxels_cloud)
+    clustering = DBSCAN(
+        eps=eps_heights,
+        min_samples=2,
+        n_jobs=-1,
+    ).fit(large_voxels_cloud)
 
     # Cluster labels are attached to the fine-resolution voxelated cloud
     voxelated_cloud = np.append(

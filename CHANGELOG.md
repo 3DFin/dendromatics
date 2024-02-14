@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Take advantage of multiple CPU cores during `DBSCAN` clustering.
+
 ### Fixed
 
-- Take into account all iterations in `individualize.compute_axes` to fix inconsistencies with progress bar
+- Take into account all iterations in `individualize.compute_axes` to fix inconsistencies with progress bar.
 
 ## [0.4.1] - 2024-02-07
 
@@ -30,6 +34,7 @@ between the original area and the slice area.
 ### Fixed
 
 - Fixed a malformed call to `voxelate` inside `ground.check_normalization`.
+
 - Fixed the documentation build int RTD.
 
 ### Added

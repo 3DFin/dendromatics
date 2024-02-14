@@ -1,7 +1,8 @@
 import timeit
 
-import jakteristics as jak
 import numpy as np
+import pgeof2
+from pgeof2 import EFeatureID
 from sklearn.cluster import DBSCAN
 
 from .voxel.voxel import *
@@ -72,9 +73,9 @@ def verticality_clustering_iteration(
     )
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
-    # 'vert_scale'.
-    vert_values = jak.compute_features(
-        voxelated_stripe, search_radius=vert_scale, feature_names=["verticality"]
+    # 'vert_scale'.compute_features_jak(xyz, knn, dist, )
+    vert_values = pgeof2.compute_features_jak(
+        voxelated_stripe, 100, vert_scale, [EFeatureID.Verticality]
     )
 
     elapsed = timeit.default_timer() - t
@@ -107,7 +108,11 @@ def verticality_clustering_iteration(
 
     eps = resolution_xy * 1.9
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
-    clustering = DBSCAN(eps=eps, min_samples=2).fit(vox_filt_stripe)
+    clustering = DBSCAN(
+        eps=eps,
+        min_samples=2,
+        n_jobs=-1,
+    ).fit(vox_filt_stripe)
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
