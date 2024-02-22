@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Take into account all iterations in `individualize.compute_axes` to fix inconsistencies with progress bar.
 
+- Update `CSF-3DFin` to version 1.3.0. Thanks to Daniel Girardeau-Montaut,
+  and the CloudCompare project, it contains many bug fixes and speed 
+  improvements. Most notably, it fixes a race condition that resulted
+  in non deterministic executions.
+
 ## [0.4.1] - 2024-02-07
 
 ### Changed
