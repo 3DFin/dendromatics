@@ -67,9 +67,9 @@ def voxelate(
     cloud_min = np.min(cloud[:, [X_field, Y_field, Z_field]], axis=0)
 
     # Substraction of the coordinates
-    cloud[:, X_field] = cloud[:, X_field] - cloud_min[X_field]
-    cloud[:, Y_field] = cloud[:, Y_field] - cloud_min[Y_field]
-    cloud[:, Z_field] = cloud[:, Z_field] - cloud_min[Z_field]
+    cloud[:, X_field] = cloud[:, X_field] - cloud_min[0]
+    cloud[:, Y_field] = cloud[:, Y_field] - cloud_min[1]
+    cloud[:, Z_field] = cloud[:, Z_field] - cloud_min[2]
 
     if not silent:
         elapsed = timeit.default_timer() - t
@@ -147,9 +147,9 @@ def voxelate(
     y_code = np.floor((unique_code - z_code * 10 ** (n_digits * 2)) / 10**n_digits)
     x_code = unique_code - z_code * 10 ** (n_digits * 2) - y_code * 10**n_digits
 
-    voxelated_cloud[:, X_field] = x_code
-    voxelated_cloud[:, Y_field] = y_code
-    voxelated_cloud[:, Z_field] = z_code
+    voxelated_cloud[:, 0] = x_code
+    voxelated_cloud[:, 1] = y_code
+    voxelated_cloud[:, 2] = z_code
 
     if not silent:
         elapsed = timeit.default_timer() - t
@@ -157,20 +157,14 @@ def voxelate(
 
     # Transformation of x, z, y codes into X, Y, X voxel coordinates, by scaling,
     # translating and centering.
-    voxelated_cloud[:, Z_field] = (
-        voxelated_cloud[:, Z_field] * resolution_z
-        + cloud_min[Z_field]
-        + resolution_z / 2
+    voxelated_cloud[:, 2] = (
+        voxelated_cloud[:, 2] * resolution_z + cloud_min[2] + resolution_z / 2
     )
-    voxelated_cloud[:, Y_field] = (
-        voxelated_cloud[:, Y_field] * resolution_xy
-        + cloud_min[Y_field]
-        + resolution_xy / 2
+    voxelated_cloud[:, 1] = (
+        voxelated_cloud[:, 1] * resolution_xy + cloud_min[1] + resolution_xy / 2
     )
-    voxelated_cloud[:, X_field] = (
-        voxelated_cloud[:, X_field] * resolution_xy
-        + cloud_min[X_field]
-        + resolution_xy / 2
+    voxelated_cloud[:, 0] = (
+        voxelated_cloud[:, 0] * resolution_xy + cloud_min[0] + resolution_xy / 2
     )
 
     # Boolean parameter that includes or not a 4th column with the number of
@@ -197,8 +191,8 @@ def voxelate(
             "% of original points",
         )
 
-    cloud[:, X_field] = cloud[:, X_field] + cloud_min[X_field]
-    cloud[:, Y_field] = cloud[:, Y_field] + cloud_min[Y_field]
-    cloud[:, Z_field] = cloud[:, Z_field] + cloud_min[Z_field]
+    cloud[:, X_field] = cloud[:, X_field] + cloud_min[0]
+    cloud[:, Y_field] = cloud[:, Y_field] + cloud_min[1]
+    cloud[:, Z_field] = cloud[:, Z_field] + cloud_min[2]
 
     return voxelated_cloud, vox_to_cloud_ind, cloud_to_vox_ind
