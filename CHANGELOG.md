@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2024-03-14
+
 ### Changed
 
 - Take advantage of multiple CPU cores during `DBSCAN` clustering.
@@ -19,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the CloudCompare project, it contains many bug fixes and speed 
   improvements. Most notably, it fixes a race condition that resulted
   in non deterministic executions.
+
+- Fixed a bug that prevent using voxelate with custom xyz component indices
 
 ## [0.4.1] - 2024-02-07
 
