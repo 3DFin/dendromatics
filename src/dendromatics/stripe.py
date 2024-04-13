@@ -1,7 +1,8 @@
 import timeit
 
-import jakteristics as jak
 import numpy as np
+import pgeof
+from pgeof import EFeatureID
 from sklearn.cluster import DBSCAN
 
 from .voxel.voxel import *
@@ -36,7 +37,7 @@ def verticality_clustering_iteration(
         fields. 3D or higher array containing data with `float` type.
     vert_scale : float
         Scale to be used during verticality computation to define a
-        neighbourhood arounda given point. Verticality will be computed from
+        neighbourhood around a given point. Verticality will be computed from
         the structure tensor of said neighbourhood via eigendecomposition.
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part
@@ -73,8 +74,8 @@ def verticality_clustering_iteration(
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
-    vert_values = jak.compute_features(
-        voxelated_stripe, search_radius=vert_scale, feature_names=["verticality"]
+    vert_values = pgeof.compute_features_selected(
+        voxelated_stripe, vert_scale, 200, [EFeatureID.Verticality]
     )
 
     elapsed = timeit.default_timer() - t
@@ -190,7 +191,7 @@ def verticality_clustering(
         fields. 3D or higher array containing data with `float` type.
     scale : float
         Scale to be used during verticality computation to define a
-        neighbourhood arounda given point. Verticality will be computed from
+        neighbourhood around a given point. Verticality will be computed from
         the structure tensor of said neighbourhood via eigendecomposition.
         Defaults to 0.1.
     vert_threshold : float
