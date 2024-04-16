@@ -31,7 +31,7 @@ classifiers = [
 ]
 dependencies = [
     "csf_3dfin==1.3.0",
-    "pgeof~=0.1",
+    "pgeof~=0.2",
     "laspy~=2.5",
     "numpy~=1.24",
     "scikit_learn~=1.2",

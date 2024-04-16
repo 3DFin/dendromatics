@@ -74,8 +74,9 @@ def verticality_clustering_iteration(
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
+    # use a large max_knn like jakteristics
     vert_values = pgeof.compute_features_selected(
-        voxelated_stripe, vert_scale, 200, [EFeatureID.Verticality]
+        voxelated_stripe, vert_scale, 50000, [EFeatureID.Verticality]
     )
 
     elapsed = timeit.default_timer() - t
