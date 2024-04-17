@@ -7,7 +7,7 @@ name = "dendromatics"
 dynamic = ["version"]
 description = "Automatic dendrometry and forest inventory for terrestrial point clouds"
 readme = "README.rst"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = "GPL-3.0-or-later"
 authors = [
     { name = "Carlos Cabo", email = "carloscabo@uniovi.es" },
