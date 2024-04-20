@@ -912,12 +912,12 @@ def tree_locator(
                         # use BH section diameter as DBH
                         dbh_values[i] = R[i, which_dbh] * 2
 
-                        tree_locations[i, X_field] = X_c[
-                            i, which_dbh
-                        ].flatten()  # use its center x value as x coordinate of tree locator
-                        tree_locations[i, Y_field] = Y_c[
-                            i, which_dbh
-                        ].flatten()  # use its center y value as y coordinate of tree locator
+                        tree_locations[i, X_field] = (
+                            X_c[i, which_dbh].flatten()
+                        )  # use its center x value as x coordinate of tree locator
+                        tree_locations[i, Y_field] = (
+                            Y_c[i, which_dbh].flatten()
+                        )  # use its center y value as y coordinate of tree locator
                         tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
 
                     # If not all of them are valid, then there is no coherence in
@@ -994,12 +994,12 @@ def tree_locator(
                         if filtered_sections.shape[0] == close_to_dbh.shape[0]:
                             dbh_values[i] = R[i, which_dbh] * 2
 
-                            tree_locations[i, X_field] = X_c[
-                                i, which_dbh
-                            ].flatten()  # Their centers are averaged and we keep that value
-                            tree_locations[i, Y_field] = Y_c[
-                                i, which_dbh
-                            ].flatten()  # Their centers are averaged and we keep that value
+                            tree_locations[i, X_field] = (
+                                X_c[i, which_dbh].flatten()
+                            )  # Their centers are averaged and we keep that value
+                            tree_locations[i, Y_field] = (
+                                Y_c[i, which_dbh].flatten()
+                            )  # Their centers are averaged and we keep that value
                             tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
 
                         # Case C
@@ -1016,8 +1016,8 @@ def tree_locator(
                             diff_height = (
                                 dbh - tree_vector[i, 6] + tree_vector[i, 7]
                             )  # Compute the height difference between centroid and BH
-                            dist_centroid_dbh = diff_height / np.cos(
-                                tree_vector[i, 8] * np.pi / 180
+                            dist_centroid_dbh = (
+                                diff_height / np.cos(tree_vector[i, 8] * np.pi / 180)
                             )  # Compute the distance between centroid and axis point at BH.
                             tree_locations[i, :] = (
                                 vector * dist_centroid_dbh + tree_vector[i, 4:7]
