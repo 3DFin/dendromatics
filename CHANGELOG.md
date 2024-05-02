@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Replace `jakteristics` by `pgeof` for verticality computation. This should result in a slight 
+  but noticeable speed improvement.
+
+- Minimum python version is now 3.9.
+
 ## [0.4.2] - 2024-03-14
 
 ### Changed
