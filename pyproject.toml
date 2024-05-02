@@ -93,42 +93,41 @@ serve = "python -m http.server --directory docs/_build"
 
 [tool.hatch.envs.lint]
 detached = true
-dependencies = [
-  "ruff>=0.0.261",
-  "black>=23.3.0"
-]
+
 [tool.hatch.envs.lint.scripts]
 # static analysis with ruff
-check-static = "ruff check {args:.}"
-check-format = "black --check --diff --color {args:.}"
-fix-static = "ruff --fix {args:.}"
-fix-format = "black {args:.}"
+check-static = "hatch fmt -l --check"
+check-format = "hatch fmt -f --check"
+fix-static = "hatch fmt -l"
+fix-format = "hatch fmt -f"
 check-all = ["check-static", "check-format"]
-fix-all = [
-  "fix-static",
-  "fix-format",
-  "check-all",
-]
+fix-all = ["fix-static", "fix-format", "check-all"]
 
 [tool.ruff]
-select = ["E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I"] 
-# TODO Add D, PTH, RET, disabled for now as they collides with intial choices
 target-version = "py310"
 line-length = 88
+
+[tool.ruff.lint]
+# TODO Add D, PTH, RET, disabled for now as they collides with intial choices
+select = ["I001","E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I"]
 # TODO: for now we ignore "Line too long error (E501)" 
 # because our comments are too longs
-# Black will take care of the line lenght in code anyway
-ignore = ["E501", 
-# Ignore docstring in public package and module
-  "D100", "D104",
-# Blank line before class
+# code formatting will take care of the line length in code anyway
+ignore = [
+  "E501",
+  # Ignore docstring in public package and module
+  "D100",
+  "D104",
+  # Blank line before class
   "D203",
-# multiline summary second line
+  # multiline summary second line
   "D213",
 # Temporary because relative imports seem to be a design choice
   "F405", "F403"
 ]
 
-[tool.black]
-line-length = 88
-target-version = ["py310"]
+[tool.ruff.lint.isort]
+known-first-party = ["three_d_fin"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
