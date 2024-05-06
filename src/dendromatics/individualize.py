@@ -148,9 +148,9 @@ def compute_axes(
             detected_trees[id_valid, 1:4] = pca_out.components_[
                 0, :
             ]  # PCA1 X value | PCA1 Y value | PCA1 Z value
-            detected_trees[
-                id_valid, 4:7
-            ] = centroid  # stem centroid X value | stem centroid Y value | stem centroid Z value
+            detected_trees[id_valid, 4:7] = (
+                centroid  # stem centroid X value | stem centroid Y value | stem centroid Z value
+            )
             detected_trees[id_valid, 7] = diff_z_z0  # Height difference
             detected_trees[id_valid, 8] = np.abs(
                 np.arctan(

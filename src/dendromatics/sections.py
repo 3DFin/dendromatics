@@ -912,12 +912,12 @@ def tree_locator(
                         # use BH section diameter as DBH
                         dbh_values[i] = R[i, which_dbh] * 2
 
-                        tree_locations[i, X_field] = (
-                            X_c[i, which_dbh].flatten()
-                        )  # use its center x value as x coordinate of tree locator
-                        tree_locations[i, Y_field] = (
-                            Y_c[i, which_dbh].flatten()
-                        )  # use its center y value as y coordinate of tree locator
+                        tree_locations[i, X_field] = X_c[
+                            i, which_dbh
+                        ].flatten()  # use its center x value as x coordinate of tree locator
+                        tree_locations[i, Y_field] = Y_c[
+                            i, which_dbh
+                        ].flatten()  # use its center y value as y coordinate of tree locator
                         tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
 
                     # If not all of them are valid, then there is no coherence in
@@ -994,12 +994,12 @@ def tree_locator(
                         if filtered_sections.shape[0] == close_to_dbh.shape[0]:
                             dbh_values[i] = R[i, which_dbh] * 2
 
-                            tree_locations[i, X_field] = (
-                                X_c[i, which_dbh].flatten()
-                            )  # Their centers are averaged and we keep that value
-                            tree_locations[i, Y_field] = (
-                                Y_c[i, which_dbh].flatten()
-                            )  # Their centers are averaged and we keep that value
+                            tree_locations[i, X_field] = X_c[
+                                i, which_dbh
+                            ].flatten()  # Their centers are averaged and we keep that value
+                            tree_locations[i, Y_field] = Y_c[
+                                i, which_dbh
+                            ].flatten()  # Their centers are averaged and we keep that value
                             tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
 
                         # Case C
