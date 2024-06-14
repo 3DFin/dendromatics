@@ -53,32 +53,7 @@ Issues = "https://github.com/3DFin/dendromatics/issues"
 [tool.hatch.version]
 path = "src/dendromatics/__about__.py"
 
-[tool.hatch.envs.default]
-dependencies = [
-  "pytest",
-  "pytest-cov",
-  "pytest-randomly",
-]
-[tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/dendromatics --cov=tests --randomly-seed=1 {args}"
-no-cov = "cov --no-cov {args}"
-
-[[tool.hatch.envs.test.matrix]]
 python = ["39", "310", "311", "312"]
-
-[tool.coverage.run]
-branch = true
-parallel = true
-omit = [
-    "src/dendromatics/__about__.py",
-]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
 
 [tool.hatch.envs.docs]
 detached = true

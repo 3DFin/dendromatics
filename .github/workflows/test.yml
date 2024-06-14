@@ -39,4 +39,4 @@ jobs:
         run: hatch run lint:check-all
 
       - name: Run tests
-        run: hatch run cov
+        run: hatch test -c
