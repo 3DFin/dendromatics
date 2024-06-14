@@ -156,7 +156,7 @@ Install
 
 The list of dependencies is available in the *pyproject.toml* file.
 
-*dendromatics* relies on `hatch <https://github.com/pypa/hatch>`_
+*dendromatics* relies on `hatch <https://github.com/pypa/hatch>` (version > 1.12)
 
 Depending on your version of Python and your OS, you might also need a C/C++ compiler to compile some of the mandatory dependencies (CSF and jakteristics). 
 But in any case you would not have to run the compiler by yourself, the build system will manage dependencies and compilation for you. 
@@ -169,7 +169,7 @@ You can run tests to ensure it works on your computer.
 
 .. code-block:: console
     
-    hatch run cov
+    hatch test -c
 
 It is also possible to build doc locally.
 

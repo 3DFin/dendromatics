@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Minimum python version is now 3.9.
 
+- Migrate to hatch 1.12+. Make use of `hatch format` and `hatch test` command
 ## [0.4.2] - 2024-03-14
 
 ### Changed
