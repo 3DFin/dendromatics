@@ -345,7 +345,7 @@ def individualize_trees(
     resolution_xy=0.035,
     stripe_lower_limit=0.7,
     stripe_upper_limit=3.5,
-    h_range=1.2,
+    h_range=0.7,
     d_max=1.5,
     min_points=20,
     d=15,
