@@ -95,7 +95,7 @@ def verticality_clustering_iteration(
     if filt_stripe.shape[0] == 0:
         raise ValueError(
             "No vertical clusters where found with these parameters."
-            "Suggestion: decrease n points/voxel size or verticality "
+            "Suggestion: decrease n_points/voxel size or verticality "
             "threshold."
         )
 
@@ -119,7 +119,7 @@ def verticality_clustering_iteration(
     if len(cluster_id) == 1 and cluster_id[0] == -1:
         raise ValueError(
             "No stems were found with the current configuration."
-            "Suggestion: increase n points/voxel size."
+            "Suggestion: decrease n_points/voxel size."
         )
 
     elapsed = timeit.default_timer() - t
@@ -149,7 +149,7 @@ def verticality_clustering_iteration(
     if large_clusters.size == 0:
         raise ValueError(
             "Clusters were found, but they are too small to be considered potential "
-            "stems using current settings. Suggestion: increase n points."
+            "stems using current settings. Suggestion: decrease n_points."
         )
 
     # Removing the points that are not in valid clusters.
