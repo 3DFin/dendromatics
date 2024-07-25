@@ -26,7 +26,7 @@ def verticality_clustering_iteration(
     this as a subset of the original cloud delimited by a lower height and an
     upper height, which will narrow down a region where it is expected to only
     be stems. Then it will voxelate those points and compute the verticality
-    via compute_features() from jakteristics. It will filter points based on
+    via compute_features() from pgeof It will filter points based on
     their verticality value, voxelate again and then cluster the remaining
     points. Those are expected to belong to stems.
 
@@ -74,7 +74,7 @@ def verticality_clustering_iteration(
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
-    # use a large max_knn like jakteristics
+    # use a large max_knn like the one used by jakteristics (it could be lowered)
     vert_values = pgeof.compute_features_selected(
         voxelated_stripe, vert_scale, 50000, [EFeatureID.Verticality]
     )

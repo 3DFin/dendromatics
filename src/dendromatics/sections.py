@@ -696,18 +696,18 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             # Tilting measured from every vertical within a tree: All verticals
             # obtained from the set of sections within a tree. For instance, if
             # there are 10 sections, there are 10 tilting values for each section.
-            tilt_matrix = np.arctan(xy_dist_matrix / z_dist_matrix) * 180 / np.pi
+            tilt_matrix = np.degrees(np.arctan(xy_dist_matrix / z_dist_matrix))
 
             # Summation of tilting values from each center.
             tilt_sum = np.nansum(tilt_matrix, axis=0)
 
             # Outliers within previous vector (too low / too high tilting values).
-            # These are anormals tilting values from ANY axis.
+            # These are abnormals tilting values from ANY axis.
             outlier_prob[i][valid_radius] = outlier_vector(tilt_sum) * abs_outlier_w
 
             # Second loop: iterates over each section (within a single tree).
             for j in range(np.size(sections[valid_radius])):
-                # Search for anomalous tilting values from a CERTAIN axis.
+                # Search for abnormals tilting values from a CERTAIN axis.
                 tilt_matrix[j, j] = np.quantile(tilt_matrix[j, ~j], 0.5)
                 rel_outlier = (
                     outlier_vector(tilt_matrix[j]) * rel_outlier_w
@@ -871,10 +871,10 @@ def tree_locator(
 
                         tree_locations[i, X_field] = X_c[
                             i, which_dbh
-                        ].flatten()  # Their centers are averaged and we keep that value
+                        ]  # Their centers are averaged and we keep that value
                         tree_locations[i, Y_field] = Y_c[
                             i, which_dbh
-                        ].flatten()  # Their centers are averaged and we keep that value
+                        ]  # Their centers are averaged and we keep that value
                         tree_locations[i, Z_field] = (
                             tree_vector[i, 7] + dbh
                         )  # original height is obtained
@@ -914,10 +914,10 @@ def tree_locator(
 
                         tree_locations[i, X_field] = X_c[
                             i, which_dbh
-                        ].flatten()  # use its center x value as x coordinate of tree locator
+                        ]  # use its center x value as x coordinate of tree locator
                         tree_locations[i, Y_field] = Y_c[
                             i, which_dbh
-                        ].flatten()  # use its center y value as y coordinate of tree locator
+                        ]  # use its center y value as y coordinate of tree locator
                         tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
 
                     # If not all of them are valid, then there is no coherence in
@@ -996,10 +996,10 @@ def tree_locator(
 
                             tree_locations[i, X_field] = X_c[
                                 i, which_dbh
-                            ].flatten()  # Their centers are averaged and we keep that value
+                            ]  # Their centers are averaged and we keep that value
                             tree_locations[i, Y_field] = Y_c[
                                 i, which_dbh
-                            ].flatten()  # Their centers are averaged and we keep that value
+                            ]  # Their centers are averaged and we keep that value
                             tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
 
                         # Case C
