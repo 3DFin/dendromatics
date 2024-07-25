@@ -180,7 +180,7 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
     circle. It divides the section in a number of sectors to check if there are
     points within them (so they are occupied). If there are not enough occupied
     sectors, the section fails the test, as it is safe to assume it has an
-    anormal, non desirable structure.
+    abnormal, non desirable structure.
 
     Parameters
     ----------
@@ -310,7 +310,7 @@ def fit_circle_check(
         Minimum number of occupied sectors in a section for its fitted circle
         to be considered as valid.
     width : float
-        Width around the fitted circle to look for points (units is milimeters).
+        Width around the fitted circle to look for points (units is millimeters).
 
     Returns
     -------
@@ -640,9 +640,10 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     # directly from the interquartile range, or from a certain distance from it,
     # thanks to 'n_range' parameter. Its default value is 1.5.
 
-    def outlier_vector(vector, lower_q=0.25, upper_q=0.75, n_range=1.5):
-        q1 = np.quantile(vector, lower_q)  # First quartile
-        q3 = np.quantile(vector, upper_q)  # Third quartile
+    def _outlier_vector(vector, lower_q=0.25, upper_q=0.75, n_range=1.5):
+        q1, q3 = np.quantile(
+            vector, [lower_q, upper_q]
+        )  # First quartile and Third quartile
         iqr = q3 - q1  # Interquartile range
 
         lower_bound = (
@@ -652,9 +653,8 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             q3 + iqr * n_range
         )  # Upper bound of filter. If n_range = 0 -> upper_bound = q3
 
-        # Outlier vector.
-        outlier_ind = (vector < lower_bound) | (vector > upper_bound) * 1
-        return outlier_ind
+        # return the outlier vector.
+        return ((vector < lower_bound) | (vector > upper_bound)).astype(int)
 
     # Empty matrix that will store the probabilities of a section to be invalid
     outlier_prob = np.zeros_like(X_tree)
@@ -666,32 +666,27 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
         if np.sum(radius[i, :]) > 0:
             # Filtering sections within a tree that have valid circles (non-zero radius).
             valid_radius = radius[i, :] > 0
-
+            num_valid_sections = np.size(sections[valid_radius])
             # Weights associated to each section. They are computed in a way
             # that the final value of outliers sums up to 1 as maximum.
-            abs_outlier_w = w_1 / (np.size(sections[valid_radius]) * w_2 + w_1)
-            rel_outlier_w = w_2 / (np.size(sections[valid_radius]) * w_2 + w_1)
+            abs_outlier_w = w_1 / (num_valid_sections * w_2 + w_1)
+            rel_outlier_w = w_2 / (num_valid_sections * w_2 + w_1)
 
             # Vertical distance matrix among all sections (among their centers)
-            heights = np.zeros(
-                (np.size(sections[valid_radius]), Z_field)
-            )  # Empty matrix to store heights of each section
-            heights[:, 0] = np.transpose(
-                sections[valid_radius]
-            )  #  Height (Z value) of each section
-            z_dist_matrix = distance_matrix(
-                heights, heights
-            )  # Vertical distance matrix
+            # Empty matrix to store heights of each section
+            heights = np.zeros((num_valid_sections, Z_field))
+            #  Height (Z value) of each section
+            heights[:, 0] = np.transpose(sections[valid_radius])
+            # Vertical distance matrix
+            z_dist_matrix = distance_matrix(heights, heights)
 
             # Horizontal distance matrix among all sections (among their centers)
-            c_coord = np.zeros(
-                (np.size(sections[valid_radius]), 2)
-            )  # Empty matrix to store X, Y coordinates of each section
-            c_coord[:, 0] = np.transpose(X_tree[i][valid_radius])  # X coordinates
-            c_coord[:, 1] = np.transpose(Y_tree[i][valid_radius])  # Y coordinates
-            xy_dist_matrix = distance_matrix(
-                c_coord, c_coord
-            )  # Horizontal distance matrix
+            # Store X, Y coordinates of each section
+            c_coord = np.column_stack(
+                (X_tree[i][valid_radius], Y_tree[i][valid_radius])
+            )
+            # Horizontal distance matrix
+            xy_dist_matrix = distance_matrix(c_coord, c_coord)
 
             # Tilting measured from every vertical within a tree: All verticals
             # obtained from the set of sections within a tree. For instance, if
@@ -703,20 +698,16 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
 
             # Outliers within previous vector (too low / too high tilting values).
             # These are abnormals tilting values from ANY axis.
-            outlier_prob[i][valid_radius] = outlier_vector(tilt_sum) * abs_outlier_w
+            outlier_prob[i][valid_radius] = _outlier_vector(tilt_sum) * abs_outlier_w
 
             # Second loop: iterates over each section (within a single tree).
             for j in range(np.size(sections[valid_radius])):
                 # Search for abnormals tilting values from a CERTAIN axis.
                 tilt_matrix[j, j] = np.quantile(tilt_matrix[j, ~j], 0.5)
-                rel_outlier = (
-                    outlier_vector(tilt_matrix[j]) * rel_outlier_w
-                )  # Storing those values.
-
-                # Sum of absolute outlier value and relative outlier value
-                outlier_prob[i][valid_radius] = (
-                    outlier_prob[i][valid_radius] + rel_outlier
-                )
+                # Storing those values.
+                rel_outlier = _outlier_vector(tilt_matrix[j]) * rel_outlier_w
+                # Sum of absolute outlier value and relative outlier values
+                outlier_prob[i][valid_radius] += rel_outlier
 
     return outlier_prob
 
