@@ -746,59 +746,44 @@ def tree_locator(
         Matrix containing (x, y, z) coordinates of each tree locator.
     """
 
-    dbh = 1.3  # Breast height
+    DBH = 1.3  # Breast height
 
-    n_trees = X_c.shape[0]  # Number of trees
-
-    tree_locations = np.zeros(shape=(n_trees, 3))  # Empty vector to be filled with tree locators
-
-    dbh_values = np.zeros(shape=(n_trees, 1))  # Empty vector to be filled with DBH values.
+    # Number of trees
+    n_trees = X_c.shape[0]
+    # Empty vector to be filled with tree locators
+    tree_locations = np.zeros((n_trees, 3))
+    # Empty vector to be filled with DBH values.
+    dbh_values = np.zeros((n_trees, 1))
 
     # This if loop covers the cases where the stripe was defined in a way that
     # it did not include BH and DBH nor tree locator cannot be obtained from a
     # section at or close to BH. If that happens, tree axis is used to locate
     # the tree and DBH is not computed.
-    if np.min(sections) > 1.3:
+    if np.min(sections) > DBH:
         for i in range(n_trees):
             vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
-
-            diff_height = (
-                dbh - tree_vector[i, 6] + tree_vector[i, 7]
-            )  # Compute the height difference between centroid and BH
-            dist_centroid_dbh = diff_height / np.cos(
-                np.radians(tree_vector[i, 8])
-            )  # Compute the distance between centroid and axis point at BH.
-            tree_locations[i, :] = (
-                vector * dist_centroid_dbh + tree_vector[i, 4:7]
-            )  # Compute coordinates of axis point at BH.
-
+            # Compute the height difference between centroid and BH
+            diff_height = DBH - tree_vector[i, 6] + tree_vector[i, 7]
+            # Compute the distance between centroid and axis point at BH.
+            dist_centroid_dbh = diff_height / np.cos(np.radians(tree_vector[i, 8]))
+            # Compute coordinates of axis point at BH.
+            tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
     else:
         d = 1
-        diff_to_dbh = sections - dbh  # Height difference between each section and BH.
-        which_dbh = np.argmin(np.abs(diff_to_dbh))  # Which section is closer to BH.
+        which_dbh = np.argmin(np.abs(sections - DBH))  # Which section is closer to BH.
 
         # get surrounding sections too
-        lower_d_section = which_dbh - d
-        upper_d_section = which_dbh + d
-
-        # Just in case they are out of bound
-        if lower_d_section < 0:
-            lower_d_section = 0
-
-        if upper_d_section > sections.shape[0]:
-            upper_d_section = sections.shape[0]
-
+        lower_d_section = max(0, which_dbh - d)
+        upper_d_section = min(sections.shape[0], which_dbh + d)
         # BH section and its neighbors. From now on, neighborhood
         close_to_dbh = np.arange(lower_d_section, upper_d_section)
 
         for i in range(n_trees):  # For each tree
             which_valid_R = R[i, close_to_dbh] > 0  # From neighborhood, select only those with non 0 radius
-            which_valid_out = (
-                outliers[i, close_to_dbh] < 0.30
-            )  # From neighborhood, select only those with outlier probability lower than 10 %
-            which_valid_sector_perct = (
-                sector_perct[i, close_to_dbh] > 30
-            )  # only those with sector occupancy higher than 30 %
+            # From neighborhood, select only those with outlier probability lower than 10 %
+            which_valid_out = outliers[i, close_to_dbh] < 0.3
+            # only those with sector occupancy higher than 30 %
+            which_valid_sector_perct = sector_perct[i, close_to_dbh] > 30.0
 
             # valid points could be retrieved as well
             # i.e. only those with enough points in inner circle
@@ -814,65 +799,50 @@ def tree_locator(
                     & (np.all(which_valid_R))
                     & (np.all(which_valid_out))
                     & np.all(which_valid_sector_perct)
-                ):  # only happens when which_dbh == 0 # which_valid_points should be used here
+                ):  # Only happens when which_dbh == 0 in this case which_valid_points should be used here
                     # If they are coherent: difference among their radii is not larger than 10 % of the largest radius
                     if np.abs(R[i, close_to_dbh[0]] - R[i, close_to_dbh[1]]) < np.max(R[i, close_to_dbh]) * 0.1:
                         dbh_values[i] = R[i, which_dbh] * 2
-
-                        tree_locations[i, X_field] = X_c[
-                            i, which_dbh
-                        ]  # Their centers are averaged and we keep that value
-                        tree_locations[i, Y_field] = Y_c[
-                            i, which_dbh
-                        ]  # Their centers are averaged and we keep that value
-                        tree_locations[i, Z_field] = tree_vector[i, 7] + dbh  # original height is obtained
+                        # Their centers are averaged and we keep that value
+                        tree_locations[i, X_field] = X_c[i, which_dbh]
+                        tree_locations[i, Y_field] = Y_c[i, which_dbh]
+                        # Original height is obtained
+                        tree_locations[i, Z_field] = tree_vector[i, 7] + DBH
 
                     # If not all of them are valid, then there is no coherence
                     # in any case, and the axis location is used
                     else:
                         vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
+                        # Compute the height difference between centroid and BH
+                        diff_height = DBH - tree_vector[i, 6] + tree_vector[i, 7]
+                        # Compute the distance between centroid and axis point at BH.
+                        dist_centroid_dbh = diff_height / np.cos(np.radians(tree_vector[i, 8]))
+                        # Compute coordinates of axis point at BH.
+                        tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
 
-                        diff_height = (
-                            dbh - tree_vector[i, 6] + tree_vector[i, 7]
-                        )  # Compute the height difference between centroid and BH
-                        dist_centroid_dbh = diff_height / np.cos(
-                            np.radians(tree_vector[i, 8])
-                        )  # Compute the distance between centroid and axis point at BH.
-                        tree_locations[i, :] = (
-                            vector * dist_centroid_dbh + tree_vector[i, 4:7]
-                        )  # Compute coordinates of axis point at BH.
-
-                # If last section is BH section and if itself and its only neighbour are valid
+                # If last section is BH section and if itself and its only neighbor are valid
                 elif (upper_d_section == sections.shape[0]) & (np.all(which_valid_R)) & (np.all(which_valid_out)):
-                    # if they are coherent
+                    # if they are coherent; difference among their radii is not larger than 15 % of the largest radius
                     if np.abs(R[i, close_to_dbh[0]] - R[i, close_to_dbh[1]]) < np.max(R[i, close_to_dbh]) * 0.15:
                         # use BH section diameter as DBH
                         dbh_values[i] = R[i, which_dbh] * 2
-
-                        tree_locations[i, X_field] = X_c[
-                            i, which_dbh
-                        ]  # use its center x value as x coordinate of tree locator
-                        tree_locations[i, Y_field] = Y_c[
-                            i, which_dbh
-                        ]  # use its center y value as y coordinate of tree locator
-                        tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
+                        # Use its center x value as x coordinate of tree locator
+                        tree_locations[i, X_field] = X_c[i, which_dbh]
+                        # Use its center y value as y coordinate of tree locator
+                        tree_locations[i, Y_field] = Y_c[i, which_dbh]
+                        tree_locations[i, Z_field] = tree_vector[i, 7] + DBH
 
                     # If not all of them are valid, then there is no coherence in
                     # any case, and the axis location is used and DBH is not computed
                     else:
                         vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
-
                         dbh_values[i] = 0
-
-                        diff_height = (
-                            dbh - tree_vector[i, 6] + tree_vector[i, 7]
-                        )  # Compute the height difference between centroid and BH
-                        dist_centroid_dbh = diff_height / np.cos(
-                            np.radians(tree_vector[i, 8])
-                        )  # Compute the distance between centroid and axis point at BH.
-                        tree_locations[i, :] = (
-                            vector * dist_centroid_dbh + tree_vector[i, 4:7]
-                        )  # Compute coordinates of axis point at BH.
+                        # Compute the height difference between centroid and BH
+                        diff_height = DBH - tree_vector[i, 6] + tree_vector[i, 7]
+                        # Compute the distance between centroid and axis point at BH.
+                        dist_centroid_dbh = diff_height / np.cos(np.radians(tree_vector[i, 8]))
+                        # Compute coordinates of axis point at BH.
+                        tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
 
                 # In any other case, BH section is not first or last section, so it has 2 neighbors
                 # 3 possibilities left:
@@ -884,79 +854,55 @@ def tree_locator(
                     # Case A:
                     if not ((np.all(which_valid_R)) & (np.all(which_valid_out)) & np.all(which_valid_sector_perct)):
                         vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
-
                         dbh_values[i] = 0
-
-                        diff_height = (
-                            dbh - tree_vector[i, 6] + tree_vector[i, 7]
-                        )  # Compute the height difference between centroid and BH
-                        dist_centroid_dbh = diff_height / np.cos(
-                            np.radians(tree_vector[i, 8])
-                        )  # Compute the distance between centroid and axis point at BH.
-                        tree_locations[i, :] = (
-                            vector * dist_centroid_dbh + tree_vector[i, 4:7]
-                        )  # Compute coordinates of axis point at BH.
-
+                        # Compute the height difference between centroid and BH
+                        diff_height = DBH - tree_vector[i, 6] + tree_vector[i, 7]
+                        # Compute the distance between centroid and axis point at BH.
+                        dist_centroid_dbh = diff_height / np.cos(np.radians(tree_vector[i, 8]))
+                        # Compute coordinates of axis point at BH.
+                        tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
+                    # case B&C:
                     else:
                         valid_sections = close_to_dbh  # Valid sections indexes
                         valid_radii = R[i, valid_sections]  # Valid sections radii
                         median_radius = np.median(valid_radii)  # Valid sections median radius
-                        abs_dev = np.abs(
-                            valid_radii - median_radius
-                        )  # Valid sections absolute deviation from median radius
+                        # Valid sections absolute deviation from median radius
+                        abs_dev = np.abs(valid_radii - median_radius)
                         mad = np.median(abs_dev)  # Median absolute deviation
-                        filtered_sections = valid_sections[
-                            abs_dev < 3 * mad
-                        ]  # Only keep sections close to median radius (3 MAD criterion)
-
+                        # Only keep sections close to median radius (3 MAD criterion)
+                        filtered_sections = valid_sections[abs_dev < 3 * mad]
                         # 3 things can happen here:
                         # There are no deviated sections --> there is coherence among 3 --> case B
                         # There are 2 deviated sections --> only median radius survives filter --> case C
-
                         # Case B
                         if filtered_sections.shape[0] == close_to_dbh.shape[0]:
                             dbh_values[i] = R[i, which_dbh] * 2
-
-                            tree_locations[i, X_field] = X_c[
-                                i, which_dbh
-                            ]  # Their centers are averaged and we keep that value
-                            tree_locations[i, Y_field] = Y_c[
-                                i, which_dbh
-                            ]  # Their centers are averaged and we keep that value
-                            tree_locations[i, Z_field] = tree_vector[i, 7] + dbh
-
+                            # Their centers are averaged and we keep that value
+                            tree_locations[i, X_field] = X_c[i, which_dbh]
+                            # Their centers are averaged and we keep that value
+                            tree_locations[i, Y_field] = Y_c[i, which_dbh]
+                            tree_locations[i, Z_field] = tree_vector[i, 7] + DBH
                         # Case C
                         else:
                             # if PCA1 Z value is negative
                             vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
-
                             dbh_values[i] = 0
-
-                            diff_height = (
-                                dbh - tree_vector[i, 6] + tree_vector[i, 7]
-                            )  # Compute the height difference between centroid and BH
-                            dist_centroid_dbh = diff_height / np.cos(
-                                np.radians(tree_vector[i, 8])
-                            )  # Compute the distance between centroid and axis point at BH.
-                            tree_locations[i, :] = (
-                                vector * dist_centroid_dbh + tree_vector[i, 4:7]
-                            )  # Compute coordinates of axis point at BH.
-
+                            # Compute the height difference between centroid and BH
+                            diff_height = DBH - tree_vector[i, 6] + tree_vector[i, 7]
+                            # Compute the distance between centroid and axis point at BH.
+                            dist_centroid_dbh = diff_height / np.cos(np.radians(tree_vector[i, 8]))
+                            # Compute coordinates of axis point at BH.
+                            tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
             # If there is not a single section that either has non 0 radius nor low
             # outlier probability, there is nothing else to do -> axis location is used
             else:
                 vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
-
-                diff_height = (
-                    dbh - tree_vector[i, 6] + tree_vector[i, 7]
-                )  # Compute the height difference between centroid and BH
-                dist_centroid_dbh = diff_height / np.cos(
-                    np.radians(tree_vector[i, 8])
-                )  # Compute the distance between centroid and axis point at BH.
-                tree_locations[i, :] = (
-                    vector * dist_centroid_dbh + tree_vector[i, 4:7]
-                )  # Compute coordinates of axis point at BH.
-
+                # Compute the height difference between centroid and BH
+                diff_height = DBH - tree_vector[i, 6] + tree_vector[i, 7]
+                # Compute the distance between centroid and axis point at BH.
+                dist_centroid_dbh = diff_height / np.cos(np.radians(tree_vector[i, 8]))
+                # Compute coordinates of axis point at BH.
+                tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
                 dbh_values[i] = 0
 
     return (dbh_values, tree_locations)

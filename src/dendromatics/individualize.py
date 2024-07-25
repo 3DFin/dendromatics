@@ -176,7 +176,7 @@ def compute_axes(
                 progress_hook(id_progress, n_values)
     # This deletes the trailing rows that only contains zeros
     detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
-    return (detected_trees, dist_to_axis, tree_id_vector)
+    return detected_trees, dist_to_axis, tree_id_vector
 
 
 # -----------------------------------------------------------------------------

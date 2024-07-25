@@ -52,7 +52,6 @@ Issues = "https://github.com/3DFin/dendromatics/issues"
 
 [tool.hatch.version]
 path = "src/dendromatics/__about__.py"
-
 python = ["39", "310", "311", "312"]
 
 [tool.hatch.envs.docs]
