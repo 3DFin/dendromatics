@@ -89,13 +89,13 @@ def fit_circle(X, Y):
 
     # Function that computes distance from each 2D point to a single point defined by (X_c, Y_c)
     # It will be used to compute the distance from each point to the circle center.
-    def calc_R(X, Y, X_c, Y_c):
+    def _calc_R(X, Y, X_c, Y_c):
         return np.sqrt((X - X_c) ** 2 + (Y - Y_c) ** 2)
 
     # Function that computes algebraic distance from each 2D point to some middle circle c
     # It calls calc_R (just defined above) and it is used during the least squares optimization.
-    def f_2(c, X, Y):
-        R_i = calc_R(X, Y, *c)
+    def _f_2(c, X, Y):
+        R_i = _calc_R(X, Y, *c)
         return R_i - R_i.mean()
 
     # Initial barycenter coordinates (middle circle c center)
@@ -106,10 +106,10 @@ def fit_circle(X, Y):
     # Least square minimization to find the circle that best fits all
     # points within the section. 'ier' is a flag indicating whether the solution
     # was found (ier = 1, 2, 3 or 4) or not (otherwise).
-    circle_c, _ = opt.leastsq(f_2, barycenter, args=(X, Y), maxfev=2000)
+    circle_c, _ = opt.leastsq(_f_2, barycenter, args=(X, Y), maxfev=2000)
 
     # Its radius
-    radius = calc_R(X, Y, *circle_c)
+    radius = _calc_R(X, Y, *circle_c)
     mean_radius = radius.mean()
 
     # Output: - X, Y coordinates of best-fit circle center - its radius
@@ -203,10 +203,10 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
 
     Returns
     -------
-    perct_occuped_sectors : numpy.ndarray
-        Vector containing the percentage of occupied sectors in each section.
-    enough_occuped_sectors : numpy.ndarray
-        Vector containing binary indicators whether the fitted circle is valid
+    perct_occupied_sectors : float
+        Percentage of occupied sectors in each section.
+    enough_occupied_sectors : int
+        Binary indicators whether the fitted circle is valid
         or not. 1 - valid, 0 - not valid.
     """
 
@@ -230,24 +230,19 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
     )  # np.floor only keep the integer part of the division
 
     # Number of points in each sector.
-    n_occuped_sectors = np.size(np.unique(norm_angles))
+    n_occupied_sectors = np.size(np.unique(norm_angles))
 
     # Percentage of occupied sectors.
-    perct_occuped_sectors = n_occuped_sectors * 100 / n_sectors
+    perct_occupied_sectors = n_occupied_sectors * 100 / n_sectors
 
     # If there are enough occupied sectors, then it is a valid section.
-    if n_occuped_sectors < min_n_sectors:
-        enough_occuped_sectors = 0
+    enough_occupied_sectors = 0 if n_occupied_sectors < min_n_sectors else 1  # TODO(RJ): Maybe convert this to boolean
 
-    # If there are not, then it is not a valid section.
-    else:
-        enough_occuped_sectors = 1
-
-    # Output: percentage of occuped sectors | boolean indicating if it has enough
-    # occuped sectors to pass the test.
+    # Output: percentage of occupied sectors | boolean indicating if it has enough
+    # occupied sectors to pass the test.
     return (
-        perct_occuped_sectors,
-        enough_occuped_sectors,
+        perct_occupied_sectors,
+        enough_occupied_sectors,
     )  # 0: passes; 1: does not pass.
 
 
@@ -505,7 +500,7 @@ def compute_sections(
     second_time = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store 'second_time' data
     sector_perct = np.zeros(
         (n_trees, n_sections), dtype=float
-    )  # Empty array to store percentage of occuped sectors data
+    )  # Empty array to store percentage of occupied sectors data
     n_points_in = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store inner points data
 
     # Filling previous empty arrays
@@ -765,10 +760,7 @@ def tree_locator(
     # the tree and DBH is not computed.
     if np.min(sections) > 1.3:
         for i in range(n_trees):
-            if tree_vector[i, 3] < 0:
-                vector = -tree_vector[i, 1:4]
-            else:
-                vector = tree_vector[i, 1:4]
+            vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
 
             diff_height = (
                 dbh - tree_vector[i, 6] + tree_vector[i, 7]
@@ -838,11 +830,7 @@ def tree_locator(
                     # If not all of them are valid, then there is no coherence
                     # in any case, and the axis location is used
                     else:
-                        if tree_vector[i, 3] < 0:
-                            vector = -tree_vector[i, 1:4]
-
-                        else:
-                            vector = tree_vector[i, 1:4]
+                        vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
 
                         diff_height = (
                             dbh - tree_vector[i, 6] + tree_vector[i, 7]
@@ -872,11 +860,7 @@ def tree_locator(
                     # If not all of them are valid, then there is no coherence in
                     # any case, and the axis location is used and DBH is not computed
                     else:
-                        if tree_vector[i, 3] < 0:
-                            vector = -tree_vector[i, 1:4]
-
-                        else:
-                            vector = tree_vector[i, 1:4]
+                        vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
 
                         dbh_values[i] = 0
 
@@ -899,11 +883,7 @@ def tree_locator(
                 else:
                     # Case A:
                     if not ((np.all(which_valid_R)) & (np.all(which_valid_out)) & np.all(which_valid_sector_perct)):
-                        if tree_vector[i, 3] < 0:
-                            vector = -tree_vector[i, 1:4]
-
-                        else:
-                            vector = tree_vector[i, 1:4]
+                        vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
 
                         dbh_values[i] = 0
 
@@ -948,11 +928,7 @@ def tree_locator(
                         # Case C
                         else:
                             # if PCA1 Z value is negative
-                            if tree_vector[i, 3] < 0:
-                                vector = -tree_vector[i, 1:4]
-
-                            else:
-                                vector = tree_vector[i, 1:4]
+                            vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
 
                             dbh_values[i] = 0
 
@@ -969,11 +945,7 @@ def tree_locator(
             # If there is not a single section that either has non 0 radius nor low
             # outlier probability, there is nothing else to do -> axis location is used
             else:
-                if tree_vector[i, 3] < 0:
-                    vector = -tree_vector[i, 1:4]
-
-                else:
-                    vector = tree_vector[i, 1:4]
+                vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
 
                 diff_height = (
                     dbh - tree_vector[i, 6] + tree_vector[i, 7]

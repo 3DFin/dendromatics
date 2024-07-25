@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed some typos, improve coding style, slight runtime improvements (mostly due by the use of dedicated numpy functions to handle angle conversions).
+- Fixed some typos, improve coding style, slight runtime improvements
 
 ## [0.5.1] - 2024-06-17
 

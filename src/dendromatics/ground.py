@@ -305,10 +305,7 @@ def check_normalization_discrepancy(cloud, original_area, res_xy=1.0, z_min=-0.1
     # to any point clouds where this situation happens.
 
     # Check if the difference is greater than 10 % of the first number
-    if area_difference >= threshold_difference:
-        area_warning = True
-    else:
-        area_warning = False
+    area_warning = area_difference >= threshold_difference
 
     return area_warning, area_difference * 100 / original_area
 

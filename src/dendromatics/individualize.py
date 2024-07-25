@@ -464,8 +464,9 @@ def individualize_trees(
 
     # Two new fields are added to the original cloud: - tree ID (id of closest axis)
     # - distance to that axis
-    assigned_cloud = np.append(cloud, tree_id_vector[vox_to_cloud_ind, np.newaxis], axis=1)
-    assigned_cloud = np.append(assigned_cloud, dist_to_axis[vox_to_cloud_ind, np.newaxis], axis=1)
+    assigned_cloud = np.hstack(
+        [cloud, tree_id_vector[vox_to_cloud_ind, np.newaxis], dist_to_axis[vox_to_cloud_ind, np.newaxis]]
+    )
 
     # Output: - Assigned cloud (X, Y, Z, Z0, tree_id, dist_to_axis) - tree vector
     return assigned_cloud, detected_trees, tree_heights

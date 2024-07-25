@@ -297,41 +297,37 @@ def generate_axis_cloud(
     tilt : numpy.ndarray
         Matrix that describes the tilt of each axes
     """
-    stripe_centroid = (stripe_lower_limit + stripe_upper_limit) / 2
+    stripe_centroid = (stripe_lower_limit + stripe_upper_limit) / 2.0
     mean_descend = stripe_centroid + line_downstep
     mean_rise = line_upstep - stripe_centroid
 
-    up_iter = np.round(mean_rise / point_interval)
-    down_iter = mean_descend / point_interval
+    up_iter = int(np.floor(mean_rise / point_interval))
+    down_iter = int(mean_descend / point_interval)
 
-    axes_points = np.zeros((np.int_(tree_vector.shape[0] * (up_iter + down_iter)), 3))
-    tilt = np.zeros(np.int_(tree_vector.shape[0] * (up_iter + down_iter)))
+    axes_points = np.zeros((tree_vector.shape[0] * (up_iter + down_iter), 3))
+    tilt = np.zeros(tree_vector.shape[0] * (up_iter + down_iter))
+
     ind = 0
-
     for i in range(tree_vector.shape[0]):
         if np.sum(np.exp2(tree_vector[i, 1:4])) > 0:
-            if tree_vector[i, 3] < 0:
-                vector = -tree_vector[i, 1:4]
-
-            else:
-                vector = tree_vector[i, 1:4]
-
-            axes_points[np.int_(ind) : np.int_(ind + up_iter + down_iter), :] = (
-                np.transpose(
-                    [
+            vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
+            next_ind = ind + up_iter + down_iter
+            axes_points[ind:next_ind] = (
+                np.column_stack(
+                    (
                         np.arange(-down_iter, up_iter),
                         np.arange(-down_iter, up_iter),
                         np.arange(-down_iter, up_iter),
-                    ]
+                    )
                 )
                 * vector
                 * point_interval
                 + tree_vector[i, 4:7]
             )
-            tilt[np.int_(ind) : np.int_(ind + up_iter + down_iter)] = tree_vector[i, 8]
-            ind = ind + up_iter + down_iter
+            tilt[ind:next_ind] = tree_vector[i, 8]
+            ind = next_ind
 
-    axes_points = axes_points[: np.int_(ind), :]
+    axes_points = axes_points[:ind]
     return (axes_points, tilt)
 
 
