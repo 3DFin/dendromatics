@@ -2,9 +2,10 @@
 
 import os
 
-import dendromatics as dm
 import laspy
 import numpy as np
+
+import dendromatics as dm
 
 ### Reading the point cloud ###
 os.chdir("C:/path/data")  # your path to data
@@ -92,13 +93,9 @@ stems = dm.verticality_clustering(xyz0_coords)[:, 0:6]
 
 ### Computing sections ###
 section_len = 0.2
-sections = np.arange(
-    min_h, max_h, section_len
-)  # Range of uniformly spaced values within the specified interval
+sections = np.arange(min_h, max_h, section_len)  # Range of uniformly spaced values within the specified interval
 
-X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in = dm.compute_sections(
-    stems, sections
-)
+X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in = dm.compute_sections(stems, sections)
 # ---------------------------------------------------------#
 
 ### Tilt detection ###
@@ -122,9 +119,7 @@ dm.draw_axes(tree_vector, filename_las)
 # ---------------------------------------------------------#
 
 ### Computing DBH and tree locators
-dbh_values, tree_locations = dm.tree_locator(
-    sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_points_in
-)
+dbh_values, tree_locations = dm.tree_locator(sections, X_c, Y_c, tree_vector, sector_perct, R, outliers, n_points_in)
 
 las_tree_locations = laspy.create(point_format=2, file_version="1.2")
 las_tree_locations.x = tree_locations[:, 0]

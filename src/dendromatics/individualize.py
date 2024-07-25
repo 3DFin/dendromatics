@@ -82,12 +82,8 @@ def compute_axes(
     """
     # Empty vectors that will store final outputs: - distance from each point to
     # closest axis - ID of the corresponding tree (the tree that the point belongs to).
-    dist_to_axis = (
-        np.zeros((np.size(voxelated_cloud, 0))) + 100000
-    )  # distance to the closest axis
-    tree_id_vector = (
-        np.zeros((np.size(voxelated_cloud, 0))) + 100000
-    )  # tree ID of closest axis
+    dist_to_axis = np.zeros((np.size(voxelated_cloud, 0))) + 100000  # distance to the closest axis
+    tree_id_vector = np.zeros((np.size(voxelated_cloud, 0))) + 100000  # tree ID of closest axis
 
     # Set of all possible trees (trunks at this stage) and number of points associated to each:
     unique_values, n = np.unique(clust_stripe[:, tree_id_field], return_counts=True)
@@ -139,9 +135,7 @@ def compute_axes(
 
             # Values are stored in tree vector
             detected_trees[id_valid, 0] = i  # tree ID
-            detected_trees[id_valid, 1:4] = pca_out.components_[
-                0, :
-            ]  # PCA1 X value | PCA1 Y value | PCA1 Z value
+            detected_trees[id_valid, 1:4] = pca_out.components_[0, :]  # PCA1 X value | PCA1 Y value | PCA1 Z value
             detected_trees[id_valid, 4:7] = (
                 centroid  # stem centroid X value | stem centroid Y value | stem centroid Z value
             )
@@ -149,19 +143,14 @@ def compute_axes(
             detected_trees[id_valid, 8] = np.abs(
                 np.degrees(
                     np.arctan(
-                        np.hypot(
-                            detected_trees[id_valid, 1], detected_trees[id_valid, 2]
-                        )
-                        / detected_trees[id_valid, 3]
+                        np.hypot(detected_trees[id_valid, 1], detected_trees[id_valid, 2]) / detected_trees[id_valid, 3]
                     )
                 )
             )
 
             # Coordinate transformation from original to PCA. Done for EVERY
             # point of the original cloud from the PCA of a SINGLE stem.
-            cloud_pca_coords = pca_out.transform(
-                voxelated_cloud[:, [X_field, Y_field, Z_field]]
-            )
+            cloud_pca_coords = pca_out.transform(voxelated_cloud[:, [X_field, Y_field, Z_field]])
 
             # Distance from every point in the new coordinate system to the axes.
             # It is directly computed from the quadratic component of PC2 and PC3
@@ -270,9 +259,7 @@ def compute_heights(
     eps_heights = resolution_heights * 1.9
 
     # Large-resolution voxelated cloud is clusterized
-    clustering = DBSCAN(eps=eps_heights, min_samples=2, n_jobs=-1).fit(
-        large_voxels_cloud
-    )
+    clustering = DBSCAN(eps=eps_heights, min_samples=2, n_jobs=-1).fit(large_voxels_cloud)
 
     # Cluster labels are attached to the fine-resolution voxelated cloud
     voxelated_cloud = np.append(
@@ -282,9 +269,7 @@ def compute_heights(
     )
 
     # Tree IDS are attached to the fine-resolution voxelated cloud too
-    voxelated_cloud = np.append(
-        voxelated_cloud, np.expand_dims(tree_id_vector, axis=1), axis=1
-    )
+    voxelated_cloud = np.append(voxelated_cloud, np.expand_dims(tree_id_vector, axis=1), axis=1)
 
     # Eliminating all points too far away from axes
     voxelated_cloud = voxelated_cloud[dist_to_axis < d, :]
@@ -309,9 +294,7 @@ def compute_heights(
     for i in range(n_trees):  # Last row of tree_vector
         # Be aware this finds the highest voxel (fine-resolution), not the highest point.
         valid_id = detected_trees[i, 0]
-        single_tree = voxelated_cloud[
-            voxelated_cloud[:, -1] == valid_id, 0:3
-        ]  # Just the (x, y, z) coordinates
+        single_tree = voxelated_cloud[voxelated_cloud[:, -1] == valid_id, 0:3]  # Just the (x, y, z) coordinates
         which_z_max = np.argmax(single_tree[:, 2])  # The highest (z) value
         highest_point = single_tree[which_z_max, :]  # The highest point
         tree_heights[i, 0:3] = highest_point
@@ -481,12 +464,8 @@ def individualize_trees(
 
     # Two new fields are added to the original cloud: - tree ID (id of closest axis)
     # - distance to that axis
-    assigned_cloud = np.append(
-        cloud, tree_id_vector[vox_to_cloud_ind, np.newaxis], axis=1
-    )
-    assigned_cloud = np.append(
-        assigned_cloud, dist_to_axis[vox_to_cloud_ind, np.newaxis], axis=1
-    )
+    assigned_cloud = np.append(cloud, tree_id_vector[vox_to_cloud_ind, np.newaxis], axis=1)
+    assigned_cloud = np.append(assigned_cloud, dist_to_axis[vox_to_cloud_ind, np.newaxis], axis=1)
 
     # Output: - Assigned cloud (X, Y, Z, Z0, tree_id, dist_to_axis) - tree vector
     return assigned_cloud, detected_trees, tree_heights

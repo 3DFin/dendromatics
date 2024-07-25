@@ -75,9 +75,7 @@ def verticality_clustering_iteration(
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
     # use a large max_knn like the one used by jakteristics (it could be lowered)
-    vert_values = pgeof.compute_features_selected(
-        voxelated_stripe, vert_scale, 50000, [EFeatureID.Verticality]
-    )
+    vert_values = pgeof.compute_features_selected(voxelated_stripe, vert_scale, 50000, [EFeatureID.Verticality])
 
     elapsed = timeit.default_timer() - t
     print("   %.2f" % elapsed, "s")
@@ -118,8 +116,7 @@ def verticality_clustering_iteration(
     # Raise error if there's only one cluster id (-1)
     if len(cluster_id) == 1 and cluster_id[0] == -1:
         raise ValueError(
-            "No stems were found with the current configuration."
-            "Suggestion: decrease n_points/voxel size."
+            "No stems were found with the current configuration." "Suggestion: decrease n_points/voxel size."
         )
 
     elapsed = timeit.default_timer() - t
@@ -151,9 +148,7 @@ def verticality_clustering_iteration(
         )
 
     # Removing the points that are not in valid clusters.
-    clust_stripe = vox_filt_lab_stripe[
-        np.isin(vox_filt_lab_stripe[:, -1], large_clusters)
-    ]
+    clust_stripe = vox_filt_lab_stripe[np.isin(vox_filt_lab_stripe[:, -1], large_clusters)]
 
     n_clusters = large_clusters.shape[0]
 

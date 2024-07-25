@@ -232,14 +232,10 @@ def draw_circles(
     las_circ.add_extra_dim(laspy.ExtraBytesParams(name="tree_ID", type=np.int32))
     las_circ.tree_ID = coords[:, 4]
 
-    las_circ.add_extra_dim(
-        laspy.ExtraBytesParams(name="sector_occupancy_percent", type=np.float64)
-    )
+    las_circ.add_extra_dim(laspy.ExtraBytesParams(name="sector_occupancy_percent", type=np.float64))
     las_circ.sector_occupancy_percent = coords[:, 5]
 
-    las_circ.add_extra_dim(
-        laspy.ExtraBytesParams(name="pts_inner_circle", type=np.int32)
-    )
+    las_circ.add_extra_dim(laspy.ExtraBytesParams(name="pts_inner_circle", type=np.int32))
     las_circ.pts_inner_circle = coords[:, 6]
 
     las_circ.add_extra_dim(laspy.ExtraBytesParams(name="Z0", type=np.float64))
@@ -385,9 +381,7 @@ def draw_axes(
     las_axes.x = axes_points[:, 0]
     las_axes.y = axes_points[:, 1]
     las_axes.z = axes_points[:, 2]
-    las_axes.add_extra_dim(
-        laspy.ExtraBytesParams(name="tilting_degree", type=np.float64)
-    )
+    las_axes.add_extra_dim(laspy.ExtraBytesParams(name="tilting_degree", type=np.float64))
     las_axes.tilting_degree = tilt
 
     las_axes.write(filename_las)

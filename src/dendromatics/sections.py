@@ -37,9 +37,7 @@ def point_clustering(X, Y, max_dist):
 
     # sch.fclusterdata outputs a vector that contains cluster ID of each point
     # (which cluster does each point belong to)
-    clust_id = sch.fclusterdata(
-        xy_stack, max_dist, criterion="distance", metric="euclidean"
-    )
+    clust_id = sch.fclusterdata(xy_stack, max_dist, criterion="distance", metric="euclidean")
 
     # Set of all clusters
     clust_id_unique = np.unique(clust_id)
@@ -219,9 +217,7 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
     # Computation of radius and angle necessary to transform cartesian coordinates
     # to polar coordinates.
     radial_coord = np.sqrt(X_red**2 + Y_red**2)  # radial coordinate
-    angular_coord = np.arctan2(
-        X_red, Y_red
-    )  # angular coordinate. This function from numpy directly computes it.
+    angular_coord = np.arctan2(X_red, Y_red)  # angular coordinate. This function from numpy directly computes it.
 
     # Points that are close enough to the circle that will be checked.
     points_within = (radial_coord > (R - width)) * (radial_coord < (R + width))
@@ -343,9 +339,7 @@ def fit_circle_check(
         n_points_in = inner_circle(X, Y, X_c, Y_c, R, times_R)
 
         # Call to sector_occupancy to check if sectors around inner circle are occupied.
-        (sector_perct, enough_sectors) = sector_occupancy(
-            X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width
-        )
+        (sector_perct, enough_sectors) = sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width)
 
         # If any of the following conditions hold:
         #   - Too many points in inner circle
@@ -358,9 +352,7 @@ def fit_circle_check(
             if second_time == 0:
                 # First round implies there is no X_g or Y_g, as points would not
                 # have been grouped yet. point_clustering is called.
-                (X_g, Y_g) = point_clustering(
-                    X, Y, max_dist
-                )  # X_g or Y_g are the coordinates of the largest cluster.
+                (X_g, Y_g) = point_clustering(X, Y, max_dist)  # X_g or Y_g are the coordinates of the largest cluster.
 
                 # If cluster size is big enough, then proceed. It is done this way to
                 # account for cases where, even though the section had enough points,
@@ -502,27 +494,19 @@ def compute_sections(
     n_points_in : numpy.ndarray
         Matrix containing the number of points in the inner circles.
     """
-    trees = np.unique(
-        stems[:, tree_id_field]
-    )  # Select the column that contains tree ID
+    trees = np.unique(stems[:, tree_id_field])  # Select the column that contains tree ID
     n_trees = trees.size  # Number of trees
     n_sections = sections.size  # Number of sections
 
     X_c = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store X data
     Y_c = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store Y data
     R = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store radius data
-    check_circle = np.zeros(
-        (n_trees, n_sections), dtype=float
-    )  # Empty array to store 'check' data
-    second_time = np.zeros(
-        (n_trees, n_sections), dtype=float
-    )  # Empty array to store 'second_time' data
+    check_circle = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store 'check' data
+    second_time = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store 'second_time' data
     sector_perct = np.zeros(
         (n_trees, n_sections), dtype=float
     )  # Empty array to store percentage of occuped sectors data
-    n_points_in = np.zeros(
-        (n_trees, n_sections), dtype=float
-    )  # Empty array to store inner points data
+    n_points_in = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store inner points data
 
     # Filling previous empty arrays
 
@@ -641,17 +625,11 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     # thanks to 'n_range' parameter. Its default value is 1.5.
 
     def _outlier_vector(vector, lower_q=0.25, upper_q=0.75, n_range=1.5):
-        q1, q3 = np.quantile(
-            vector, [lower_q, upper_q]
-        )  # First quartile and Third quartile
+        q1, q3 = np.quantile(vector, [lower_q, upper_q])  # First quartile and Third quartile
         iqr = q3 - q1  # Interquartile range
 
-        lower_bound = (
-            q1 - iqr * n_range
-        )  # Lower bound of filter. If n_range = 0 -> lower_bound = q1
-        upper_bound = (
-            q3 + iqr * n_range
-        )  # Upper bound of filter. If n_range = 0 -> upper_bound = q3
+        lower_bound = q1 - iqr * n_range  # Lower bound of filter. If n_range = 0 -> lower_bound = q1
+        upper_bound = q3 + iqr * n_range  # Upper bound of filter. If n_range = 0 -> upper_bound = q3
 
         # return the outlier vector.
         return ((vector < lower_bound) | (vector > upper_bound)).astype(int)
@@ -682,9 +660,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
 
             # Horizontal distance matrix among all sections (among their centers)
             # Store X, Y coordinates of each section
-            c_coord = np.column_stack(
-                (X_tree[i][valid_radius], Y_tree[i][valid_radius])
-            )
+            c_coord = np.column_stack((X_tree[i][valid_radius], Y_tree[i][valid_radius]))
             # Horizontal distance matrix
             xy_dist_matrix = distance_matrix(c_coord, c_coord)
 
@@ -779,13 +755,9 @@ def tree_locator(
 
     n_trees = X_c.shape[0]  # Number of trees
 
-    tree_locations = np.zeros(
-        shape=(n_trees, 3)
-    )  # Empty vector to be filled with tree locators
+    tree_locations = np.zeros(shape=(n_trees, 3))  # Empty vector to be filled with tree locators
 
-    dbh_values = np.zeros(
-        shape=(n_trees, 1)
-    )  # Empty vector to be filled with DBH values.
+    dbh_values = np.zeros(shape=(n_trees, 1))  # Empty vector to be filled with DBH values.
 
     # This if loop covers the cases where the stripe was defined in a way that
     # it did not include BH and DBH nor tree locator cannot be obtained from a
@@ -828,9 +800,7 @@ def tree_locator(
         close_to_dbh = np.arange(lower_d_section, upper_d_section)
 
         for i in range(n_trees):  # For each tree
-            which_valid_R = (
-                R[i, close_to_dbh] > 0
-            )  # From neighborhood, select only those with non 0 radius
+            which_valid_R = R[i, close_to_dbh] > 0  # From neighborhood, select only those with non 0 radius
             which_valid_out = (
                 outliers[i, close_to_dbh] < 0.30
             )  # From neighborhood, select only those with outlier probability lower than 10 %
@@ -854,10 +824,7 @@ def tree_locator(
                     & np.all(which_valid_sector_perct)
                 ):  # only happens when which_dbh == 0 # which_valid_points should be used here
                     # If they are coherent: difference among their radii is not larger than 10 % of the largest radius
-                    if (
-                        np.abs(R[i, close_to_dbh[0]] - R[i, close_to_dbh[1]])
-                        < np.max(R[i, close_to_dbh]) * 0.1
-                    ):
+                    if np.abs(R[i, close_to_dbh[0]] - R[i, close_to_dbh[1]]) < np.max(R[i, close_to_dbh]) * 0.1:
                         dbh_values[i] = R[i, which_dbh] * 2
 
                         tree_locations[i, X_field] = X_c[
@@ -866,9 +833,7 @@ def tree_locator(
                         tree_locations[i, Y_field] = Y_c[
                             i, which_dbh
                         ]  # Their centers are averaged and we keep that value
-                        tree_locations[i, Z_field] = (
-                            tree_vector[i, 7] + dbh
-                        )  # original height is obtained
+                        tree_locations[i, Z_field] = tree_vector[i, 7] + dbh  # original height is obtained
 
                     # If not all of them are valid, then there is no coherence
                     # in any case, and the axis location is used
@@ -890,16 +855,9 @@ def tree_locator(
                         )  # Compute coordinates of axis point at BH.
 
                 # If last section is BH section and if itself and its only neighbour are valid
-                elif (
-                    (upper_d_section == sections.shape[0])
-                    & (np.all(which_valid_R))
-                    & (np.all(which_valid_out))
-                ):
+                elif (upper_d_section == sections.shape[0]) & (np.all(which_valid_R)) & (np.all(which_valid_out)):
                     # if they are coherent
-                    if (
-                        np.abs(R[i, close_to_dbh[0]] - R[i, close_to_dbh[1]])
-                        < np.max(R[i, close_to_dbh]) * 0.15
-                    ):
+                    if np.abs(R[i, close_to_dbh[0]] - R[i, close_to_dbh[1]]) < np.max(R[i, close_to_dbh]) * 0.15:
                         # use BH section diameter as DBH
                         dbh_values[i] = R[i, which_dbh] * 2
 
@@ -940,11 +898,7 @@ def tree_locator(
                 # and not BH section or All of three sections are valid, but there is no coherence
                 else:
                     # Case A:
-                    if not (
-                        (np.all(which_valid_R))
-                        & (np.all(which_valid_out))
-                        & np.all(which_valid_sector_perct)
-                    ):
+                    if not ((np.all(which_valid_R)) & (np.all(which_valid_out)) & np.all(which_valid_sector_perct)):
                         if tree_vector[i, 3] < 0:
                             vector = -tree_vector[i, 1:4]
 
@@ -966,9 +920,7 @@ def tree_locator(
                     else:
                         valid_sections = close_to_dbh  # Valid sections indexes
                         valid_radii = R[i, valid_sections]  # Valid sections radii
-                        median_radius = np.median(
-                            valid_radii
-                        )  # Valid sections median radius
+                        median_radius = np.median(valid_radii)  # Valid sections median radius
                         abs_dev = np.abs(
                             valid_radii - median_radius
                         )  # Valid sections absolute deviation from median radius
@@ -1007,8 +959,8 @@ def tree_locator(
                             diff_height = (
                                 dbh - tree_vector[i, 6] + tree_vector[i, 7]
                             )  # Compute the height difference between centroid and BH
-                            dist_centroid_dbh = (
-                                diff_height / np.cos(np.radians(tree_vector[i, 8]))
+                            dist_centroid_dbh = diff_height / np.cos(
+                                np.radians(tree_vector[i, 8])
                             )  # Compute the distance between centroid and axis point at BH.
                             tree_locations[i, :] = (
                                 vector * dist_centroid_dbh + tree_vector[i, 4:7]
