@@ -39,7 +39,7 @@ def compute_axes(
     voxelated_cloud : numpy.ndarray
         The voxelated point cloud. It is expected to have X, Y, Z and Z0 fields.
     clust_stripe : numpy.ndarray
-        The point cloud containing the clusterized stripe (the stems) from
+        The point cloud containing the clustered stripe (the stems) from
         verticality_clustering.
     stripe_lower_limit : float
         Lower (vertical) limit of the stripe (units is meters). Defaults to 0.7.
@@ -65,7 +65,7 @@ def compute_axes(
         Index at which cluster ID is stored.
     progress_hook : callable, optional
         A hook that take two int, the first is the current number of iteration
-        and the second is the targetted number iteration. Defaults to None.
+        and the second is the targeted number iteration. Defaults to None.
 
     Returns
     -------

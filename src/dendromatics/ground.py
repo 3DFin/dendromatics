@@ -131,7 +131,7 @@ def generate_dtm(
 def clean_cloth(dtm_points):
     """This function takes a Digital Terrain Model (DTM) and denoises it. This
     denoising is done via a 2 MADs criterion from the median height value of a
-    neighbourhood of size 15.
+    neighborhood of size 15.
 
     Parameters
     ----------

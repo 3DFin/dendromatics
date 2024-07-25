@@ -15,7 +15,7 @@ from .voxel.voxel import *
 def verticality_clustering_iteration(
     stripe,
     vert_scale,
-    vert_treshold,
+    vert_threshold,
     n_points,
     resolution_xy,
     resolution_z,
@@ -37,8 +37,8 @@ def verticality_clustering_iteration(
         fields. 3D or higher array containing data with `float` type.
     vert_scale : float
         Scale to be used during verticality computation to define a
-        neighbourhood around a given point. Verticality will be computed from
-        the structure tensor of said neighbourhood via eigendecomposition.
+        neighborhood around a given point. Verticality will be computed from
+        the structure tensor of said neighborhood via eigen-decomposition.
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part
         of a stem.
@@ -85,11 +85,11 @@ def verticality_clustering_iteration(
 
     # Verticality values are appended to the ORIGINAL cloud, using voxel-to-
     # original-cloud indexes.
-    vert_stripe = np.append(stripe, vert_values[vox_to_stripe_ind], axis=1)
+    vert_stripe = np.hstack((stripe, vert_values[vox_to_stripe_ind]))
 
     # Filtering of points that were in voxels whose verticality value is under
     # the threshold. Output is a filtered cloud.
-    filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_treshold]
+    filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_threshold]
 
     # Check there are enough points to continue
     if filt_stripe.shape[0] == 0:
@@ -139,11 +139,9 @@ def verticality_clustering_iteration(
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    large_clusters = cluster_id[K > n_points]
-
-    # ID = -1 is always created by DBSCAN() to include points that were not
-    # included in any cluster.
-    large_clusters = large_clusters[large_clusters != -1]
+    # Moreover, ID = -1 is always created by DBSCAN() to include points
+    # that were not included in any cluster.
+    large_clusters = cluster_id[(K > n_points) & (cluster_id != -1)]
 
     # Raise error if there are no large clusters.
     if large_clusters.size == 0:
@@ -175,7 +173,7 @@ def verticality_clustering_iteration(
 def verticality_clustering(
     stripe,
     scale=0.1,
-    vert_treshold=0.7,
+    vert_threshold=0.7,
     n_points=1000,
     n_iter=2,
     resolution_xy=0.02,
@@ -192,8 +190,8 @@ def verticality_clustering(
         fields. 3D or higher array containing data with `float` type.
     scale : float
         Scale to be used during verticality computation to define a
-        neighbourhood around a given point. Verticality will be computed from
-        the structure tensor of said neighbourhood via eigendecomposition.
+        neighborhood around a given point. Verticality will be computed from
+        the structure tensor of said neighborhood via Eigendecomposition.
         Defaults to 0.1.
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part
@@ -227,7 +225,7 @@ def verticality_clustering(
     # but it slows down the process needlessly.
     if n_iter == 0:
         n_iter = 1
-        vert_treshold = 0
+        vert_threshold = 0
 
     # Basically, use verticality_clustering as many times as defined by n_iter
     for i in np.arange(n_iter):
@@ -240,7 +238,7 @@ def verticality_clustering(
         clust_stripe, t = verticality_clustering_iteration(
             aux_stripe,
             scale,
-            vert_treshold,
+            vert_threshold,
             n_points,
             resolution_xy,
             resolution_z,

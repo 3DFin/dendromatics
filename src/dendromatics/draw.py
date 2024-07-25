@@ -25,7 +25,7 @@ def generate_circles_cloud(
 ):
     """This function generates points that comprise the circles computed by
     fit_circle_check function, so sections can be visualized. The circles
-    points cloud along with their associated meta data are retuned as a Matrix
+    points cloud along with their associated meta data are returned as a Matrix
     (numpy.ndarray)
 
     Parameters
@@ -81,7 +81,7 @@ def generate_circles_cloud(
         for j in range(tree_section[1]):
             # If distance is within range (R_min, R_max), then proceed.
             if R[i, j] >= R_min and R[i, j] <= R_max:
-                # Filling the array with the appropiate data
+                # Filling the array with the appropriate data
                 section_c_xyz[section, :] = [
                     X_c[i, j],
                     Y_c[i, j],

@@ -129,10 +129,10 @@ def inner_circle(X, Y, X_c, Y_c, R, times_R):
     insight on the quality of the 'fit_circle-circle'.
 
         - If points are closest to the inner circle, then the first fit was not
-          appropiate
+          appropriate
 
         - On the contrary, if points are closer to the outer circle, the
-          'fit_circle-circle' is appropiate and describes well the stem diameter.
+          'fit_circle-circle' is appropriate and describes well the stem diameter.
 
     Instead of directly computing the inner circle, it just takes a proportion
     (less than one) of the original circle radius and its center. Then, it just
@@ -179,8 +179,8 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
     """This function provides quality measurements for the fitting of the
     circle. It divides the section in a number of sectors to check if there are
     points within them (so they are occupied). If there are not enough occupied
-    sectors, the section fails the test, as it is safe to asume it has an
-    anomale, non desirable structure.
+    sectors, the section fails the test, as it is safe to assume it has an
+    anormal, non desirable structure.
 
     Parameters
     ----------
@@ -231,7 +231,7 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
     # point is assigned the integer corresponding to the sector it belongs to.
     norm_angles = np.floor(
         angular_coord[points_within] / (2 * np.pi / n_sectors)
-    )  # np.floor se queda solo con la parte entera de la división
+    )  # np.floor only keep the integer part of the division
 
     # Number of points in each sector.
     n_occuped_sectors = np.size(np.unique(norm_angles))
@@ -402,7 +402,7 @@ def fit_circle_check(
                     R = 0
                     second_time = 1
 
-            # If this is the second round (whether the first round succesfully
+            # If this is the second round (whether the first round successfully
             # provided a valid section or not), then proceed.
             else:
                 review = 1  # Just stating that if this is the second round, the check has happened.
@@ -487,7 +487,7 @@ def compute_sections(
         Index at which cluster ID is stored. Defaults to 4.
     progress_hook : callable, optional
         A hook that take two int, the first is the current number of iteration
-        and the second is the targetted number iteration. Defaults to None.
+        and the second is the targeted number iteration. Defaults to None.
 
     Returns
     -------
@@ -634,16 +634,16 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
         Vector containing the 'outlier probability' of each section.
     """
 
-    # This function simply defines 1st and 3rd cuartile of a vector and separates
-    # values that are outside the interquartilic range defined by these. Those
+    # This function simply defines 1st and 3rd quartile of a vector and separates
+    # values that are outside the interquartile range defined by these. Those
     # are the candidates to be outliers. This filtering may be done either
-    # directly from the interquartilic range, or from a certain distance from it,
+    # directly from the interquartile range, or from a certain distance from it,
     # thanks to 'n_range' parameter. Its default value is 1.5.
 
     def outlier_vector(vector, lower_q=0.25, upper_q=0.75, n_range=1.5):
         q1 = np.quantile(vector, lower_q)  # First quartile
         q3 = np.quantile(vector, upper_q)  # Third quartile
-        iqr = q3 - q1  # Interquartilic range
+        iqr = q3 - q1  # Interquartile range
 
         lower_bound = (
             q1 - iqr * n_range
@@ -702,7 +702,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             tilt_sum = np.nansum(tilt_matrix, axis=0)
 
             # Outliers within previous vector (too low / too high tilting values).
-            # These are anomalus tilting values from ANY axis.
+            # These are anormals tilting values from ANY axis.
             outlier_prob[i][valid_radius] = outlier_vector(tilt_sum) * abs_outlier_w
 
             # Second loop: iterates over each section (within a single tree).
@@ -786,13 +786,14 @@ def tree_locator(
 
     dbh = 1.3  # Breast height
 
+    n_trees = X_c.shape[0]  # Number of trees
+
     tree_locations = np.zeros(
-        shape=(X_c.shape[0], 3)
+        shape=(n_trees, 3)
     )  # Empty vector to be filled with tree locators
-    n_trees = tree_locations.shape[0]  # Number of trees
 
     dbh_values = np.zeros(
-        shape=(X_c.shape[0], 1)
+        shape=(n_trees, 1)
     )  # Empty vector to be filled with DBH values.
 
     # This if loop covers the cases where the stripe was defined in a way that
@@ -803,7 +804,6 @@ def tree_locator(
         for i in range(n_trees):
             if tree_vector[i, 3] < 0:
                 vector = -tree_vector[i, 1:4]
-
             else:
                 vector = tree_vector[i, 1:4]
 
@@ -811,7 +811,7 @@ def tree_locator(
                 dbh - tree_vector[i, 6] + tree_vector[i, 7]
             )  # Compute the height difference between centroid and BH
             dist_centroid_dbh = diff_height / np.cos(
-                tree_vector[i, 8] * np.pi / 180
+                np.radians(tree_vector[i, 8])
             )  # Compute the distance between centroid and axis point at BH.
             tree_locations[i, :] = (
                 vector * dist_centroid_dbh + tree_vector[i, 4:7]
@@ -833,16 +833,16 @@ def tree_locator(
         if upper_d_section > sections.shape[0]:
             upper_d_section = sections.shape[0]
 
-        # BH section and its neighbours. From now on, neighbourhood
-        close_to_dbh = np.array(np.arange(lower_d_section, upper_d_section))
+        # BH section and its neighbors. From now on, neighborhood
+        close_to_dbh = np.arange(lower_d_section, upper_d_section)
 
         for i in range(n_trees):  # For each tree
             which_valid_R = (
                 R[i, close_to_dbh] > 0
-            )  # From neighbourhood, select only those with non 0 radius
+            )  # From neighborhood, select only those with non 0 radius
             which_valid_out = (
                 outliers[i, close_to_dbh] < 0.30
-            )  # From neighbourhood, select only those with outlier probability lower than 10 %
+            )  # From neighborhood, select only those with outlier probability lower than 10 %
             which_valid_sector_perct = (
                 sector_perct[i, close_to_dbh] > 30
             )  # only those with sector occupancy higher than 30 %
@@ -854,8 +854,8 @@ def tree_locator(
             # )
 
             # If there are valid sections among the selected
-            if (np.any(which_valid_R)) & (np.any(which_valid_out)):
-                # If first section is BH section and if itself and its only neighbour are valid
+            if np.any(which_valid_R) & np.any(which_valid_out):
+                # If first section is BH section and if itself and its only neighbor are valid
                 if (
                     (lower_d_section == 0)
                     & (np.all(which_valid_R))
@@ -892,7 +892,7 @@ def tree_locator(
                             dbh - tree_vector[i, 6] + tree_vector[i, 7]
                         )  # Compute the height difference between centroid and BH
                         dist_centroid_dbh = diff_height / np.cos(
-                            tree_vector[i, 8] * np.pi / 180
+                            np.radians(tree_vector[i, 8])
                         )  # Compute the distance between centroid and axis point at BH.
                         tree_locations[i, :] = (
                             vector * dist_centroid_dbh + tree_vector[i, 4:7]
@@ -935,17 +935,17 @@ def tree_locator(
                             dbh - tree_vector[i, 6] + tree_vector[i, 7]
                         )  # Compute the height difference between centroid and BH
                         dist_centroid_dbh = diff_height / np.cos(
-                            tree_vector[i, 8] * np.pi / 180
+                            np.radians(tree_vector[i, 8])
                         )  # Compute the distance between centroid and axis point at BH.
                         tree_locations[i, :] = (
                             vector * dist_centroid_dbh + tree_vector[i, 4:7]
                         )  # Compute coordinates of axis point at BH.
 
-                # In any other case, BH section is not first or last section, so it has 2 neighbourghs
-                # 3 posibilities left:
+                # In any other case, BH section is not first or last section, so it has 2 neighbors
+                # 3 possibilities left:
                 # A: Not all of three sections are valid: there is no possible coherence
                 # B: All of three sections are valid, and there is coherence among the three
-                # C: All of three sections are valid, but there is only coherence among neighbours
+                # C: All of three sections are valid, but there is only coherence among neighbors
                 # and not BH section or All of three sections are valid, but there is no coherence
                 else:
                     # Case A:
@@ -966,7 +966,7 @@ def tree_locator(
                             dbh - tree_vector[i, 6] + tree_vector[i, 7]
                         )  # Compute the height difference between centroid and BH
                         dist_centroid_dbh = diff_height / np.cos(
-                            tree_vector[i, 8] * np.pi / 180
+                            np.radians(tree_vector[i, 8])
                         )  # Compute the distance between centroid and axis point at BH.
                         tree_locations[i, :] = (
                             vector * dist_centroid_dbh + tree_vector[i, 4:7]
@@ -1017,7 +1017,7 @@ def tree_locator(
                                 dbh - tree_vector[i, 6] + tree_vector[i, 7]
                             )  # Compute the height difference between centroid and BH
                             dist_centroid_dbh = (
-                                diff_height / np.cos(tree_vector[i, 8] * np.pi / 180)
+                                diff_height / np.cos(np.radians(tree_vector[i, 8]))
                             )  # Compute the distance between centroid and axis point at BH.
                             tree_locations[i, :] = (
                                 vector * dist_centroid_dbh + tree_vector[i, 4:7]
@@ -1036,7 +1036,7 @@ def tree_locator(
                     dbh - tree_vector[i, 6] + tree_vector[i, 7]
                 )  # Compute the height difference between centroid and BH
                 dist_centroid_dbh = diff_height / np.cos(
-                    tree_vector[i, 8] * np.pi / 180
+                    np.radians(tree_vector[i, 8])
                 )  # Compute the distance between centroid and axis point at BH.
                 tree_locations[i, :] = (
                     vector * dist_centroid_dbh + tree_vector[i, 4:7]
