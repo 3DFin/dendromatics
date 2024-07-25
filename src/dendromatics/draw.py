@@ -73,7 +73,7 @@ def generate_circles_cloud(
     # be used to complete the .LAS file data.
     section_c_xyz = np.zeros([tree_section[0] * tree_section[1], 9])
 
-    # Auxiliar index indicating which section is in use.
+    # Auxiliary index indicating which section is in use.
     section = 0
 
     # Double for loop to iterate through each combination of coordinates

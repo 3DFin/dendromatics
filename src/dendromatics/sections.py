@@ -526,7 +526,7 @@ def compute_sections(
 
     # Filling previous empty arrays
 
-    # Auxiliar index for first loop
+    # Auxiliary index for first loop
     tree = -1  # Loop will start at -1
     if progress_hook is not None:
         progress_hook(0, n_trees)
@@ -537,7 +537,7 @@ def compute_sections(
         tree = tree + 1
         if progress_hook is not None:
             progress_hook(tree + 1, n_trees)
-        # Auxiliar index for second loop
+        # Auxiliary index for second loop
         section = 0
 
         # Second loop: iterates over each section
