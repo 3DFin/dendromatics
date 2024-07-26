@@ -489,15 +489,13 @@ def compute_sections(
     n_trees = trees.size  # Number of trees
     n_sections = sections.size  # Number of sections
 
-    X_c = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store X data
-    Y_c = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store Y data
-    R = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store radius data
-    check_circle = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store 'check' data
-    second_time = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store 'second_time' data
-    sector_perct = np.zeros(
-        (n_trees, n_sections), dtype=float
-    )  # Empty array to store percentage of occupied sectors data
-    n_points_in = np.zeros((n_trees, n_sections), dtype=float)  # Empty array to store inner points data
+    X_c = np.zeros((n_trees, n_sections))  # Empty array to store X data
+    Y_c = np.zeros((n_trees, n_sections))  # Empty array to store Y data
+    R = np.zeros((n_trees, n_sections))  # Empty array to store radius data
+    check_circle = np.zeros((n_trees, n_sections))  # Empty array to store 'check' data
+    second_time = np.zeros((n_trees, n_sections))  # Empty array to store 'second_time' data
+    sector_perct = np.zeros((n_trees, n_sections))  # Empty array to store percentage of occupied sectors data
+    n_points_in = np.zeros((n_trees, n_sections))  # Empty array to store inner points data
 
     # Filling previous empty arrays
 
