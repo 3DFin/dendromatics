@@ -116,7 +116,7 @@ def verticality_clustering_iteration(
     # Raise error if there's only one cluster id (-1)
     if len(cluster_id) == 1 and cluster_id[0] == -1:
         raise ValueError(
-            "No stems were found with the current configuration." "Suggestion: decrease n_points/voxel size."
+            "No stems were found with the current configuration. Suggestion: decrease n_points/voxel size."
         )
 
     elapsed = timeit.default_timer() - t

@@ -328,7 +328,7 @@ def generate_axis_cloud(
             ind = next_ind
 
     axes_points = axes_points[:ind]
-    return (axes_points, tilt)
+    return axes_points, tilt
 
 
 def draw_axes(

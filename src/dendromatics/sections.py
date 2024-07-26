@@ -113,7 +113,7 @@ def fit_circle(X, Y):
     mean_radius = radius.mean()
 
     # Output: - X, Y coordinates of best-fit circle center - its radius
-    return (circle_c, mean_radius)
+    return circle_c, mean_radius
 
 
 # -----------------------------------------------------------------------------
@@ -240,10 +240,7 @@ def sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width):
 
     # Output: percentage of occupied sectors | boolean indicating if it has enough
     # occupied sectors to pass the test.
-    return (
-        perct_occupied_sectors,
-        enough_occupied_sectors,
-    )  # 0: passes; 1: does not pass.
+    return perct_occupied_sectors, enough_occupied_sectors
 
 
 # -----------------------------------------------------------------------------
@@ -334,7 +331,7 @@ def fit_circle_check(
         n_points_in = inner_circle(X, Y, X_c, Y_c, R, times_R)
 
         # Call to sector_occupancy to check if sectors around inner circle are occupied.
-        (sector_perct, enough_sectors) = sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width)
+        sector_perct, enough_sectors = sector_occupancy(X, Y, X_c, Y_c, R, n_sectors, min_n_sectors, width)
 
         # If any of the following conditions hold:
         #   - Too many points in inner circle
@@ -347,7 +344,7 @@ def fit_circle_check(
             if second_time == 0:
                 # First round implies there is no X_g or Y_g, as points would not
                 # have been grouped yet. point_clustering is called.
-                (X_g, Y_g) = point_clustering(X, Y, max_dist)  # X_g or Y_g are the coordinates of the largest cluster.
+                X_g, Y_g = point_clustering(X, Y, max_dist)  # X_g or Y_g are the coordinates of the largest cluster.
 
                 # If cluster size is big enough, then proceed. It is done this way to
                 # account for cases where, even though the section had enough points,
@@ -394,8 +391,7 @@ def fit_circle_check(
             else:
                 review = 1  # Just stating that if this is the second round, the check has happened.
 
-    # This matches the first loop. If section is not even big enough (does not
-    # contain enough points), it is not valid.
+    # This matches the first loop. If section is not even big enough (does not contain enough points), it is not valid.
     else:
         review = 2
         X_c = 0
@@ -533,13 +529,13 @@ def compute_sections(
 
             # fit_circle_check call. It provides data to fill the empty arrays
             (
-                X_c_fill,
-                Y_c_fill,
-                R_fill,
-                check_circle_fill,
-                second_time_fill,
-                sector_perct_fill,
-                n_points_in_fill,
+                X_c[tree, section],
+                Y_c[tree, section],
+                R[tree, section],
+                check_circle[tree, section],
+                second_time[tree, section],
+                sector_perct[tree, section],
+                n_points_in[tree, section],
             ) = fit_circle_check(
                 X,
                 Y,
@@ -555,15 +551,6 @@ def compute_sections(
                 min_n_sectors,
                 width,
             )
-
-            # Filling the empty arrays
-            X_c[tree, section] = X_c_fill
-            Y_c[tree, section] = Y_c_fill
-            R[tree, section] = R_fill
-            check_circle[tree, section] = check_circle_fill
-            second_time[tree, section] = second_time_fill
-            sector_perct[tree, section] = sector_perct_fill
-            n_points_in[tree, section] = n_points_in_fill
 
             section = section + 1
     return (X_c, Y_c, R, check_circle, second_time, sector_perct, n_points_in)
@@ -905,4 +892,4 @@ def tree_locator(
                 tree_locations[i, :] = vector * dist_centroid_dbh + tree_vector[i, 4:7]
                 dbh_values[i] = 0
 
-    return (dbh_values, tree_locations)
+    return dbh_values, tree_locations
