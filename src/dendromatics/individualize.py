@@ -127,7 +127,7 @@ def compute_axes(
 
         # Second loop: only stems where points extend vertically throughout its
         # whole range are considered.
-        if np.ptp(stem_i[:, Z_field]) > (h_range_value):
+        if np.ptp(stem_i[:, Z_field]) > h_range_value:
             # PCA and centroid computation.
             pca_out = PCA(n_components=3)
             pca_out.fit(stem_i)
@@ -136,9 +136,7 @@ def compute_axes(
             # Values are stored in tree vector
             detected_trees[id_valid, 0] = i  # tree ID
             detected_trees[id_valid, 1:4] = pca_out.components_[0, :]  # PCA1 X value | PCA1 Y value | PCA1 Z value
-            detected_trees[id_valid, 4:7] = (
-                centroid  # stem centroid X value | stem centroid Y value | stem centroid Z value
-            )
+            detected_trees[id_valid, 4:7] = centroid  # Stem centroid coordinates
             detected_trees[id_valid, 7] = diff_z_z0  # Height difference
             detected_trees[id_valid, 8] = np.abs(
                 np.degrees(
