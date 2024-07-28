@@ -1,3 +1,5 @@
+import timeit
+
 import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
@@ -128,9 +130,13 @@ def compute_axes(
         # Second loop: only stems where points extend vertically throughout its
         # whole range are considered.
         if np.ptp(stem_i[:, Z_field]) > (h_range_value):
+            start_global = timeit.default_timer()
+
             # PCA and centroid computation.
+            start_pca = timeit.default_timer()
             pca_out = PCA(n_components=3)
             pca_out.fit(stem_i)
+            time_pca = timeit.default_timer() - start_pca
             centroid = np.mean(stem_i, axis=0)
 
             # Values are stored in tree vector
@@ -150,25 +156,38 @@ def compute_axes(
 
             # Coordinate transformation from original to PCA. Done for EVERY
             # point of the original cloud from the PCA of a SINGLE stem.
+            start_transform = timeit.default_timer()
             cloud_pca_coords = pca_out.transform(voxelated_cloud[:, [X_field, Y_field, Z_field]])
-
+            time_transform = timeit.default_timer() - start_transform
             # Distance from every point in the new coordinate system to the axes.
             # It is directly computed from the quadratic component of PC2 and PC3
+            start_dist = timeit.default_timer()
             axis_dist = np.hypot(cloud_pca_coords[:, 1], cloud_pca_coords[:, 2])
-
+            time_dist = timeit.default_timer() - start_dist
             # Points that are closer than d_max to an axis are assigned to that axis.
             # Also, if a point is closer to an axis than it was to previous axes, accounting for points
             # that were previously assigned to some other axis in previous iterations, it is assigned
             # to the new, closer axis. Distance to the axis is stored as well.
+            start_mask = timeit.default_timer()
             valid_points = (axis_dist < d_max) & (axis_dist < dist_to_axis)
             tree_id_vector[valid_points] = i
             dist_to_axis[valid_points] = axis_dist[valid_points]
-
+            time_mask = timeit.default_timer() - start_mask
             # Progress hook
             id_valid = id_valid + 1
             id_progress = id_progress + 1
             if progress_hook is not None:
                 progress_hook(id_progress, n_values)
+
+            print("timings")
+            print(f"total : {timeit.default_timer() - start_global}")
+            total_computed = time_pca + time_transform + time_dist + time_mask * 100
+            print(
+                f"pca: {time_pca / total_computed},"
+                f"transform: {time_transform / total_computed},"
+                f"dist: {time_dist / total_computed},"
+                f"mask: {time_mask / total_computed}"
+            )
         else:
             # we keep track of the progress even if the tree is not valid
             id_progress = id_progress + 1
