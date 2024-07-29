@@ -201,7 +201,7 @@ def compute_axes(
     return detected_trees, dist_to_axis, tree_id_vector
 
 
-def compute_axes_approximate(
+def compute_axes_approx_kdtree(
     voxelated_cloud,
     clust_stripe,
     stripe_lower_limit,
@@ -224,10 +224,11 @@ def compute_axes_approximate(
     (PCA1 direction). This allows to group points based on their distance to
     those axes, thus assigning each point to a tree.
 
-    This is an approximate method that samples points along each axis and inserts them into a k-d tree. 
-    It enables finding the nearest neighbor (NN) point in the k-d tree index for each point in the voxelated cloud, 
-    allowing for parallel processing of distances queries.
-
+    This is an approximate method that samples points along each axis and inserts
+    them into a k-d tree.
+    It enables finding the nearest neighbor (NN) point in the k-d tree index
+    for each point in the voxelated cloud, allowing for parallel processing of
+    an approximate point-line distances queries.
 
     It requires a height-normalized cloud in order to function properly.
 
@@ -278,6 +279,7 @@ def compute_axes_approximate(
     tree_id_vector : numpy.ndarray
         Vector containing the tree IDs.
     """
+
     def _axis_bb_inter(axis_pos, axis_norm, tp_pos, bp_pos):
         """Calculate the intersection points of an axis with the top and bottom planes of a bounding box.
 
@@ -355,8 +357,10 @@ def compute_axes_approximate(
         return intersection
 
     start_total = timeit.default_timer()
-    NO_ID = 100000  # ID for trees with dist_axis > dmax
-    SAMPLE_STEP = 0.025 # space between sample along the axes
+    NO_ID = 100000  # ID for trees with dist_axis > d_max
+    # Space between sample along the axes
+    # TODO it should be defined by the voxel size of the voxelated cloud
+    SAMPLE_STEP = 0.04
 
     # Set of all possible trees (trunks at this stage) and number of points associated to each:
     unique_values, n = np.unique(clust_stripe[:, tree_id_field], return_counts=True)
@@ -402,11 +406,9 @@ def compute_axes_approximate(
         # Difference between Z and Z0 mean heights
         diff_z_z0 = z_z0[0] - z_z0[1]
 
-
         # Second loop: only stems where points extend vertically throughout its
         # whole range are considered.
         if np.ptp(stem_i[:, Z_field]) > (h_range_value):
-
             # PCA and centroid computation.
             pca_out = PCA(n_components=3)
             pca_out.fit(stem_i)
@@ -456,18 +458,19 @@ def compute_axes_approximate(
 
     tree = KDTree(axes_cloud)
     dist_to_axis, indexes = tree.query(voxelated_cloud[:, [X_field, Y_field, Z_field]], 1, workers=-1)
-    dist_to_axis[dist_to_axis>d_max] = d_max
+    dist_to_axis[dist_to_axis > d_max] = d_max
 
     tree_cluster = np.zeros(voxelated_cloud.shape[0])
     min_id = 0
     for i, axis_points in enumerate(axes_points_list):
         num_points = axis_points.shape[0]
-        tree_cluster[min_id:min_id+num_points] = valid_tree_ids[i]
+        tree_cluster[min_id : min_id + num_points] = valid_tree_ids[i]
         min_id += num_points
 
     tree_id_vector = tree_cluster[indexes]
-    tree_id_vector[dist_to_axis>d_max] = NO_ID
+    tree_id_vector[dist_to_axis > d_max] = NO_ID
     print("Dist Axis total time :", timeit.default_timer() - start_total)
+
     # This deletes the trailing rows that only contains zeros
     detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
     return detected_trees, dist_to_axis, tree_id_vector
