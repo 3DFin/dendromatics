@@ -12,7 +12,7 @@ from .voxel.voxel import *
 # -----------------------------------------------------------------------------
 
 
-def compute_axes(
+def compute_axes_(
     voxelated_cloud,
     clust_stripe,
     stripe_lower_limit,
@@ -470,6 +470,298 @@ def compute_axes_approx_kdtree(
     tree_id_vector = tree_cluster[indexes]
     tree_id_vector[dist_to_axis > d_max] = NO_ID
     print("Dist Axis total time :", timeit.default_timer() - start_total)
+
+    # This deletes the trailing rows that only contains zeros
+    detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
+    return detected_trees, dist_to_axis, tree_id_vector
+
+
+def compute_axes(
+    voxelated_cloud,
+    clust_stripe,
+    stripe_lower_limit,
+    stripe_upper_limit,
+    h_range,
+    min_points,
+    d_max,
+    X_field,
+    Y_field,
+    Z_field,
+    Z0_field,
+    tree_id_field,
+    progress_hook=None,
+):
+    """Function used inside individualize_trees during tree individualization
+    process. It identifies tree axes. It expects a voxelated version of the
+    point cloud and a filtered (based on the verticality clustering process)
+    stripe as input, so that it only contains (hopefully) stems. Those stems
+    are isolated and enumerated, and then, their axes are identified using PCA
+    (PCA1 direction). This allows to group points based on their distance to
+    those axes, thus assigning each point to a tree.
+
+    This is an approximate method that samples points along each axis and inserts
+    them into a k-d tree.
+    It enables finding the nearest neighbor (NN) point in the k-d tree index
+    for each point in the voxelated cloud, allowing for parallel processing of
+    an approximate point-line distances queries.
+
+    It requires a height-normalized cloud in order to function properly.
+
+
+    Parameters
+    ----------
+    voxelated_cloud : numpy.ndarray
+        The voxelated point cloud. It is expected to have X, Y, Z and Z0 fields.
+    clust_stripe : numpy.ndarray
+        The point cloud containing the clustered stripe (the stems) from
+        verticality_clustering.
+    stripe_lower_limit : float
+        Lower (vertical) limit of the stripe (units is meters). Defaults to 0.7.
+    stripe_upper_limit : float
+        Upper (vertical) limit of the stripe (units is meters). Defaults to 3.5.
+    h_range : float
+        Only stems where points extend vertically throughout a range as tall as
+        defined by h_range are considered.
+    min_points : int
+        Minimum number of points in a cluster for it to be considered as a
+        potential stem
+    d_max : float
+        Points that are closer than d_max to an axis are assigned to that axis.
+    X_field : int
+        Index at which (x) coordinates are stored.
+    Y_field : int
+        Index at which (y) coordinates are stored.
+    Z_field : int
+        Index at which (z) coordinates are stored.
+    Z0_field : int
+        Index at which (z0) coordinates are stored.
+    tree_id_field : int
+        Index at which cluster ID is stored.
+    progress_hook : callable, optional
+        A hook that take two int, the first is the current number of iteration
+        and the second is the targeted number iteration. Defaults to None.
+
+    Returns
+    -------
+    detected_trees : numpy.ndarray
+        Matrix with as many rows as trees, containing a description of each
+        individualized tree. It stores the following values: tree ID, PCA1 X
+        value, PCA1 Y value, PCA1 Z value, stem centroid X value, stem centroid
+        Y value, stem centroid Z value, height difference of stem centroid
+        (z - z0), axis vertical deviation.
+    dist_to_axis : numpy.ndarray
+        Matrix containing the distance from each point to the closest axis.
+    tree_id_vector : numpy.ndarray
+        Vector containing the tree IDs.
+    """
+
+    def _axis_bb_inter(axis_pos, axis_norm, middle_point):
+        """Calculate the intersection points of an axis with the top and bottom planes of a bounding box.
+
+        This function computes the intersections of an axis, defined by a position and a normal vector,
+        with two horizontal planes representing the top and bottom boundaries of a bounding box.
+
+        Parameters
+        ----------
+        axis_pos : np.ndarray
+            A 3D point representing a position on the axis.
+        axis_norm : np.ndarray
+            A 3D vector representing the normal vector of the axis.
+        tp_pos : np.ndarray
+            A 3D point representing a position on the top plane of the bounding box.
+        bp_pos : np.ndarray
+            A 3D point representing a position on the bottom plane of the bounding box.
+
+        Returns
+        -------
+        bottom_limit: np.ndarray
+            Intersection point with the bottom plane.
+        top_limit: np.ndarray
+            Intersection point with the top plane.
+
+        Raises
+        ------
+        Exception
+            If the axis is parallel to either the top or bottom plane, resulting in no intersection.
+        """
+        middle_axis = _vector_plane_intersection(
+            axis_pos, axis_norm, np.array([axis_pos[0], axis_pos[1], middle_point]), np.array([0.0, 0.0, 1.0])
+        )
+
+        # It should not be possible but we throw an exception one the axis
+        # is parallel to one of the bounding plane
+        # TODO: use maybe a more informative exception
+        if middle_axis is None:
+            raise Exception
+
+        return middle_axis
+
+    def _vector_plane_intersection(axis_pos, axis_norm, plane_pos, plane_norm):
+        """
+        Find the intersection point of a vector and a plane in 3D.
+
+        Parameters
+        ----------
+        axis_pos : (numpy.ndarray)
+            Starting 3D point of the vector.
+        axis_norm : (numpy.ndarray)
+            Normalized 3D (directional) vector of the axis.
+        plane_pos : numpy.ndarray
+            A 3D point on the plane.
+        plane_norm : numpy.ndarray
+            the 3D Normal vector of the plane.
+
+        Returns
+        -------
+        numpy.array | None
+            Intersection point or None if the vector is parallel to the plane.
+        """
+
+        # Calculate the dot product axis_norm and the plane norm
+        denom = np.dot(axis_norm, plane_norm)
+
+        # no intersection
+        if denom == 0:
+            return None
+
+        # Calculate the parameter t
+        t = np.dot(plane_norm, plane_pos - axis_pos) / denom
+
+        # Calculate the intersection point
+        intersection = axis_pos + t * axis_norm
+
+        return intersection
+
+    start_total = timeit.default_timer()
+    NO_ID = 100000  # ID for trees with dist_axis > d_max
+    # Space between sample along the axes
+    # TODO it should be defined by the voxel size of the voxelated cloud
+    SAMPLE_STEP = 0.1
+
+    # Set of all possible trees (trunks at this stage) and number of points associated to each:
+    unique_values, n = np.unique(clust_stripe[:, tree_id_field], return_counts=True)
+
+    # Filtering of possible trees that do not contain enough points to be considered.
+    filt_unique_values = unique_values[n > min_points]
+
+    # Final number of trees
+    n_values = np.size(filt_unique_values)
+
+    # Empty array to be filled with several descriptors of the trees. In the following order:
+    # It has as many rows as trees are.
+    detected_trees = np.zeros((np.size(filt_unique_values, 0), 9))
+
+    # Index used to display progress information.
+    # we use this index because filt_unique_values contains tree_id that
+    # could be non contiguous
+    id_progress = 0
+    # Index used to keep track of valid trees and index the detected_trees array.
+    id_valid = 0
+
+    # Height range (actual value, not the %) that points should extend throughout
+    h_range_value = (stripe_upper_limit - stripe_lower_limit) * h_range
+
+    # Compute bounding box
+    bb_min = np.min(voxelated_cloud[:, [X_field, Y_field, Z_field]], axis=0)
+    bb_max = np.max(voxelated_cloud[:, [X_field, Y_field, Z_field]], axis=0)
+
+    valid_tree_ids = []
+
+    # First loop: It goes over each tree (still stems) except for the first entry,
+    # which maps to noise (this entry is generated by DBSCAN during clustering).
+    if progress_hook is not None:
+        progress_hook(0, n_values)
+    for i in filt_unique_values:
+        # Isolation of stems: stem_i only contains points associated to 1 tree.
+        tree_mask = clust_stripe[:, tree_id_field] == i
+        stem_i = clust_stripe[tree_mask][:, [X_field, Y_field, Z_field]]
+
+        # Z and Z0 mean heights of points in a given tree
+        z_z0 = np.mean(clust_stripe[tree_mask][:, [Z_field, Z0_field]], axis=0)
+
+        # Difference between Z and Z0 mean heights
+        diff_z_z0 = z_z0[0] - z_z0[1]
+
+        # Second loop: only stems where points extend vertically throughout its
+        # whole range are considered.
+        if np.ptp(stem_i[:, Z_field]) > (h_range_value):
+            # PCA and centroid computation.
+            pca_out = PCA(n_components=3)
+            pca_out.fit(stem_i)
+            centroid = np.mean(stem_i, axis=0)
+
+            # Values are stored in tree vector
+            detected_trees[id_valid, 0] = i  # tree ID
+            detected_trees[id_valid, 1:4] = pca_out.components_[0, :]  # PCA1 X value | PCA1 Y value | PCA1 Z value
+            detected_trees[id_valid, 4:7] = (
+                centroid  # stem centroid X value | stem centroid Y value | stem centroid Z value
+            )
+            detected_trees[id_valid, 7] = diff_z_z0  # Height difference
+            detected_trees[id_valid, 8] = np.abs(
+                np.degrees(
+                    np.arctan(
+                        np.hypot(detected_trees[id_valid, 1], detected_trees[id_valid, 2]) / detected_trees[id_valid, 3]
+                    )
+                )
+            )
+            # append the current valid id for further reindexing
+            valid_tree_ids.append(i)
+
+            # Progress hook
+            id_valid = id_valid + 1
+            id_progress = id_progress + 1
+            if progress_hook is not None:
+                progress_hook(id_progress, n_values)
+        else:
+            # we keep track of the progress even if the tree is not valid
+            id_progress = id_progress + 1
+            if progress_hook is not None:
+                progress_hook(id_progress, n_values)
+
+    num_layers = int(np.linalg.norm(bb_max - bb_min) / SAMPLE_STEP)
+
+    bottom_point = bb_min[2]
+    axis_cloud = np.zeros((len(valid_tree_ids), 2))
+
+    start_dist = timeit.default_timer()
+    total_sampling = 0.
+    total_inter = 0.
+    total_nn = 0.
+    for _ in range(num_layers):
+        top_point = bottom_point + SAMPLE_STEP
+        middle_point = bottom_point + SAMPLE_STEP / 2
+
+        start_sampling = timeit.default_timer()
+        layer_cloud = voxelated_cloud[
+            (voxelated_cloud[:, Z_field] >= bottom_point) & (voxelated_cloud[:, Z_field] < top_point)
+        ][:, [X_field, Y_field]]
+        total_sampling += timeit.default_timer() - start_sampling
+
+        if layer_cloud.shape[0] == 0:
+            continue
+
+        start_inter = timeit.default_timer()
+        # compute intersection of axis with middle plane of the layer
+        for contiguous_id, _ in enumerate(valid_tree_ids):
+            vector = detected_trees[contiguous_id, 1:4]
+            pos = detected_trees[contiguous_id, 4:7]
+            axis_cloud[contiguous_id] = _axis_bb_inter(pos, vector, middle_point)[0:2]
+        total_inter +=  timeit.default_timer() - start_inter
+
+        # get the layer of the PC
+        # KDTree approach
+        start_nn = timeit.default_timer()
+        tree = KDTree(axis_cloud)
+        dist_to_axis, indexes = tree.query(layer_cloud, 1, workers=-1)
+        total_nn += timeit.default_timer() - start_nn
+
+        bottom_point = top_point
+    print("Dist computation time :", timeit.default_timer() - start_dist)
+    print("total nn time: ", total_nn, "total inter time: ", total_inter, "total sampling time: ", total_sampling)
+
+    #tree_id_vector = tree_cluster[indexes]
+    #tree_id_vector[dist_to_axis > d_max] = NO_ID
+    #print("Dist Axis total time :", timeit.default_timer() - start_total)
 
     # This deletes the trailing rows that only contains zeros
     detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
