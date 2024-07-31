@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- An approximate dist axis function `individualize.compute_axes_approximate`. it relax the dist_axis computation 
+  by sampling point along axis and compute point-to-point distance between those points and the original point cloud.
+  This method enables the global computation of the distance axis without dependencies,
+  offering faster results with a slight trade-off in accuracy. It is enabled by default.
+
 ### Fixed
 
 - Fixed some typos, improve coding style, slight runtime improvements
