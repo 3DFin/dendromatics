@@ -12,7 +12,7 @@ from .voxel.voxel import *
 # -----------------------------------------------------------------------------
 
 
-def compute_axes_(
+def compute_axes_exact(
     voxelated_cloud,
     clust_stripe,
     stripe_lower_limit,
@@ -132,13 +132,9 @@ def compute_axes_(
         # Second loop: only stems where points extend vertically throughout its
         # whole range are considered.
         if np.ptp(stem_i[:, Z_field]) > (h_range_value):
-            start_global = timeit.default_timer()
-
             # PCA and centroid computation.
-            start_pca = timeit.default_timer()
             pca_out = PCA(n_components=3)
             pca_out.fit(stem_i)
-            time_pca = timeit.default_timer() - start_pca
             centroid = np.mean(stem_i, axis=0)
 
             # Values are stored in tree vector
@@ -158,56 +154,42 @@ def compute_axes_(
 
             # Coordinate transformation from original to PCA. Done for EVERY
             # point of the original cloud from the PCA of a SINGLE stem.
-            start_transform = timeit.default_timer()
             cloud_pca_coords = pca_out.transform(voxelated_cloud[:, [X_field, Y_field, Z_field]])
-            time_transform = timeit.default_timer() - start_transform
             # Distance from every point in the new coordinate system to the axes.
             # It is directly computed from the quadratic component of PC2 and PC3
-            start_dist = timeit.default_timer()
             axis_dist = np.hypot(cloud_pca_coords[:, 1], cloud_pca_coords[:, 2])
-            time_dist = timeit.default_timer() - start_dist
             # Points that are closer than d_max to an axis are assigned to that axis.
             # Also, if a point is closer to an axis than it was to previous axes, accounting for points
             # that were previously assigned to some other axis in previous iterations, it is assigned
             # to the new, closer axis. Distance to the axis is stored as well.
-            start_mask = timeit.default_timer()
             valid_points = (axis_dist < d_max) & (axis_dist < dist_to_axis)
             tree_id_vector[valid_points] = i
             dist_to_axis[valid_points] = axis_dist[valid_points]
-            time_mask = timeit.default_timer() - start_mask
             # Progress hook
             id_valid = id_valid + 1
             id_progress = id_progress + 1
             if progress_hook is not None:
                 progress_hook(id_progress, n_values)
 
-            print("timings")
-            print(f"total step: {timeit.default_timer() - start_global}")
-            total_computed = time_pca + time_transform + time_dist + time_mask * 100
-            print(
-                f"pca: {time_pca / total_computed},"
-                f"transform: {time_transform / total_computed},"
-                f"dist: {time_dist / total_computed},"
-                f"mask: {time_mask / total_computed}"
-            )
         else:
             # we keep track of the progress even if the tree is not valid
             id_progress = id_progress + 1
             if progress_hook is not None:
                 progress_hook(id_progress, n_values)
-    print("total time :", start_total - timeit.default_timer())
+    print("-> Dist axes total time :", start_total - timeit.default_timer())
     # This deletes the trailing rows that only contains zeros
     detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
     return detected_trees, dist_to_axis, tree_id_vector
 
 
-def compute_axes(
+def compute_axes_approximate(
     voxelated_cloud,
     clust_stripe,
     stripe_lower_limit,
     stripe_upper_limit,
     h_range,
     min_points,
+    voxel_resolution,
     d_max,
     X_field,
     Y_field,
@@ -250,6 +232,9 @@ def compute_axes(
     min_points : int
         Minimum number of points in a cluster for it to be considered as a
         potential stem
+    voxel_resolution: float
+        Voxel resolution of the voxelated_cloud. It is used to compute the
+        axis sampling step
     d_max : float
         Points that are closer than d_max to an axis are assigned to that axis.
     X_field : int
@@ -278,6 +263,11 @@ def compute_axes(
         Matrix containing the distance from each point to the closest axis.
     tree_id_vector : numpy.ndarray
         Vector containing the tree IDs.
+
+    Raises
+    ------
+    RuntimeError
+        If the axis is parallel to either the top or bottom plane, resulting in no intersection.
     """
 
     def _axis_bb_inter(axis_pos, axis_norm, tp_pos, bp_pos):
@@ -285,6 +275,8 @@ def compute_axes(
 
         This function computes the intersections of an axis, defined by a position and a normal vector,
         with two horizontal planes representing the top and bottom boundaries of a bounding box.
+
+        We only test top and bottom for the sake of speed and simplicity but it could be overly conservative.
 
         Parameters
         ----------
@@ -306,7 +298,7 @@ def compute_axes(
 
         Raises
         ------
-        Exception
+        RuntimeError
             If the axis is parallel to either the top or bottom plane, resulting in no intersection.
         """
         top_limit = _vector_plane_intersection(axis_pos, axis_norm, tp_pos, np.array([0.0, 0.0, -1.0]))
@@ -316,7 +308,7 @@ def compute_axes(
         # is parallel to one of the bounding plane
         # TODO: use maybe a more informative exception
         if top_limit is None or bottom_limit is None:
-            raise Exception
+            raise RuntimeError("Tree axis can't be parallel to the top or the bottom plane of the bounding box")
 
         return bottom_limit, top_limit
 
@@ -340,15 +332,16 @@ def compute_axes(
         numpy.array | None
             Intersection point or None if the vector is parallel to the plane.
         """
-
+        EPS = 1.0e-06
         # Calculate the dot product axis_norm and the plane norm
         denom = np.dot(axis_norm, plane_norm)
 
-        # no intersection
-        if denom == 0:
+        # no intersection, axis and plane are //
+        if np.abs(denom) < EPS:
             return None
 
-        # Calculate the parameter t
+        # Projecting the vector from axis_pos to plane_pos onto the plane
+        # normal, and then normalizing by denom.
         t = np.dot(plane_norm, plane_pos - axis_pos) / denom
 
         # Calculate the intersection point
@@ -359,8 +352,7 @@ def compute_axes(
     start_total = timeit.default_timer()
     NO_ID = 100000  # ID for trees with dist_axis > d_max
     # Space between sample along the axes
-    # TODO it should be defined by the voxel size of the voxelated cloud
-    SAMPLE_STEP = 0.04
+    SAMPLE_STEP = voxel_resolution
 
     # Set of all possible trees (trunks at this stage) and number of points associated to each:
     unique_values, n = np.unique(clust_stripe[:, tree_id_field], return_counts=True)
@@ -385,7 +377,7 @@ def compute_axes(
     # Height range (actual value, not the %) that points should extend throughout
     h_range_value = (stripe_upper_limit - stripe_lower_limit) * h_range
 
-    # Compute bounding box
+    # Compute bounding box of the voxelated PC
     bb_min = np.min(voxelated_cloud[:, [X_field, Y_field, Z_field]], axis=0)
     bb_max = np.max(voxelated_cloud[:, [X_field, Y_field, Z_field]], axis=0)
 
@@ -458,10 +450,12 @@ def compute_axes(
 
     axes_cloud = np.concatenate(axes_points_list)
 
+    # Compute distances and NN axis for each point via a KDTree.
     tree = KDTree(axes_cloud)
     dist_to_axis, indexes = tree.query(voxelated_cloud[:, [X_field, Y_field, Z_field]], 1, workers=-1)
     dist_to_axis[dist_to_axis > d_max] = d_max
 
+    # fill tree_cluster
     tree_cluster = np.zeros(voxelated_cloud.shape[0])
     min_id = 0
     for i, axis_points in enumerate(axes_points_list):
@@ -471,7 +465,7 @@ def compute_axes(
 
     tree_id_vector = tree_cluster[indexes]
     tree_id_vector[dist_to_axis > d_max] = NO_ID
-    print("Dist Axis total time :", timeit.default_timer() - start_total)
+    print("-> Dist Axis total time :", timeit.default_timer() - start_total)
 
     # This deletes the trailing rows that only contains zeros
     detected_trees = detected_trees[~np.all(detected_trees == 0, axis=1)]
@@ -730,13 +724,14 @@ def individualize_trees(
     )
 
     # Call to compute_axes
-    detected_trees, dist_to_axis, tree_id_vector = compute_axes(
+    detected_trees, dist_to_axis, tree_id_vector = compute_axes_approximate(
         voxelated_cloud,
         clust_stripe,
         stripe_lower_limit,
         stripe_upper_limit,
         h_range,
         min_points,
+        resolution_xy,
         d_max,
         X_field,
         Y_field,
