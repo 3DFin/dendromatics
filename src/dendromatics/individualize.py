@@ -12,7 +12,7 @@ from .voxel.voxel import *
 # -----------------------------------------------------------------------------
 
 
-def compute_axes(
+def compute_axes_(
     voxelated_cloud,
     clust_stripe,
     stripe_lower_limit,
@@ -201,7 +201,7 @@ def compute_axes(
     return detected_trees, dist_to_axis, tree_id_vector
 
 
-def compute_axes_approx_kdtree(
+def compute_axes(
     voxelated_cloud,
     clust_stripe,
     stripe_lower_limit,
@@ -388,6 +388,7 @@ def compute_axes_approx_kdtree(
     # Compute bounding box
     bb_min = np.min(voxelated_cloud[:, [X_field, Y_field, Z_field]], axis=0)
     bb_max = np.max(voxelated_cloud[:, [X_field, Y_field, Z_field]], axis=0)
+
     axes_points_list = []
     valid_tree_ids = []
 
@@ -430,7 +431,8 @@ def compute_axes_approx_kdtree(
             )
 
             min_point, max_point = _axis_bb_inter(centroid, detected_trees[id_valid, 1:4], bb_max, bb_min)
-            distance = np.linalg.norm(min_points - max_point)
+
+            distance = np.linalg.norm(max_point - min_point)
             num_samples = int(distance / SAMPLE_STEP)
             point_range = np.arange(0, num_samples)
             # upward vector
