@@ -15,7 +15,7 @@ from .voxel.voxel import *
 def verticality_clustering_iteration(
     stripe,
     vert_scale,
-    vert_treshold,
+    vert_threshold,
     n_points,
     resolution_xy,
     resolution_z,
@@ -26,7 +26,7 @@ def verticality_clustering_iteration(
     this as a subset of the original cloud delimited by a lower height and an
     upper height, which will narrow down a region where it is expected to only
     be stems. Then it will voxelate those points and compute the verticality
-    via compute_features() from jakteristics. It will filter points based on
+    via compute_features() from pgeof It will filter points based on
     their verticality value, voxelate again and then cluster the remaining
     points. Those are expected to belong to stems.
 
@@ -37,8 +37,8 @@ def verticality_clustering_iteration(
         fields. 3D or higher array containing data with `float` type.
     vert_scale : float
         Scale to be used during verticality computation to define a
-        neighbourhood around a given point. Verticality will be computed from
-        the structure tensor of said neighbourhood via eigendecomposition.
+        neighborhood around a given point. Verticality will be computed from
+        the structure tensor of said neighborhood via eigen-decomposition.
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part
         of a stem.
@@ -74,10 +74,8 @@ def verticality_clustering_iteration(
     # Computation of verticality values associated to voxels using
     # 'compute_features' function. It needs a vicinity radius, provided by
     # 'vert_scale'.
-    # use a large max_knn like jakteristics
-    vert_values = pgeof.compute_features_selected(
-        voxelated_stripe, vert_scale, 50000, [EFeatureID.Verticality]
-    )
+    # use a large max_knn like the one used by jakteristics (it could be lowered)
+    vert_values = pgeof.compute_features_selected(voxelated_stripe, vert_scale, 50000, [EFeatureID.Verticality])
 
     elapsed = timeit.default_timer() - t
     print("   %.2f" % elapsed, "s")
@@ -85,11 +83,11 @@ def verticality_clustering_iteration(
 
     # Verticality values are appended to the ORIGINAL cloud, using voxel-to-
     # original-cloud indexes.
-    vert_stripe = np.append(stripe, vert_values[vox_to_stripe_ind], axis=1)
+    vert_stripe = np.hstack((stripe, vert_values[vox_to_stripe_ind]))
 
     # Filtering of points that were in voxels whose verticality value is under
     # the threshold. Output is a filtered cloud.
-    filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_treshold]
+    filt_stripe = vert_stripe[vert_stripe[:, -1] > vert_threshold]
 
     # Check there are enough points to continue
     if filt_stripe.shape[0] == 0:
@@ -118,8 +116,7 @@ def verticality_clustering_iteration(
     # Raise error if there's only one cluster id (-1)
     if len(cluster_id) == 1 and cluster_id[0] == -1:
         raise ValueError(
-            "No stems were found with the current configuration."
-            "Suggestion: decrease n_points/voxel size."
+            "No stems were found with the current configuration. Suggestion: decrease n_points/voxel size."
         )
 
     elapsed = timeit.default_timer() - t
@@ -139,11 +136,9 @@ def verticality_clustering_iteration(
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    large_clusters = cluster_id[K > n_points]
-
-    # ID = -1 is always created by DBSCAN() to include points that were not
-    # included in any cluster.
-    large_clusters = large_clusters[large_clusters != -1]
+    # Moreover, ID = -1 is always created by DBSCAN() to include points
+    # that were not included in any cluster.
+    large_clusters = cluster_id[(K > n_points) & (cluster_id != -1)]
 
     # Raise error if there are no large clusters.
     if large_clusters.size == 0:
@@ -153,9 +148,7 @@ def verticality_clustering_iteration(
         )
 
     # Removing the points that are not in valid clusters.
-    clust_stripe = vox_filt_lab_stripe[
-        np.isin(vox_filt_lab_stripe[:, -1], large_clusters)
-    ]
+    clust_stripe = vox_filt_lab_stripe[np.isin(vox_filt_lab_stripe[:, -1], large_clusters)]
 
     n_clusters = large_clusters.shape[0]
 
@@ -175,7 +168,7 @@ def verticality_clustering_iteration(
 def verticality_clustering(
     stripe,
     scale=0.1,
-    vert_treshold=0.7,
+    vert_threshold=0.7,
     n_points=1000,
     n_iter=2,
     resolution_xy=0.02,
@@ -192,8 +185,8 @@ def verticality_clustering(
         fields. 3D or higher array containing data with `float` type.
     scale : float
         Scale to be used during verticality computation to define a
-        neighbourhood around a given point. Verticality will be computed from
-        the structure tensor of said neighbourhood via eigendecomposition.
+        neighborhood around a given point. Verticality will be computed from
+        the structure tensor of said neighborhood via Eigendecomposition.
         Defaults to 0.1.
     vert_threshold : float
         Minimum verticality value associated to a point to consider it as part
@@ -227,7 +220,7 @@ def verticality_clustering(
     # but it slows down the process needlessly.
     if n_iter == 0:
         n_iter = 1
-        vert_treshold = 0
+        vert_threshold = 0
 
     # Basically, use verticality_clustering as many times as defined by n_iter
     for i in np.arange(n_iter):
@@ -238,13 +231,7 @@ def verticality_clustering(
         else:
             aux_stripe = clust_stripe
         clust_stripe, t = verticality_clustering_iteration(
-            aux_stripe,
-            scale,
-            vert_treshold,
-            n_points,
-            resolution_xy,
-            resolution_z,
-            n_digits,
+            aux_stripe, scale, vert_threshold, n_points, resolution_xy, resolution_z, n_digits
         )
         total_t = total_t + t
     print("Final:")

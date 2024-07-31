@@ -157,15 +157,9 @@ def voxelate(
 
     # Transformation of x, z, y codes into X, Y, X voxel coordinates, by scaling,
     # translating and centering.
-    voxelated_cloud[:, 2] = (
-        voxelated_cloud[:, 2] * resolution_z + cloud_min[2] + resolution_z / 2
-    )
-    voxelated_cloud[:, 1] = (
-        voxelated_cloud[:, 1] * resolution_xy + cloud_min[1] + resolution_xy / 2
-    )
-    voxelated_cloud[:, 0] = (
-        voxelated_cloud[:, 0] * resolution_xy + cloud_min[0] + resolution_xy / 2
-    )
+    voxelated_cloud[:, 2] = voxelated_cloud[:, 2] * resolution_z + cloud_min[2] + resolution_z / 2
+    voxelated_cloud[:, 1] = voxelated_cloud[:, 1] * resolution_xy + cloud_min[1] + resolution_xy / 2
+    voxelated_cloud[:, 0] = voxelated_cloud[:, 0] * resolution_xy + cloud_min[0] + resolution_xy / 2
 
     # Boolean parameter that includes or not a 4th column with the number of
     # points in each voxel
@@ -185,9 +179,7 @@ def voxelate(
         print(
             "        ",
             "Voxels account for",
-            "{:.2f}".format(
-                cloud_to_vox_ind.shape[0] * 100 / vox_to_cloud_ind.shape[0]
-            ),
+            "{:.2f}".format(cloud_to_vox_ind.shape[0] * 100 / vox_to_cloud_ind.shape[0]),
             "% of original points",
         )
 

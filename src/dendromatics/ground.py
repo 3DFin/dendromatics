@@ -37,9 +37,7 @@ def clean_ground(cloud, res_ground=0.15, min_points=2):
         the denoised points.
     """
 
-    vox_cloud, vox_to_cloud_ind, _ = voxelate(
-        cloud, res_ground, res_ground, with_n_points=False
-    )
+    vox_cloud, vox_to_cloud_ind, _ = voxelate(cloud, res_ground, res_ground, with_n_points=False)
     # Cluster labels are appended to the FILTERED cloud. They map each point to
     # the cluster they belong to, according to the clustering algorithm.
     eps = res_ground * 1.75
@@ -131,7 +129,7 @@ def generate_dtm(
 def clean_cloth(dtm_points):
     """This function takes a Digital Terrain Model (DTM) and denoises it. This
     denoising is done via a 2 MADs criterion from the median height value of a
-    neighbourhood of size 15.
+    neighborhood of size 15.
 
     Parameters
     ----------
@@ -145,13 +143,10 @@ def clean_cloth(dtm_points):
     """
 
     if dtm_points.shape[0] < 15:
-        raise ValueError(
-            "input DTM is too small (less than 15 points). Denoising cannot be done."
-        )
-    elif dtm_points.shape[0] == 15:
+        raise ValueError("input DTM is too small (less than 15 points). Denoising cannot be done.")
+    if dtm_points.shape[0] == 15:
         warnings.warn(
-            "input DTM contains exactly 15 points, which is the minimum input size"
-            "accepted by clean_cloth().",
+            "input DTM contains exactly 15 points, which is the minimum input size accepted by clean_cloth().",
             stacklevel=2,
         )
     tree = KDTree(dtm_points[:, :2])
@@ -230,9 +225,7 @@ def normalize_heights(cloud, dtm_points):
     tree = KDTree(dtm_points[:, :2])
     d, idx_pt_mesh = tree.query(cloud[:, :2], 3, workers=-1)
     # Z point cloud - Z dtm (Weighted average, based on distance)
-    zs_diff_triples = cloud[:, 2] - np.average(
-        dtm_points[:, 2][idx_pt_mesh], weights=d, axis=1
-    )
+    zs_diff_triples = cloud[:, 2] - np.average(dtm_points[:, 2][idx_pt_mesh], weights=d, axis=1)
     return zs_diff_triples
 
 
@@ -241,9 +234,7 @@ def normalize_heights(cloud, dtm_points):
 # -----------------------------------------------------------------------------
 
 
-def check_normalization_discrepancy(
-    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
-):
+def check_normalization_discrepancy(cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1):
     """Compare the area of a slice of points from a point cloud to another area and
     return a warning indicator if difference is greater than a certain threshold. The
     percentage of discrepancy between the too area is also returned. Area of the slice
@@ -294,9 +285,7 @@ def check_normalization_discrepancy(
     ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
 
     # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
-    _, _, voxelated_slice = voxelate(
-        ground_slice, res_xy, res_z, with_n_points=False, silent=False
-    )
+    _, _, voxelated_slice = voxelate(ground_slice, res_xy, res_z, with_n_points=False, silent=False)
 
     # Area of the voxelated ground slice (n of voxels * area of voxel base)
     slice_area = voxelated_slice.shape[0] * res_xy**2
@@ -316,17 +305,12 @@ def check_normalization_discrepancy(
     # to any point clouds where this situation happens.
 
     # Check if the difference is greater than 10 % of the first number
-    if area_difference >= threshold_difference:
-        area_warning = True
-    else:
-        area_warning = False
+    area_warning = area_difference >= threshold_difference
 
     return area_warning, area_difference * 100 / original_area
 
 
-def check_normalization(
-    cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1
-):
+def check_normalization(cloud, original_area, res_xy=1.0, z_min=-0.1, z_max=0.15, warning_thresh=0.1):
     """Compare the area of a slice of points from a point cloud to another area and
     store a warning indicator if difference is greater than a certain threshold. Area
     of the slice will be approximated from a voxelated version of it. This function is
@@ -353,7 +337,5 @@ def check_normalization(
     area_warning : bool
         True if area difference is greater than threshold, False if not.
     """
-    indicator, _ = check_normalization_discrepancy(
-        cloud, original_area, res_xy, z_min, z_max, warning_thresh
-    )
+    indicator, _ = check_normalization_discrepancy(cloud, original_area, res_xy, z_min, z_max, warning_thresh)
     return indicator

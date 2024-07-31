@@ -25,7 +25,7 @@ def generate_circles_cloud(
 ):
     """This function generates points that comprise the circles computed by
     fit_circle_check function, so sections can be visualized. The circles
-    points cloud along with their associated meta data are retuned as a Matrix
+    points cloud along with their associated meta data are returned as a Matrix
     (numpy.ndarray)
 
     Parameters
@@ -73,7 +73,7 @@ def generate_circles_cloud(
     # be used to complete the .LAS file data.
     section_c_xyz = np.zeros([tree_section[0] * tree_section[1], 9])
 
-    # Auxiliar index indicating which section is in use.
+    # Auxiliary index indicating which section is in use.
     section = 0
 
     # Double for loop to iterate through each combination of coordinates
@@ -81,7 +81,7 @@ def generate_circles_cloud(
         for j in range(tree_section[1]):
             # If distance is within range (R_min, R_max), then proceed.
             if R[i, j] >= R_min and R[i, j] <= R_max:
-                # Filling the array with the appropiate data
+                # Filling the array with the appropriate data
                 section_c_xyz[section, :] = [
                     X_c[i, j],
                     Y_c[i, j],
@@ -232,14 +232,10 @@ def draw_circles(
     las_circ.add_extra_dim(laspy.ExtraBytesParams(name="tree_ID", type=np.int32))
     las_circ.tree_ID = coords[:, 4]
 
-    las_circ.add_extra_dim(
-        laspy.ExtraBytesParams(name="sector_occupancy_percent", type=np.float64)
-    )
+    las_circ.add_extra_dim(laspy.ExtraBytesParams(name="sector_occupancy_percent", type=np.float64))
     las_circ.sector_occupancy_percent = coords[:, 5]
 
-    las_circ.add_extra_dim(
-        laspy.ExtraBytesParams(name="pts_inner_circle", type=np.int32)
-    )
+    las_circ.add_extra_dim(laspy.ExtraBytesParams(name="pts_inner_circle", type=np.int32))
     las_circ.pts_inner_circle = coords[:, 6]
 
     las_circ.add_extra_dim(laspy.ExtraBytesParams(name="Z0", type=np.float64))
@@ -301,42 +297,38 @@ def generate_axis_cloud(
     tilt : numpy.ndarray
         Matrix that describes the tilt of each axes
     """
-    stripe_centroid = (stripe_lower_limit + stripe_upper_limit) / 2
+    stripe_centroid = (stripe_lower_limit + stripe_upper_limit) / 2.0
     mean_descend = stripe_centroid + line_downstep
     mean_rise = line_upstep - stripe_centroid
 
-    up_iter = np.round(mean_rise / point_interval)
-    down_iter = mean_descend / point_interval
+    up_iter = int(np.floor(mean_rise / point_interval))
+    down_iter = int(mean_descend / point_interval)
 
-    axes_points = np.zeros((np.int_(tree_vector.shape[0] * (up_iter + down_iter)), 3))
-    tilt = np.zeros(np.int_(tree_vector.shape[0] * (up_iter + down_iter)))
+    axes_points = np.zeros((tree_vector.shape[0] * (up_iter + down_iter), 3))
+    tilt = np.zeros(tree_vector.shape[0] * (up_iter + down_iter))
+
     ind = 0
-
     for i in range(tree_vector.shape[0]):
         if np.sum(np.exp2(tree_vector[i, 1:4])) > 0:
-            if tree_vector[i, 3] < 0:
-                vector = -tree_vector[i, 1:4]
-
-            else:
-                vector = tree_vector[i, 1:4]
-
-            axes_points[np.int_(ind) : np.int_(ind + up_iter + down_iter), :] = (
-                np.transpose(
-                    [
+            vector = -tree_vector[i, 1:4] if tree_vector[i, 3] < 0 else tree_vector[i, 1:4]
+            next_ind = ind + up_iter + down_iter
+            axes_points[ind:next_ind] = (
+                np.column_stack(
+                    (
                         np.arange(-down_iter, up_iter),
                         np.arange(-down_iter, up_iter),
                         np.arange(-down_iter, up_iter),
-                    ]
+                    )
                 )
                 * vector
                 * point_interval
                 + tree_vector[i, 4:7]
             )
-            tilt[np.int_(ind) : np.int_(ind + up_iter + down_iter)] = tree_vector[i, 8]
-            ind = ind + up_iter + down_iter
+            tilt[ind:next_ind] = tree_vector[i, 8]
+            ind = next_ind
 
-    axes_points = axes_points[: np.int_(ind), :]
-    return (axes_points, tilt)
+    axes_points = axes_points[:ind]
+    return axes_points, tilt
 
 
 def draw_axes(
@@ -385,9 +377,7 @@ def draw_axes(
     las_axes.x = axes_points[:, 0]
     las_axes.y = axes_points[:, 1]
     las_axes.z = axes_points[:, 2]
-    las_axes.add_extra_dim(
-        laspy.ExtraBytesParams(name="tilting_degree", type=np.float64)
-    )
+    las_axes.add_extra_dim(laspy.ExtraBytesParams(name="tilting_degree", type=np.float64))
     las_axes.tilting_degree = tilt
 
     las_axes.write(filename_las)

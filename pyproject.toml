@@ -52,7 +52,6 @@ Issues = "https://github.com/3DFin/dendromatics/issues"
 
 [tool.hatch.version]
 path = "src/dendromatics/__about__.py"
-
 python = ["39", "310", "311", "312"]
 
 [tool.hatch.envs.docs]
@@ -80,11 +79,11 @@ fix-all = ["fix-static", "fix-format", "check-all"]
 
 [tool.ruff]
 target-version = "py310"
-line-length = 88
+line-length = 120
 
 [tool.ruff.lint]
 # TODO Add D, PTH, RET, disabled for now as they collides with intial choices
-select = ["I001","E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I"]
+select = ["E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I", "SIM", "RUF"]
 # TODO: for now we ignore "Line too long error (E501)" 
 # because our comments are too longs
 # code formatting will take care of the line length in code anyway
@@ -97,12 +96,14 @@ ignore = [
   "D203",
   # multiline summary second line
   "D213",
-# Temporary because relative imports seem to be a design choice
+  # yoda conditions
+  "SIM300",
+  # Temporary because relative imports seem to be a design choice
   "F405", "F403"
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["three_d_fin"]
+known-first-party = ["dendromatics"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
