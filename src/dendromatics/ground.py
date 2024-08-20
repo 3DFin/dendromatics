@@ -55,11 +55,9 @@ def clean_ground(cloud, res_ground=0.15, min_points=2):
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    large_clusters = cluster_id[K > min_points]
-
     # ID = -1 is always created by DBSCAN() to include points that were not
     # included in any cluster.
-    large_clusters = large_clusters[large_clusters != -1]
+    large_clusters = cluster_id[(K > min_points) & (cluster_id != -1)]
 
     # Removing the points that are not in valid clusters.
     clust_cloud = cloud_labs[np.isin(cloud_labs[:, -1], large_clusters), :3]
