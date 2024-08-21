@@ -17,7 +17,7 @@ def voxelate(
     Y_field=1,
     Z_field=2,
     with_n_points=True,
-    silent=False,
+    verbose=True,
 ):
     """Function used to voxelate point clouds. It allows to use a different
     resolution for (z), but (x, y) will always share the same resolution. It
@@ -71,7 +71,7 @@ def voxelate(
     cloud[:, Y_field] = cloud[:, Y_field] - cloud_min[1]
     cloud[:, Z_field] = cloud[:, Z_field] - cloud_min[2]
 
-    if not silent:
+    if verbose:
         elapsed = timeit.default_timer() - t
         print("      -Voxelization")
         print(
@@ -93,7 +93,7 @@ def voxelate(
         + np.floor(cloud[:, X_field] / resolution_xy)
     )
 
-    if not silent:
+    if not verbose:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: encoding")
 
@@ -101,7 +101,7 @@ def voxelate(
     # then sort the cloud.
     vox_order_ind = np.argsort(code)
 
-    if not silent:
+    if not verbose:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: 1st sorting")
 
@@ -112,7 +112,7 @@ def voxelate(
     # Sorted code.
     code = code[vox_order_ind]
 
-    if not silent:
+    if not verbose:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: 2nd sorting")
 
@@ -127,7 +127,7 @@ def voxelate(
         code, return_index=True, return_inverse=True, return_counts=True
     )
 
-    if not silent:
+    if not verbose:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: extracting uniques values")
 
@@ -151,7 +151,7 @@ def voxelate(
     voxelated_cloud[:, 1] = y_code
     voxelated_cloud[:, 2] = z_code
 
-    if not silent:
+    if not verbose:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: decomposing code")
 
@@ -166,7 +166,7 @@ def voxelate(
     if with_n_points is True:
         voxelated_cloud = np.append(voxelated_cloud, vox_points[:, np.newaxis], axis=1)
 
-    if not silent:
+    if not verbose:
         elapsed = timeit.default_timer() - t
         print("        ", "%.2f" % elapsed, "s: rescaling and translating back")
         print(

@@ -570,10 +570,8 @@ def compute_heights(
     cluster_id, K = np.unique(clustering.labels_, return_counts=True)
 
     # Filtering of labels associated only to clusters that contain a minimum number of points.
-    large_clusters = cluster_id[K > 3]
-
     # Discarding points that do not belong to any cluster
-    large_clusters = large_clusters[large_clusters != -1]
+    large_clusters = cluster_id[(K > 3) & (cluster_id != -1)]
 
     # Eliminating all points that belong to clusters with less than 2 points (large voxels)
     voxelated_cloud = voxelated_cloud[np.isin(voxelated_cloud[:, -2], large_clusters)]
