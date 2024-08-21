@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed some typos, improve coding style, slight runtime improvements
 
+### Changed
+
+- voxelization log is now handled with a `verbose` parameter instead of a `silent` one (to match general convention). 
+  This is a breaking change.
+
 ## [0.5.1] - 2024-06-17
 
 ### Fixed
