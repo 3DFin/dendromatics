@@ -5,7 +5,7 @@ import pgeof
 from pgeof import EFeatureID
 from sklearn.cluster import DBSCAN
 
-from .voxel.voxel import *
+from .voxel.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # verticality_clustering_iteration

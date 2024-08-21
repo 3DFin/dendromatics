@@ -188,3 +188,11 @@ def voxelate(
     cloud[:, Z_field] = cloud[:, Z_field] + cloud_min[2]
 
     return voxelated_cloud, vox_to_cloud_ind, cloud_to_vox_ind
+
+# monkey patch voxelization if possible
+try:
+    print("Using dendromatic with optimized C++ primitives")
+    import dendroptimized
+    voxelate = dendroptimized.voxelize
+except ImportError:
+    pass

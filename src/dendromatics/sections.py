@@ -3,7 +3,7 @@ from scipy import optimize as opt
 from scipy.cluster import hierarchy as sch
 from scipy.spatial import distance_matrix
 
-from .voxel.voxel import *
+from .voxel.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # point_clustering

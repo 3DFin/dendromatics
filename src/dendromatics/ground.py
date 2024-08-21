@@ -6,7 +6,7 @@ from scipy.interpolate import griddata
 from scipy.spatial import KDTree
 from sklearn.cluster import DBSCAN
 
-from .voxel.voxel import *
+from .voxel.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # clean_ground

@@ -5,7 +5,7 @@ from scipy.spatial import KDTree
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 
-from .voxel.voxel import *
+from .voxel.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # compute_axes
