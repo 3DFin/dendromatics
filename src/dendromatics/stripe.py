@@ -1,11 +1,12 @@
+import math
 import timeit
 
 import numpy as np
 import pgeof
 from pgeof import EFeatureID
-from sklearn.cluster import DBSCAN
 
-from .voxel.voxel import voxelate
+from .primitives.clustering import DBSCAN_clustering
+from .primitives.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # verticality_clustering_iteration
@@ -105,13 +106,13 @@ def verticality_clustering_iteration(
         filt_stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
 
-    eps = resolution_xy * 1.9
+    eps = resolution_xy * math.sqrt(3) + 1e-6
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
-    clustering = DBSCAN(eps=eps, min_samples=2, n_jobs=-1).fit(vox_filt_stripe)
+    cluster_labels = DBSCAN_clustering(vox_filt_stripe, eps=eps, min_samples=2)
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
-    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
+    cluster_id, K = np.unique(cluster_labels, return_counts=True)
 
     # Raise error if there's only one cluster id (-1)
     if len(cluster_id) == 1 and cluster_id[0] == -1:
@@ -130,13 +131,13 @@ def verticality_clustering_iteration(
     # the cluster they belong to, according to the clustering algorithm.
     vox_filt_lab_stripe = np.append(
         filt_stripe,
-        np.expand_dims(clustering.labels_[vox_to_filt_stripe_ind], axis=1),
+        np.expand_dims(cluster_labels[vox_to_filt_stripe_ind], axis=1),
         axis=1,
     )
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    # Moreover, ID = -1 is always created by DBSCAN() to include points
+    # Moreover, ID = -1 is always created by DBSCAN to include points
     # that were not included in any cluster.
     large_clusters = cluster_id[(K > n_points) & (cluster_id != -1)]
 

@@ -1,12 +1,13 @@
+import math
 import warnings
 
 import CSF_3DFin as CSF
 import numpy as np
 from scipy.interpolate import griddata
 from scipy.spatial import KDTree
-from sklearn.cluster import DBSCAN
 
-from .voxel.voxel import voxelate
+from .primitives.clustering import DBSCAN_clustering
+from .primitives.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # clean_ground
@@ -40,22 +41,22 @@ def clean_ground(cloud, res_ground=0.15, min_points=2):
     vox_cloud, vox_to_cloud_ind, _ = voxelate(cloud, res_ground, res_ground, with_n_points=False)
     # Cluster labels are appended to the FILTERED cloud. They map each point to
     # the cluster they belong to, according to the clustering algorithm.
-    eps = res_ground * 1.75
-    clustering = DBSCAN(eps=eps, min_samples=min_points, n_jobs=-1).fit(vox_cloud)
+    eps = res_ground * math.sqrt(3) + 1e-6
+    cluster_labels = DBSCAN_clustering(vox_cloud, eps=eps, min_samples=min_points)
 
     cloud_labs = np.append(
         cloud,
-        np.expand_dims(clustering.labels_[vox_to_cloud_ind], axis=1),
+        np.expand_dims(cluster_labels[vox_to_cloud_ind], axis=1),
         axis=1,
     )
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of points'.
-    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
+    cluster_id, K = np.unique(cluster_labels, return_counts=True)
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    # ID = -1 is always created by DBSCAN() to include points that were not
+    # ID = -1 is always created by DBSCAN to include points that were not
     # included in any cluster.
     large_clusters = cluster_id[(K > min_points) & (cluster_id != -1)]
 

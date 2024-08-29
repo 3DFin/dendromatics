@@ -20,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- voxelization log is now handled with a `verbose` parameter instead of a `silent` one (to match general convention). 
+- `voxelization` log is now handled with a `verbose` parameter instead of a `silent` one (to match general convention). 
   This is a breaking change.
+
+- Create a primitive module for voxelization and clustering. It allows improve future integration of optimized algorithms.
 
 ## [0.5.1] - 2024-06-17
 

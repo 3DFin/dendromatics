@@ -41,7 +41,8 @@ templates_path = ["_templates"]
 # Modifying qualified names
 
 # sphinx_reference_rename_mapping = {
-#     "dendromatics.voxel.voxel.voxelate": "voxelate",
+#     "dendromatics.primitives.voxel.voxelate": "voxelate",
+#     "dendromatics.primitives.clustering.DBSCAN_clustering": "DBSCAN_clustering",
 #     "dendromatics.ground.clean_cloth": "clean_cloth",
 #     "dendromatics.ground.clean_ground": "clean_ground",
 #     "dendromatics.ground.generate_dtm": "generate_dtm",
