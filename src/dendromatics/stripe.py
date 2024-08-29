@@ -224,16 +224,14 @@ def verticality_clustering(
         vert_threshold = 0
 
     # Basically, use verticality_clustering as many times as defined by n_iter
+    aux_stripe = stripe
+    total_t = 0
     for i in np.arange(n_iter):
         print("Iteration number", i + 1, "out of", n_iter)
-        if i == 0:
-            total_t = 0
-            aux_stripe = stripe
-        else:
-            aux_stripe = clust_stripe
         clust_stripe, t = verticality_clustering_iteration(
             aux_stripe, scale, vert_threshold, n_points, resolution_xy, resolution_z, n_digits
         )
+        aux_stripe = clust_stripe
         total_t = total_t + t
     print("Final:")
     print("%.2f" % total_t, "s in total (whole process)")
