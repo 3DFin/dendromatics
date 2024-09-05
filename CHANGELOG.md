@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Create a primitive module for voxelization and clustering. It allows improve future integration of optimized algorithms.
 
+- `dendromatics` now optionally depends on `dendroptimized` package. When `dendroptimized` is installed `dendromatics`
+`dendromatics` automatically switches certain algorithms (currently `voxelization` and `DBSCAN`) to utilize their faster C++ implementations.
+
 ## [0.5.1] - 2024-06-17
 
 ### Fixed
