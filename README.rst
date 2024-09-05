@@ -160,9 +160,9 @@ since v0.6.0 dendromatics optionally depends on `dendroptimized <https://github.
     python -m pip install dendromatics[dendroptimized]
 
 
-*dendromatics* relies on `hatch <https://github.com/pypa/hatch>` (version > 1.12)
+*dendromatics* relies on `hatch <https://github.com/pypa/hatch>`_ (version > 1.12)
 
-Depending on your version of Python and your OS, you might also need a C/C++ compiler to compile some of the mandatory dependencies (`CSF`, `pgeof`, and optionally `dendroptimized``). 
+Depending on your version of Python and your OS, you might also need a C/C++ compiler to compile some of the mandatory dependencies (`CSF`, `pgeof`, and optionally `dendroptimized`). 
 But in any case you would not have to run the compiler by yourself, the build system will manage dependencies and compilation for you.
 
 .. code-block:: console
