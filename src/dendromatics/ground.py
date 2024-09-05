@@ -284,7 +284,7 @@ def check_normalization_discrepancy(cloud, original_area, res_xy=1.0, z_min=-0.1
     ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
 
     # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
-    _, _, voxelated_slice = voxelate(ground_slice, res_xy, res_z, with_n_points=False, silent=False)
+    _, _, voxelated_slice = voxelate(ground_slice, res_xy, res_z, with_n_points=False, verbose=True)
 
     # Area of the voxelated ground slice (n of voxels * area of voxel base)
     slice_area = voxelated_slice.shape[0] * res_xy**2
