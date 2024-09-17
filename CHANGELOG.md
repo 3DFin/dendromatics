@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `dendromatics` now optionally depends on `dendroptimized` package. When `dendroptimized` is installed `dendromatics`
 `dendromatics` automatically switches certain algorithms (currently `voxelization` and `DBSCAN`) to utilize their faster C++ implementations.
 
+- update dependencies (notably `pgeof` 0.3.0)
+
 ## [0.5.1] - 2024-06-17
 
 ### Fixed
