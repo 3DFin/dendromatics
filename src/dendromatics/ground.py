@@ -107,9 +107,9 @@ def generate_dtm(
     csf.params.cloth_resolution = cloth_resolution
     # csf.params.rigidness # 1, 2 or 3
 
-    csf.setPointCloud(cloud)  # pass the (x), (y), (z) list to csf
+    csf.set_point_cloud(cloud)  # pass the (x), (y), (z) list to csf
 
-    raw_nodes = csf.do_cloth_export()  # do actual filtering and export cloth
+    raw_nodes = csf.do_cloth(verbose=True) # do actual filtering and export cloth
     cloth_nodes = np.reshape(np.array(raw_nodes), (-1, 3))
 
     return cloth_nodes
