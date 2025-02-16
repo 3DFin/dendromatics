@@ -1,8 +1,8 @@
 import math
 import warnings
 
-import CSF_3DFin as CSF
 import numpy as np
+from CSF_3DFin import CSF
 from scipy.interpolate import griddata
 from scipy.spatial import KDTree
 
@@ -75,7 +75,6 @@ def generate_dtm(
     cloud,
     bSloopSmooth=True,
     cloth_resolution=0.5,
-    classify_threshold=0.1,
 ):
     """This function takes a point cloud and generates a Digital Terrain Model
     (DTM) based on its ground. It's based on 'Cloth Simulation Filter' by
@@ -93,9 +92,6 @@ def generate_dtm(
     cloth_resolution : float
         The resolution of the cloth grid. Refer to CSF documentation. Defaults
         to 0.5.
-    classify_threshold : float
-        The height threshold used to classify the point cloud into ground and
-        non-ground parts. Refer to CSF documentation. Defaults to 0.1.
 
     Returns
     -------
@@ -104,13 +100,12 @@ def generate_dtm(
     """
 
     ### Cloth simulation filter ###
-    csf = CSF.CSF()  # initialize the csf
+    csf = CSF()  # initialize the csf
 
     ### parameter settings ###
-    csf.params.bSloopSmooth = bSloopSmooth
+    csf.params.smooth_slope = bSloopSmooth
     csf.params.cloth_resolution = cloth_resolution
     # csf.params.rigidness # 1, 2 or 3
-    csf.params.classify_threshold = classify_threshold  # default is 0.5 m
 
     csf.setPointCloud(cloud)  # pass the (x), (y), (z) list to csf
 
