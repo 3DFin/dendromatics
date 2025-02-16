@@ -13,11 +13,7 @@ authors = [
     { name = "Carlos Cabo", email = "carloscabo@uniovi.es" },
     { name = "Diego Laino", email = "diegolainor@gmail.com" },
 ]
-keywords = [
-    "forestry",
-    "lidar",
-    "tls",
-]
+keywords = ["forestry", "lidar", "tls"]
 classifiers = [
     "Intended Audience :: Science/Research",
     "Programming Language :: Python",
@@ -30,7 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "csf_3dfin==2.0.0a1",
+    "csf_3dfin==2.0.0a2",
     "laspy~=2.5.4",
     "numpy>=1.7",
     "pgeof==0.3.1",
@@ -39,14 +35,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-docs = [
-  "sphinx",
-  "sphinx-reference-rename",
-  "sphinx-rtd-theme",
-]
-dendroptimized = [
-  "dendroptimized~=0.2.0"
-]
+docs = ["sphinx", "sphinx-reference-rename", "sphinx-rtd-theme"]
+dendroptimized = ["dendroptimized~=0.2.0"]
 
 [project.urls]
 Source = "https://github.com/3DFin/dendromatics"
@@ -59,11 +49,7 @@ python = ["310", "311", "312", "312", "313"]
 
 [tool.hatch.envs.docs]
 detached = true
-dependencies = [
-  "sphinx",
-  "sphinx-reference-rename",
-  "sphinx-rtd-theme"
-]
+dependencies = ["sphinx", "sphinx-reference-rename", "sphinx-rtd-theme"]
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build docs docs/_build"
 serve = "python -m http.server --directory docs/_build"
@@ -86,23 +72,37 @@ line-length = 120
 
 [tool.ruff.lint]
 # TODO Add D, PTH, RET, disabled for now as they collides with intial choices
-select = ["E", "W", "YTT", "NPY", "PYI", "Q", "F", "B", "I", "SIM", "RUF", "NPY201"]
-# TODO: for now we ignore "Line too long error (E501)" 
+select = [
+    "E",
+    "W",
+    "YTT",
+    "NPY",
+    "PYI",
+    "Q",
+    "F",
+    "B",
+    "I",
+    "SIM",
+    "RUF",
+    "NPY201",
+]
+# TODO: for now we ignore "Line too long error (E501)"
 # because our comments are too longs
 # code formatting will take care of the line length in code anyway
 ignore = [
-  "E501",
-  # Ignore docstring in public package and module
-  "D100",
-  "D104",
-  # Blank line before class
-  "D203",
-  # multiline summary second line
-  "D213",
-  # yoda conditions
-  "SIM300",
-  # Temporary because relative imports seem to be a design choice
-  "F405", "F403"
+    "E501",
+    # Ignore docstring in public package and module
+    "D100",
+    "D104",
+    # Blank line before class
+    "D203",
+    # multiline summary second line
+    "D213",
+    # yoda conditions
+    "SIM300",
+    # Temporary because relative imports seem to be a design choice
+    "F405",
+    "F403",
 ]
 
 [tool.ruff.lint.isort]
