@@ -7,9 +7,7 @@ def DBSCAN_clustering(xyz, eps, min_samples):
 
 # monkey patch clustering if possible
 try:
-    print("Using dendromatic with optimized C++ clustering")
     import dendroptimized
-
     DBSCAN_clustering = dendroptimized.connected_components
 except ImportError:
     pass

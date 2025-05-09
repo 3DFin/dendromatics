@@ -192,9 +192,7 @@ def voxelate(
 
 # monkey patch voxelization if possible
 try:
-    print("Using dendromatic with optimized C++ voxelization")
     import dendroptimized
-
     voxelate = dendroptimized.voxelize
 except ImportError:
     pass
