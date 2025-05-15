@@ -193,6 +193,7 @@ def voxelate(
 # monkey patch voxelization if possible
 try:
     import dendroptimized
+
     voxelate = dendroptimized.voxelize
 except ImportError:
     pass
