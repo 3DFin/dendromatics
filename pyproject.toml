@@ -25,7 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "csf_3dfin==2.0.0a3",
+    "csf_3dfin~=2.0.1",
     "laspy~=2.5.4",
     "numpy>=1.25",         #NEP 29
     "pgeof==0.3.2",
@@ -35,7 +35,7 @@ dependencies = [
 
 [project.optional-dependencies]
 docs = ["sphinx", "sphinx-reference-rename", "sphinx-rtd-theme"]
-dendroptimized = ["dendroptimized~=0.2.1"]
+dendroptimized = ["dendroptimized~=0.2.2"]
 
 [project.urls]
 Source = "https://github.com/3DFin/dendromatics"

@@ -1,4 +1,4 @@
-__all__ = ["draw", "ground", "individualize", "sections", "stripe", "primitives"]
+__all__ = ["draw", "ground", "individualize", "primitives", "sections", "stripe"]
 
 from .draw import *
 from .ground import *

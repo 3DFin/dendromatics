@@ -105,11 +105,12 @@ def generate_dtm(
     ### parameter settings ###
     csf.params.smooth_slope = bSloopSmooth
     csf.params.cloth_resolution = cloth_resolution
+    csf.params.verbose = True
     # csf.params.rigidness # 1, 2 or 3
 
     csf.set_point_cloud(cloud)  # pass the (x), (y), (z) list to csf
 
-    raw_nodes = csf.do_cloth(verbose=True)  # do actual filtering and export cloth
+    raw_nodes = csf.run_cloth_simulation()  # do actual filtering and export cloth
     cloth_nodes = np.reshape(np.array(raw_nodes), (-1, 3))
 
     return cloth_nodes

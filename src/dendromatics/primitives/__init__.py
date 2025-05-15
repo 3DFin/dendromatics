@@ -1,3 +1,3 @@
-__all__ = ["voxel", "clustering"]
+__all__ = ["clustering", "voxel"]
 
 from . import *

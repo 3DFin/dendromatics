@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Create a `Primitive` module for voxelization and clustering. It allows improve future integration of optimized algorithms.
 
-- update dependencies (notably `pgeof` 0.3.1 and `csf` 2.0.0).
+- update dependencies (notably `pgeof` 0.3.2 and `csf` 2.0.0).
 
 - Removed an unused parameter in `ground.generate_dtm`
 
