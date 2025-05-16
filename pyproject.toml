@@ -47,7 +47,7 @@ path = "src/dendromatics/__about__.py"
 python = ["310", "311", "312", "312", "313"]
 
 [tool.hatch.envs.docs]
-detached = true
+detached = false
 dependencies = ["sphinx", "sphinx-reference-rename", "sphinx-rtd-theme"]
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build docs docs/_build"

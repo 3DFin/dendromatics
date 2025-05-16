@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "dendromatics"
-copyright = "2023, Carlos Cabo & Diego Laino"
+copyright = "2023-2025, Carlos Cabo & Diego Laino"
 author = "Carlos Cabo & Diego Laino"
 release = "00.00.01"
 

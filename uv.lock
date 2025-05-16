@@ -111,8 +111,28 @@ dependencies = [
     { name = "laspy" },
     { name = "numpy" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/fc/f5237a6c49db87e42081bbe6b0b7b088f18bc55c2623cb537ee0fffc507d/csf_3dfin-2.0.1.tar.gz", hash = "sha256:dc389f8dfa4174f8a0cb79a30e4b5a5b750d4c1458ce0693599664b69430fe8b", size = 33078, upload-time = "2025-05-15T07:35:39.258Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a1/ce/2c941ae69e3ebcd4db2c97eadb126e58cc63ae9fe48e9e4bb480f5d44946/csf_3dfin-2.0.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:6ced9cb3108e42ba79f0f209986ea8b7db9a6395674d0ab0e2e3ea97d4fdc4b3", size = 84052, upload-time = "2025-05-15T07:35:11.821Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/fb/cbd33941967caee3f58c788ec3a15f5b49142ef7c675c8cc48dbdd726347/csf_3dfin-2.0.1-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:3da191e9acaf76efdfb00b2e71fc7b90213608c51fd3c28d59aa70440a8e0522", size = 91359, upload-time = "2025-05-15T07:35:12.954Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/cd/9edb6ba2bc36ae948b1a5e15325c9ff601e65113d58f082ad1c70f3440a6/csf_3dfin-2.0.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ce0812c0b0e70f8971aca17c86f263246c1fdb7c92b5a2ee03710943b6084662", size = 178437, upload-time = "2025-05-15T07:35:14.355Z" },
+    { url = "https://files.pythonhosted.org/packages/7c/83/6e0545353b6ee5125af65bcfb605b1c4a91c5f39b6ca29a7c18734d871d0/csf_3dfin-2.0.1-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:58d0e981460317bf029279eee69dc29e7f667f504897df3b3eeb1958d221f5bc", size = 710748, upload-time = "2025-05-15T07:35:15.983Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/69/ebb0e6c6d6d561deaaf85ee02b418e7b7e0fac67cc0bd9b057801984b87b/csf_3dfin-2.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:55384fa74175e9dae4873120efccfc5dd6c94419ad8b0f86eb8e21fc35af1fda", size = 83258, upload-time = "2025-05-15T07:35:19.09Z" },
+    { url = "https://files.pythonhosted.org/packages/95/c4/a9a75c9cb77ae02f3e6fc38e8464c90ac5d4147cc69d947668d1b21412ba/csf_3dfin-2.0.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:2cefb8ef6aa5762283da00f7e352bac042866e8957a469416d95783e5df803cc", size = 83852, upload-time = "2025-05-15T07:35:20.03Z" },
+    { url = "https://files.pythonhosted.org/packages/17/56/8eda8849df24ecbf58313b38963bb1ce65610b442d9cb319534a66f9e98c/csf_3dfin-2.0.1-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:679b65f775e13f5a7df98de43901d9ac625bb5661bec423ea0ac39b6eec0201b", size = 91122, upload-time = "2025-05-15T07:35:21.404Z" },
+    { url = "https://files.pythonhosted.org/packages/60/cf/45b50fd9d57202d35127096981373705726549889afe4d792406215b3d13/csf_3dfin-2.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fd026a2563666cb6b5cc2c3b601e7900ceb3869ff5808d62ba0227aa1346dd21", size = 178173, upload-time = "2025-05-15T07:35:22.471Z" },
+    { url = "https://files.pythonhosted.org/packages/16/9c/3c8c98048b81e539521250864fd7afa5a11bb1fd8ff184d7ba87552b6cb3/csf_3dfin-2.0.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:01cf98a62c1096e9bec9fb9a05d94426dc3e87d4424a34f160d2033eafd4dcbf", size = 710532, upload-time = "2025-05-15T07:35:24.109Z" },
+    { url = "https://files.pythonhosted.org/packages/79/43/32c5e5ed398217fbbd915d5fc8e415f74168bef67c96a02a152720948287/csf_3dfin-2.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:6240503581d4c08eeb4b06166f631b0cf41a20133361caf3d9ab20b2946fded6", size = 83065, upload-time = "2025-05-15T07:35:25.323Z" },
+    { url = "https://files.pythonhosted.org/packages/88/de/a7e002c67df5e78aa18840c8e99c3e7b5fddc274bf9a92014421eab58616/csf_3dfin-2.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:2a2bb0b99bdbbd5b3cb9f240880ac3676674c9afff86f08f043d6f4f9407d5ae", size = 82745, upload-time = "2025-05-15T07:35:26.648Z" },
+    { url = "https://files.pythonhosted.org/packages/89/18/56ff278d2eb41dc67e993bb901f922979f057da63b74140cb7501fcd2e66/csf_3dfin-2.0.1-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:e7d6f9e347def916fea50b5eaa86e8dc7fe663718e821f566e93584507a2190e", size = 90582, upload-time = "2025-05-15T07:35:28.832Z" },
+    { url = "https://files.pythonhosted.org/packages/81/d6/7f068ed1638115b7433c28302542f0842c78e19b4f37cbbb5cfa33a18eb3/csf_3dfin-2.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0ffcdf52423edf3e81dfe2ee185458e9480006955fdb86f847b09dd5812505c8", size = 176950, upload-time = "2025-05-15T07:35:30.233Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/0e/dab29b55150be5c5df276d24d3c05126cd0889a71316568a6da14d56e96e/csf_3dfin-2.0.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:27a69cc892ce40c378ac20f4641292acf9fe47dfe803bee69e569605807472f4", size = 709643, upload-time = "2025-05-15T07:35:31.429Z" },
+    { url = "https://files.pythonhosted.org/packages/ea/c2/503b0d43b10c762ce3f5236e2cef6bd4b89e025e2730ecc497e4fd9dad73/csf_3dfin-2.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:c8f730176db52edd6a8fd861ceb5d16f8dfabf6af6eddc5ead230eaba158dd9f", size = 82559, upload-time = "2025-05-15T07:35:32.62Z" },
+    { url = "https://files.pythonhosted.org/packages/da/77/0f5382feb6848ad2f0b153e0422883597a1f72338649e93a71c73517c1b9/csf_3dfin-2.0.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:d32e820f4b575d29fdba80d20f93d7dfd757d4c553fef3de63f1e539353d62fd", size = 82677, upload-time = "2025-05-15T07:35:33.587Z" },
+    { url = "https://files.pythonhosted.org/packages/86/b0/aec76ef2fdf4485bdbfa0bf441c65051272b07e88bcd42df93ed09e9285f/csf_3dfin-2.0.1-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:7ba2e474ad68dd9f8f30471dc837b8d8138bdaddedf5a4094f7be66f31760203", size = 90552, upload-time = "2025-05-15T07:35:34.589Z" },
+    { url = "https://files.pythonhosted.org/packages/5a/18/578ffc3397473024e47d55ba435e7e838b1697cf56207507e421c54d860f/csf_3dfin-2.0.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54912e78e5ad681d21280cf7b3eb8fc63962c7a2993f69ae01085e17c54ce7dc", size = 176865, upload-time = "2025-05-15T07:35:35.593Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/0f/29424cd8c165be02a1980ebb3fdcb8fe208c4970abf68b08c17fd9eef2d5/csf_3dfin-2.0.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:7a94f37fd00356e4df70aa40d878ebec19deb46d4d580e6f36081fc52a216f41", size = 709560, upload-time = "2025-05-15T07:35:36.866Z" },
+    { url = "https://files.pythonhosted.org/packages/11/14/fc9971afe8ffd0545e0f4d0d8f7c1401e857086ccce087194971adf311ba/csf_3dfin-2.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:a9c209aec5c2a271354565b58b3db17b5cd6e35d878a9d81c55b93d6e1cf8ced", size = 82471, upload-time = "2025-05-15T07:35:37.928Z" },
 ]
 
 [[package]]
@@ -141,7 +161,7 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "csf-3dfin", specifier = "~=2.0.1" },
-    { name = "dendroptimized", marker = "extra == 'dendroptimized'", specifier = "~=0.2.1" },
+    { name = "dendroptimized", marker = "extra == 'dendroptimized'", specifier = "~=0.2.2" },
     { name = "laspy", specifier = "~=2.5.4" },
     { name = "numpy", specifier = ">=1.25" },
     { name = "pgeof", specifier = "==0.3.2" },

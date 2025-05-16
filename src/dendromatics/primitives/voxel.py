@@ -23,7 +23,8 @@ def voxelate(
     resolution for (z), but (x, y) will always share the same resolution. It
     also allows to revert the process, by creating a unique code for each point
     in the point cloud, thus voxelated cloud can be seamlessly reverted to the
-    original point cloud.
+    original point cloud. If `dendroptimized` is installed the optimized version
+    is used instead of this one.
 
     Parameters
     ----------

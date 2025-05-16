@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This method enables the global computation of the distance axis without dependencies, offering faster results with
   a slight trade-off in accuracy. It is enabled by default.
 
-- `dendromatics` now optionally depends on `dendroptimized` package. When `dendroptimized` is installed `dendromatics`
-  `dendromatics` automatically switches certain algorithms (currently `voxelization` and `DBSCAN`) to utilize their faster C++ implementations.
+- `dendromatics` now optionally depends on `dendroptimized` package. When `dendroptimized` is installed
+  `dendromatics` automatically switches some algorithms (currently `voxelization` and `DBSCAN`) to utilize their faster C++ implementations.
 
 ### Fixed
 

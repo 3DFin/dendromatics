@@ -7,7 +7,16 @@ This page contains an index of the functions present in the package and a descri
 Voxelization
 ------------
 
-.. automodule:: dendromatics.voxel.voxel
+.. automodule:: dendromatics.primitives.voxel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Clustering
+------------
+
+.. automodule:: dendromatics.primitives.clustering
    :members:
    :undoc-members:
    :show-inheritance:
