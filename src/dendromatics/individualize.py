@@ -1,11 +1,12 @@
+import math
 import timeit
 
 import numpy as np
 from scipy.spatial import KDTree
-from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 
-from .voxel.voxel import *
+from .primitives.clustering import DBSCAN_clustering
+from .primitives.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # compute_axes
@@ -547,15 +548,15 @@ def compute_heights(
     )
 
     # eps for DBSCAN
-    eps_heights = resolution_heights * 1.9
+    eps_heights = resolution_heights * math.sqrt(3) + 1e-6
 
     # Large-resolution voxelated cloud is clusterized
-    clustering = DBSCAN(eps=eps_heights, min_samples=2, n_jobs=-1).fit(large_voxels_cloud)
+    cluster_labels = DBSCAN_clustering(large_voxels_cloud, eps=eps_heights, min_samples=2)
 
     # Cluster labels are attached to the fine-resolution voxelated cloud
     voxelated_cloud = np.append(
         voxelated_cloud,
-        np.expand_dims(clustering.labels_[large_vox_to_cloud_ind], axis=1),
+        np.expand_dims(cluster_labels[large_vox_to_cloud_ind], axis=1),
         axis=1,
     )
 
@@ -567,13 +568,11 @@ def compute_heights(
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
-    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
+    cluster_id, K = np.unique(cluster_labels, return_counts=True)
 
     # Filtering of labels associated only to clusters that contain a minimum number of points.
-    large_clusters = cluster_id[K > 3]
-
     # Discarding points that do not belong to any cluster
-    large_clusters = large_clusters[large_clusters != -1]
+    large_clusters = cluster_id[(K > 3) & (cluster_id != -1)]
 
     # Eliminating all points that belong to clusters with less than 2 points (large voxels)
     voxelated_cloud = voxelated_cloud[np.isin(voxelated_cloud[:, -2], large_clusters)]

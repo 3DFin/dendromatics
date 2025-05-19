@@ -7,16 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2024-05-15
+
 ### Added
 
-- An approximate dist axis function `individualize.compute_axes_approximate`. it relax the dist_axis computation 
+- Python 3.13 compatibility.
+
+- An approximate dist axis function `individualize.compute_axes_approximate`. It relaxes the dist_axis computation
   by sampling point along axis and compute point-to-point distance between those points and the original point cloud.
-  This method enables the global computation of the distance axis without dependencies,
-  offering faster results with a slight trade-off in accuracy. It is enabled by default.
+  This method enables the global computation of the distance axis without dependencies, offering faster results with
+  a slight trade-off in accuracy. It is enabled by default.
+
+- `dendromatics` now optionally depends on `dendroptimized` package. When `dendroptimized` is installed
+  `dendromatics` automatically switches some algorithms (currently `voxelization` and `DBSCAN`) to utilize their faster C++ implementations.
 
 ### Fixed
 
 - Fixed some typos, improve coding style, slight runtime improvements
+
+### Changed
+
+- `voxelization` log is now handled with a `verbose` parameter instead of a `silent` one (to match general convention).
+  This is a breaking change.
+
+- Create a `Primitive` module for voxelization and clustering. It allows improve future integration of optimized algorithms.
+
+- update dependencies (notably `pgeof` 0.3.2 and `csf` 2.0.0).
+
+- Removed an unused parameter in `ground.generate_dtm`
 
 ## [0.5.1] - 2024-06-17
 
@@ -28,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Replace `jakteristics` by `pgeof` for verticality computation. This should result in a slight 
+- Replace `jakteristics` by `pgeof` for verticality computation. This should result in a slight
   but noticeable speed improvement.
 
 - Minimum python version is now 3.9.
@@ -45,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Take into account all iterations in `individualize.compute_axes` to fix inconsistencies with progress bar.
 
 - Update `CSF-3DFin` to version 1.3.0. Thanks to Daniel Girardeau-Montaut,
-  and the CloudCompare project, it contains many bug fixes and speed 
+  and the CloudCompare project, it contains many bug fixes and speed
   improvements. Most notably, it fixes a race condition that resulted
   in non deterministic executions.
 
@@ -55,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update `CSF` to point to the CSF-3DFin fork. This add a fix that improve numpy array - CSF interop. 
+- Update `CSF` to point to the CSF-3DFin fork. This add a fix that improve numpy array - CSF interop.
 Height normalization processing is faster (depdending the size of the cloud it could be of several orders of magnitude)
 
 ## [0.4.0] - 2024-01-24
@@ -75,7 +93,7 @@ between the original area and the slice area.
 
 ### Added
 
-- Added an optional group of dependencies for documentation (`docs`) in the project file. 
+- Added an optional group of dependencies for documentation (`docs`) in the project file.
 
 ## [0.3.0] - 2024-01-19
 

@@ -1,12 +1,13 @@
+import math
 import warnings
 
-import CSF_3DFin as CSF
 import numpy as np
+from CSF_3DFin import CSF
 from scipy.interpolate import griddata
 from scipy.spatial import KDTree
-from sklearn.cluster import DBSCAN
 
-from .voxel.voxel import *
+from .primitives.clustering import DBSCAN_clustering
+from .primitives.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # clean_ground
@@ -40,26 +41,24 @@ def clean_ground(cloud, res_ground=0.15, min_points=2):
     vox_cloud, vox_to_cloud_ind, _ = voxelate(cloud, res_ground, res_ground, with_n_points=False)
     # Cluster labels are appended to the FILTERED cloud. They map each point to
     # the cluster they belong to, according to the clustering algorithm.
-    eps = res_ground * 1.75
-    clustering = DBSCAN(eps=eps, min_samples=min_points, n_jobs=-1).fit(vox_cloud)
+    eps = res_ground * math.sqrt(3) + 1e-6
+    cluster_labels = DBSCAN_clustering(vox_cloud, eps=eps, min_samples=min_points)
 
     cloud_labs = np.append(
         cloud,
-        np.expand_dims(clustering.labels_[vox_to_cloud_ind], axis=1),
+        np.expand_dims(cluster_labels[vox_to_cloud_ind], axis=1),
         axis=1,
     )
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of points'.
-    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
+    cluster_id, K = np.unique(cluster_labels, return_counts=True)
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    large_clusters = cluster_id[K > min_points]
-
-    # ID = -1 is always created by DBSCAN() to include points that were not
+    # ID = -1 is always created by DBSCAN to include points that were not
     # included in any cluster.
-    large_clusters = large_clusters[large_clusters != -1]
+    large_clusters = cluster_id[(K > min_points) & (cluster_id != -1)]
 
     # Removing the points that are not in valid clusters.
     clust_cloud = cloud_labs[np.isin(cloud_labs[:, -1], large_clusters), :3]
@@ -76,7 +75,6 @@ def generate_dtm(
     cloud,
     bSloopSmooth=True,
     cloth_resolution=0.5,
-    classify_threshold=0.1,
 ):
     """This function takes a point cloud and generates a Digital Terrain Model
     (DTM) based on its ground. It's based on 'Cloth Simulation Filter' by
@@ -94,9 +92,6 @@ def generate_dtm(
     cloth_resolution : float
         The resolution of the cloth grid. Refer to CSF documentation. Defaults
         to 0.5.
-    classify_threshold : float
-        The height threshold used to classify the point cloud into ground and
-        non-ground parts. Refer to CSF documentation. Defaults to 0.1.
 
     Returns
     -------
@@ -105,17 +100,17 @@ def generate_dtm(
     """
 
     ### Cloth simulation filter ###
-    csf = CSF.CSF()  # initialize the csf
+    csf = CSF()  # initialize the csf
 
     ### parameter settings ###
-    csf.params.bSloopSmooth = bSloopSmooth
+    csf.params.smooth_slope = bSloopSmooth
     csf.params.cloth_resolution = cloth_resolution
+    csf.params.verbose = True
     # csf.params.rigidness # 1, 2 or 3
-    csf.params.classify_threshold = classify_threshold  # default is 0.5 m
 
-    csf.setPointCloud(cloud)  # pass the (x), (y), (z) list to csf
+    csf.set_point_cloud(cloud)  # pass the (x), (y), (z) list to csf
 
-    raw_nodes = csf.do_cloth_export()  # do actual filtering and export cloth
+    raw_nodes = csf.run_cloth_simulation()  # do actual filtering and export cloth
     cloth_nodes = np.reshape(np.array(raw_nodes), (-1, 3))
 
     return cloth_nodes
@@ -285,7 +280,7 @@ def check_normalization_discrepancy(cloud, original_area, res_xy=1.0, z_min=-0.1
     ground_slice = cloud[(cloud[:, 2] >= z_min) & (cloud[:, 2] <= z_max)]
 
     # Voxelate the slice and store only cloud_to_vox_ind output for efficiency
-    _, _, voxelated_slice = voxelate(ground_slice, res_xy, res_z, with_n_points=False, silent=False)
+    _, _, voxelated_slice = voxelate(ground_slice, res_xy, res_z, with_n_points=False, verbose=True)
 
     # Area of the voxelated ground slice (n of voxels * area of voxel base)
     slice_area = voxelated_slice.shape[0] * res_xy**2

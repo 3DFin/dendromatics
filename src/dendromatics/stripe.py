@@ -1,11 +1,12 @@
+import math
 import timeit
 
 import numpy as np
 import pgeof
 from pgeof import EFeatureID
-from sklearn.cluster import DBSCAN
 
-from .voxel.voxel import *
+from .primitives.clustering import DBSCAN_clustering
+from .primitives.voxel import voxelate
 
 # -----------------------------------------------------------------------------
 # verticality_clustering_iteration
@@ -105,13 +106,13 @@ def verticality_clustering_iteration(
         filt_stripe, resolution_xy, resolution_z, n_digits, with_n_points=False
     )
 
-    eps = resolution_xy * 1.9
+    eps = resolution_xy * math.sqrt(3) + 1e-6
     # Clusterization of the voxelated cloud obtained from the filtered cloud.
-    clustering = DBSCAN(eps=eps, min_samples=2, n_jobs=-1).fit(vox_filt_stripe)
+    cluster_labels = DBSCAN_clustering(vox_filt_stripe, eps=eps, min_samples=2)
 
     # Set of all cluster labels and their cardinality: cluster_id = {1,...,K},
     # K = 'number of clusters'.
-    cluster_id, K = np.unique(clustering.labels_, return_counts=True)
+    cluster_id, K = np.unique(cluster_labels, return_counts=True)
 
     # Raise error if there's only one cluster id (-1)
     if len(cluster_id) == 1 and cluster_id[0] == -1:
@@ -130,13 +131,13 @@ def verticality_clustering_iteration(
     # the cluster they belong to, according to the clustering algorithm.
     vox_filt_lab_stripe = np.append(
         filt_stripe,
-        np.expand_dims(clustering.labels_[vox_to_filt_stripe_ind], axis=1),
+        np.expand_dims(cluster_labels[vox_to_filt_stripe_ind], axis=1),
         axis=1,
     )
 
     # Filtering of labels associated only to clusters that contain a minimum
     # number of points.
-    # Moreover, ID = -1 is always created by DBSCAN() to include points
+    # Moreover, ID = -1 is always created by DBSCAN to include points
     # that were not included in any cluster.
     large_clusters = cluster_id[(K > n_points) & (cluster_id != -1)]
 
@@ -223,16 +224,14 @@ def verticality_clustering(
         vert_threshold = 0
 
     # Basically, use verticality_clustering as many times as defined by n_iter
+    aux_stripe = stripe
+    total_t = 0
     for i in np.arange(n_iter):
         print("Iteration number", i + 1, "out of", n_iter)
-        if i == 0:
-            total_t = 0
-            aux_stripe = stripe
-        else:
-            aux_stripe = clust_stripe
         clust_stripe, t = verticality_clustering_iteration(
             aux_stripe, scale, vert_threshold, n_points, resolution_xy, resolution_z, n_digits
         )
+        aux_stripe = clust_stripe
         total_t = total_t + t
     print("Final:")
     print("%.2f" % total_t, "s in total (whole process)")
