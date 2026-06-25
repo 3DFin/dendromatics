@@ -611,7 +611,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
 
         # 0.6745 scales MAD to be comparable to standard deviation
         z_scores = 0.6745 * (vector - median) / mad
-        
+
         # Convert Z-score to a continuous probability (0.0 to 1.0)
         # Z-scores below 2.0 yield 0.0. A Z-score of 2.9 yields 0.3.
         prob = np.clip((np.abs(z_scores) - 2) / 3, 0, 1)
