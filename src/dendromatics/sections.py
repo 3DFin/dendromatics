@@ -559,19 +559,17 @@ def compute_sections(
 
 def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0):
     """This function finds outlier tilting values among sections within a tree
-    and assigns a score to the sections based on those outliers. Two kinds of
-    outliers are considered.
+    and assigns a continuous probability score to the sections based on 
+    Modified Z-Scores. Two kinds of outliers are considered:
 
-        - Absolute outliers are obtained from the sum of the deviations from
-          every section center to all axes within a tree (the most tilted sections
-          relative to all axes)
+        - Absolute outliers: deviations from every section center to all 
+          axes within a tree (overall tree leaning).
 
-        - Relative outliers are obtained from the deviations of other section
-          centers from a certain axis, within a tree (the most tilted sections
-          relative to a certain axis)
+        - Relative outliers: deviations of other section centers from a 
+          certain axis (local deviations, e.g., branches).
 
-    The 'outlier score' consists on a weighted sum of the absolute tilting value
-    and the relative tilting value.
+    The 'outlier score' is a weighted sum of absolute and relative probabilities,
+    scaled continuously from 0.0 to 1.0.
 
     Parameters
     ----------
@@ -602,18 +600,29 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
     # directly from the interquartile range, or from a certain distance from it,
     # thanks to 'n_range' parameter. Its default value is 1.5.
 
-    def _outlier_vector(vector, lower_q=0.25, upper_q=0.75, n_range=1.5):
-        q1, q3 = np.quantile(vector, [lower_q, upper_q])  # First quartile and Third quartile
-        iqr = q3 - q1  # Interquartile range
-
-        lower_bound = q1 - iqr * n_range  # Lower bound of filter. If n_range = 0 -> lower_bound = q1
-        upper_bound = q3 + iqr * n_range  # Upper bound of filter. If n_range = 0 -> upper_bound = q3
-
-        # return the outlier vector.
-        return ((vector < lower_bound) | (vector > upper_bound)).astype(int)
+    def _mad_score(vector, min_mad=1e-3):
+        """Calculates outlier probability using Median Absolute Deviation (MAD)."""
+        median = np.nanmedian(vector)
+        mad = np.nanmedian(np.abs(vector - median))
+        
+        # Protect against perfectly straight synthetic stems (zero variance)
+        if mad < min_mad:
+            return np.zeros_like(vector, dtype=float)
+            
+        # 0.6745 scales MAD to be comparable to standard deviation
+        z_scores = 0.6745 * (vector - median) / mad 
+        
+        # Convert Z-score to a continuous probability (0.0 to 1.0)
+        # Z-scores below 2.0 yield 0.0. A Z-score of 2.9 yields 0.3.
+        prob = np.clip((np.abs(z_scores) - 2) / 3, 0, 1) 
+        return prob
 
     # Empty matrix that will store the probabilities of a section to be invalid
-    outlier_prob = np.zeros_like(X_tree)
+    outlier_prob = np.zeros_like(X_tree, dtype=float)
+
+    # Normalize weights so they always sum to 1.0, decoupled from tree size
+    w_abs_global = w_1 / (w_1 + w_2)
+    w_rel_global = w_2 / (w_1 + w_2)
 
     # First loop: iterates over each tree
     for i in range(X_tree.shape[0]):
@@ -623,10 +632,10 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             # Filtering sections within a tree that have valid circles (non-zero radius).
             valid_radius = radius[i, :] > 0
             num_valid_sections = np.size(sections[valid_radius])
-            # Weights associated to each section. They are computed in a way
-            # that the final value of outliers sums up to 1 as maximum.
-            abs_outlier_w = w_1 / (num_valid_sections * w_2 + w_1)
-            rel_outlier_w = w_2 / (num_valid_sections * w_2 + w_1)
+
+            # MAD requires at least a few points to establish a reliable median
+            if num_valid_sections < 3:
+                continue
 
             # Vertical distance matrix among all sections (among their centers)
             # Empty matrix to store heights of each section
@@ -645,23 +654,27 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             # Tilting measured from every vertical within a tree: All verticals
             # obtained from the set of sections within a tree. For instance, if
             # there are 10 sections, there are 10 tilting values for each section.
-            tilt_matrix = np.degrees(np.arctan(xy_dist_matrix / z_dist_matrix))
+            # Suppress 0/0 division warnings on the diagonal (handled safely via NaNs)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                tilt_matrix = np.degrees(np.arctan(xy_dist_matrix / z_dist_matrix))
 
-            # Summation of tilting values from each center.
+            # --- 1. Absolute Outlier Processing ---
             tilt_sum = np.nansum(tilt_matrix, axis=0)
+            abs_prob = _mad_score(tilt_sum) * w_abs_global
+            outlier_prob[i, valid_radius] = abs_prob
 
-            # Outliers within previous vector (too low / too high tilting values).
-            # These are abnormals tilting values from ANY axis.
-            outlier_prob[i][valid_radius] = _outlier_vector(tilt_sum) * abs_outlier_w
-
-            # Second loop: iterates over each section (within a single tree).
-            for j in range(np.size(sections[valid_radius])):
-                # Search for abnormals tilting values from a CERTAIN axis.
-                tilt_matrix[j, j] = np.quantile(tilt_matrix[j, ~j], 0.5)
-                # Storing those values.
-                rel_outlier = _outlier_vector(tilt_matrix[j]) * rel_outlier_w
-                # Sum of absolute outlier value and relative outlier values
-                outlier_prob[i][valid_radius] += rel_outlier
+            for j in range(num_valid_sections):
+                # Create a boolean mask to exclude the current index 'j'
+                mask = np.arange(num_valid_sections) != j
+                
+                # Replace the diagonal NaN with the median of valid data in that row
+                tilt_matrix[j, j] = np.nanmedian(tilt_matrix[j, mask])
+                
+                # Accumulate the continuous probability score from this axis
+                rel_prob_sum += _mad_score(tilt_matrix[j])
+            
+            # Normalize the accumulated relative scores by N, then apply global weight
+            outlier_prob[i, valid_radius] += (rel_prob_sum / num_valid_sections) * w_rel_global
 
     return outlier_prob
 
