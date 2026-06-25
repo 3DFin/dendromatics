@@ -559,13 +559,13 @@ def compute_sections(
 
 def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0):
     """This function finds outlier tilting values among sections within a tree
-    and assigns a continuous probability score to the sections based on 
+    and assigns a continuous probability score to the sections based on
     Modified Z-Scores. Two kinds of outliers are considered:
 
-        - Absolute outliers: deviations from every section center to all 
+        - Absolute outliers: deviations from every section center to all
           axes within a tree (overall tree leaning).
 
-        - Relative outliers: deviations of other section centers from a 
+        - Relative outliers: deviations of other section centers from a
           certain axis (local deviations, e.g., branches).
 
     The 'outlier score' is a weighted sum of absolute and relative probabilities,
@@ -604,17 +604,17 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
         """Calculates outlier probability using Median Absolute Deviation (MAD)."""
         median = np.nanmedian(vector)
         mad = np.nanmedian(np.abs(vector - median))
-        
+
         # Protect against perfectly straight synthetic stems (zero variance)
         if mad < min_mad:
             return np.zeros_like(vector, dtype=float)
-            
+
         # 0.6745 scales MAD to be comparable to standard deviation
-        z_scores = 0.6745 * (vector - median) / mad 
+        z_scores = 0.6745 * (vector - median) / mad
         
         # Convert Z-score to a continuous probability (0.0 to 1.0)
         # Z-scores below 2.0 yield 0.0. A Z-score of 2.9 yields 0.3.
-        prob = np.clip((np.abs(z_scores) - 2) / 3, 0, 1) 
+        prob = np.clip((np.abs(z_scores) - 2) / 3, 0, 1)
         return prob
 
     # Empty matrix that will store the probabilities of a section to be invalid
@@ -655,7 +655,7 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             # obtained from the set of sections within a tree. For instance, if
             # there are 10 sections, there are 10 tilting values for each section.
             # Suppress 0/0 division warnings on the diagonal (handled safely via NaNs)
-            with np.errstate(divide='ignore', invalid='ignore'):
+            with np.errstate(divide="ignore", invalid="ignore"):
                 tilt_matrix = np.degrees(np.arctan(xy_dist_matrix / z_dist_matrix))
 
             # --- 1. Absolute Outlier Processing ---
@@ -663,16 +663,18 @@ def tilt_detection(X_tree, Y_tree, radius, sections, Z_field=2, w_1=3.0, w_2=1.0
             abs_prob = _mad_score(tilt_sum) * w_abs_global
             outlier_prob[i, valid_radius] = abs_prob
 
+            # --- 2. Relative Outlier Processing ---
+            rel_prob_sum = np.zeros(num_valid_sections, dtype=float)
             for j in range(num_valid_sections):
                 # Create a boolean mask to exclude the current index 'j'
                 mask = np.arange(num_valid_sections) != j
-                
+
                 # Replace the diagonal NaN with the median of valid data in that row
                 tilt_matrix[j, j] = np.nanmedian(tilt_matrix[j, mask])
-                
+
                 # Accumulate the continuous probability score from this axis
                 rel_prob_sum += _mad_score(tilt_matrix[j])
-            
+
             # Normalize the accumulated relative scores by N, then apply global weight
             outlier_prob[i, valid_radius] += (rel_prob_sum / num_valid_sections) * w_rel_global
 
