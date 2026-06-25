@@ -138,11 +138,86 @@ def generate_circles_cloud(
             | (centers[i, 3] < R_min)
             | (centers[i, 3] > R_max)
         ):  # only happens when which_dbh == 0 # which_valid_points should be used here
-            coords[start:end, 10] = 1  # does not pass quality checks
+            coords[start:end, 10] = 0  # does not pass quality checks
         else:
-            coords[start:end, 10] = 0  # passes quality checks
+            coords[start:end, 10] = 1  # passes quality checks
     return coords
 
+def generate_circles_cloud_vectorized(
+    X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in,
+    tree_vector, outliers, R_min=0.03, R_max=0.5, threshold=5,
+    n_sectors=16, min_n_sectors=9, circa_points=200,
+):
+    """Generates a point cloud of circles for visualization."""
+
+    # 1. Create a boolean mask for sections within the valid radius range
+    valid_mask = (R >= R_min) & (R <= R_max)
+
+    # 2. Get the original row (Tree ID) and column (Section Index)
+    # np.where perfectly preserves the original Tree ID mapping!
+    tree_ids, section_idx = np.where(valid_mask)
+
+    # Safety check: if no sections are valid, return an empty array
+    if len(tree_ids) == 0:
+        return np.empty((0, 11))
+
+    # 3. Extract the valid data dynamically
+    v_X = X_c[tree_ids, section_idx]
+    v_Y = Y_c[tree_ids, section_idx]
+    v_R = R[tree_ids, section_idx]
+    v_check = check_circle[tree_ids, section_idx]
+    v_sector = sector_perct[tree_ids, section_idx]
+    v_n_points = n_points_in[tree_ids, section_idx]
+    v_outliers = outliers[tree_ids, section_idx]
+
+    # Calculate absolute and relative Z values
+    v_rel_z = sections[section_idx]
+    v_abs_z = v_rel_z + tree_vector[tree_ids, 7]
+
+    # 4. Vectorized computation of circle coordinates
+    N = len(tree_ids)
+    angles = np.linspace(0, 2 * np.pi, circa_points, endpoint=False)
+
+    # Broadcasting calculates (dx, dy) for all circles simultaneously
+    # v_R is shape (N, 1), angles is (1, circa_points) -> result is (N, circa_points)
+    dx = v_R[:, np.newaxis] * np.cos(angles)[np.newaxis, :]
+    dy = v_R[:, np.newaxis] * np.sin(angles)[np.newaxis, :]
+
+    # Add the offsets to the center coordinates and flatten them directly
+    circle_X = (v_X[:, np.newaxis] + dx).flatten()
+    circle_Y = (v_Y[:, np.newaxis] + dy).flatten()
+
+    # 5. Build the final coordinates matrix
+    total_points = N * circa_points
+    coords = np.zeros((total_points, 11))
+
+    # Use np.repeat to tile the metadata for every point in a circle's circumference
+    coords[:, 0] = circle_X
+    coords[:, 1] = circle_Y
+    coords[:, 2] = np.repeat(v_abs_z, circa_points)        # Absolute Z
+    coords[:, 3] = np.repeat(v_check, circa_points)        # check_circle
+    coords[:, 4] = np.repeat(tree_ids, circa_points)       # FIX: Original Tree ID!
+    coords[:, 5] = np.repeat(v_sector, circa_points)       # Sector occupancy
+    coords[:, 6] = np.repeat(v_n_points, circa_points)     # Points in inner circle
+    coords[:, 7] = np.repeat(v_rel_z, circa_points)        # Relative Z (Z0)
+    coords[:, 8] = np.repeat(v_R * 2, circa_points)        # Diameter
+    coords[:, 9] = np.repeat(v_outliers, circa_points)     # Outlier probability
+
+    # 6. Quality Checks (Vectorized)
+    # Note: R_min and R_max checks are gone since valid_mask already handled them
+    failed_check = (
+        (v_sector < (min_n_sectors / n_sectors * 100)) |
+        (v_n_points > threshold) |
+        (v_outliers > 0.3)
+    )
+    
+    # Convert boolean to integers: failed -> 0, passed -> 1
+    passed_check_int = (~failed_check).astype(int)
+
+    # Assign the quality check flag
+    coords[:, 10] = np.repeat(passed_check_int, circa_points)
+
+    return coords
 
 def draw_circles(
     X_c,
@@ -200,7 +275,7 @@ def draw_circles(
     circa_points : int
         Number of points used to draw each circle. Defaults to 200.
     """
-    coords = generate_circles_cloud(
+    coords = generate_circles_cloud_vectorized(
         X_c,
         Y_c,
         R,
