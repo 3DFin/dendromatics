@@ -58,10 +58,10 @@ def generate_circles_cloud_vectorized(
     coords[:, 1] = circle_Y
     coords[:, 2] = np.repeat(v_abs_z, circa_points)        # Absolute Z
     coords[:, 3] = np.repeat(v_check, circa_points)        # check_circle
-    coords[:, 4] = np.repeat(tree_ids, circa_points)       # FIX: Original Tree ID!
+    coords[:, 4] = np.repeat(np.arange(N), circa_points)   # Original Tree ID
     coords[:, 5] = np.repeat(v_sector, circa_points)       # Sector occupancy
     coords[:, 6] = np.repeat(v_n_points, circa_points)     # Points in inner circle
-    coords[:, 7] = np.repeat(v_rel_z, circa_points)        # Relative Z (Z0)
+    coords[:, 7] = np.repeat(v_rel_z, circa_points)        # Z0
     coords[:, 8] = np.repeat(v_R * 2, circa_points)        # Diameter
     coords[:, 9] = np.repeat(v_outliers, circa_points)     # Outlier probability
 
