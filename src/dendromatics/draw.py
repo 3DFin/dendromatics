@@ -5,10 +5,23 @@ import numpy as np
 # draw_circles
 # -----------------------------------------------------------------------------
 
+
 def generate_circles_cloud_vectorized(
-    X_c, Y_c, R, sections, check_circle, sector_perct, n_points_in,
-    tree_vector, outliers, R_min=0.03, R_max=0.5, threshold=5,
-    n_sectors=16, min_n_sectors=9, circa_points=200,
+    X_c,
+    Y_c,
+    R,
+    sections,
+    check_circle,
+    sector_perct,
+    n_points_in,
+    tree_vector,
+    outliers,
+    R_min=0.03,
+    R_max=0.5,
+    threshold=5,
+    n_sectors=16,
+    min_n_sectors=9,
+    circa_points=200,
 ):
     """Generates a point cloud of circles for visualization."""
 
@@ -56,22 +69,18 @@ def generate_circles_cloud_vectorized(
     # Use np.repeat to tile the metadata for every point in a circle's circumference
     coords[:, 0] = circle_X
     coords[:, 1] = circle_Y
-    coords[:, 2] = np.repeat(v_abs_z, circa_points)        # Absolute Z
-    coords[:, 3] = np.repeat(v_check, circa_points)        # check_circle
-    coords[:, 4] = np.repeat(np.arange(N), circa_points)   # Original Tree ID
-    coords[:, 5] = np.repeat(v_sector, circa_points)       # Sector occupancy
-    coords[:, 6] = np.repeat(v_n_points, circa_points)     # Points in inner circle
-    coords[:, 7] = np.repeat(v_rel_z, circa_points)        # Z0
-    coords[:, 8] = np.repeat(v_R * 2, circa_points)        # Diameter
-    coords[:, 9] = np.repeat(v_outliers, circa_points)     # Outlier probability
+    coords[:, 2] = np.repeat(v_abs_z, circa_points)  # Absolute Z
+    coords[:, 3] = np.repeat(v_check, circa_points)  # check_circle
+    coords[:, 4] = np.repeat(np.arange(N), circa_points)  # Original Tree ID
+    coords[:, 5] = np.repeat(v_sector, circa_points)  # Sector occupancy
+    coords[:, 6] = np.repeat(v_n_points, circa_points)  # Points in inner circle
+    coords[:, 7] = np.repeat(v_rel_z, circa_points)  # Z0
+    coords[:, 8] = np.repeat(v_R * 2, circa_points)  # Diameter
+    coords[:, 9] = np.repeat(v_outliers, circa_points)  # Outlier probability
 
     # 6. Quality Checks (Vectorized)
     # Note: R_min and R_max checks are gone since valid_mask already handled them
-    failed_check = (
-        (v_sector < (min_n_sectors / n_sectors * 100)) |
-        (v_n_points > threshold) |
-        (v_outliers > 0.3)
-    )
+    failed_check = (v_sector < (min_n_sectors / n_sectors * 100)) | (v_n_points > threshold) | (v_outliers > 0.3)
 
     # Convert boolean to integers: failed -> 0, passed -> 1
     passed_check_int = (~failed_check).astype(int)
@@ -80,6 +89,7 @@ def generate_circles_cloud_vectorized(
     coords[:, 10] = np.repeat(passed_check_int, circa_points)
 
     return coords
+
 
 def draw_circles(
     X_c,
